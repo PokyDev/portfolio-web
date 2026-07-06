@@ -1,0 +1,280 @@
+.page {
+  min-height: 100%;
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem 1.25rem;
+}
+
+.stage {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+}
+
+.cardShell {
+  position: relative;
+  transition: transform var(--transition-base) var(--ease-standard);
+}
+
+.card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.5rem;
+  text-align: center;
+  width: min(24rem, 88vw);
+  padding: 2.25rem 2rem;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  background: var(--color-bg-elevated);
+  box-shadow: 0 1px 2px color-mix(in oklch, var(--color-fg) 6%, transparent);
+  transition:
+    background-color var(--transition-theme) var(--ease-standard),
+    border-color var(--transition-theme) var(--ease-standard);
+}
+
+.eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  font-weight: 500;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--color-muted);
+}
+
+.dot {
+  width: 0.45rem;
+  height: 0.45rem;
+  border-radius: 50%;
+  background: var(--color-muted);
+  transition: background-color var(--transition-fast) var(--ease-standard);
+}
+
+.dotLoading {
+  background: var(--color-accent);
+  animation: pulse 1.1s var(--ease-standard) infinite;
+}
+
+.dotSuccess {
+  background: var(--color-success);
+}
+
+.dotError {
+  background: var(--color-error);
+}
+
+@keyframes pulse {
+  0%,
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.45;
+    transform: scale(1.35);
+  }
+}
+
+.phase {
+  font-size: 1.05rem;
+  font-weight: 500;
+  line-height: 1.5;
+  color: var(--color-fg);
+  transition: color var(--transition-theme) var(--ease-standard);
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.75rem;
+}
+
+.button {
+  appearance: none;
+  border: 1px solid transparent;
+  border-radius: var(--radius-md);
+  padding: 0.6rem 1.15rem;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--color-accent-fg);
+  background: var(--color-accent);
+  cursor: pointer;
+  transition:
+    transform var(--transition-fast) var(--ease-standard),
+    box-shadow var(--transition-fast) var(--ease-standard),
+    opacity var(--transition-fast) var(--ease-standard),
+    background-color var(--transition-theme) var(--ease-standard),
+    color var(--transition-theme) var(--ease-standard);
+}
+
+.button:hover:not(:disabled) {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 14px color-mix(in oklch, var(--color-accent) 35%, transparent);
+}
+
+.button:active:not(:disabled) {
+  transform: translateY(0) scale(0.96);
+}
+
+.button:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 2px;
+}
+
+.button:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+.buttonSecondary {
+  color: var(--color-fg);
+  background: transparent;
+  border-color: var(--color-border);
+}
+
+.buttonSecondary:hover:not(:disabled) {
+  box-shadow: none;
+  border-color: var(--color-accent);
+}
+
+.panel {
+  width: min(22rem, 88vw);
+  margin-top: 1.5rem;
+  border-radius: var(--radius-lg);
+  background: var(--terminal-bg);
+  color: var(--terminal-fg);
+  padding: 1.25rem 1.5rem;
+  opacity: 0;
+  pointer-events: none;
+  transform: translateY(0.75rem);
+  transition:
+    opacity var(--transition-base) var(--ease-standard),
+    transform var(--transition-base) var(--ease-standard);
+}
+
+.panelVisible {
+  opacity: 1;
+  pointer-events: auto;
+  transform: translateY(0);
+}
+
+.panelEyebrow {
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  font-weight: 500;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--terminal-accent);
+  margin: 0 0 0.75rem;
+}
+
+.prompt {
+  color: var(--terminal-muted);
+  margin-right: 0.4rem;
+}
+
+.lineSuccess,
+.lineError {
+  font-family: var(--font-mono);
+  font-size: 0.85rem;
+  margin: 0 0 0.6rem;
+}
+
+.lineSuccess {
+  color: var(--color-success);
+}
+
+.lineError {
+  color: var(--color-error);
+}
+
+.output {
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  white-space: pre-wrap;
+  word-break: break-word;
+  margin: 0 0 0.75rem;
+  color: var(--terminal-fg);
+}
+
+.meta {
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  color: var(--terminal-muted);
+  margin: 0 0 0.9rem;
+}
+
+.progressTrack {
+  width: 100%;
+  height: 3px;
+  border-radius: var(--radius-sm);
+  background: color-mix(in oklch, var(--terminal-muted) 40%, transparent);
+  overflow: hidden;
+}
+
+.progressBar {
+  height: 100%;
+  width: 100%;
+  transform: scaleX(1);
+  transform-origin: left;
+  background: var(--terminal-accent);
+}
+
+.progressBarRunning {
+  animation: shrink 5000ms linear forwards;
+}
+
+@keyframes shrink {
+  from {
+    transform: scaleX(1);
+  }
+  to {
+    transform: scaleX(0);
+  }
+}
+
+/* A partir de aquí el panel se ancla a la derecha de la card y ambos
+   contenedores se desplazan en sentidos opuestos (ver Landing.tsx). Por
+   debajo de este ancho se mantiene el layout apilado de arriba. */
+@media (min-width: 760px) {
+  .stage {
+    flex-direction: row;
+    align-items: flex-start;
+    justify-content: center;
+  }
+
+  .cardShellShifted {
+    transform: translateX(calc(-1 * var(--dock-shift)));
+  }
+
+  .panel {
+    position: absolute;
+    top: 0;
+    left: 100%;
+    margin-top: 0;
+    margin-left: 1.5rem;
+    transform: translateX(calc(-1 * var(--panel-shift)));
+  }
+
+  .panelVisible {
+    transform: translateX(0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cardShell,
+  .panel {
+    transition-duration: 0.001ms;
+  }
+}
