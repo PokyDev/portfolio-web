@@ -5,8 +5,6 @@
   <img src="./public/icons/titulo-frontend.svg" height="64" alt="FRONTEND — portfolio-web" />
 </p>
 
-<h1 align="center">portfolio-web</h1>
-
 <p align="center">
   <img src="https://img.shields.io/badge/Next.js-16-black?logo=next.js" />
   <img src="https://img.shields.io/badge/React-19-61DAFB?logo=react&logoColor=white" />
