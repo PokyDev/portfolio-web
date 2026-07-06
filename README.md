@@ -1,7 +1,9 @@
-<table align="center"><tr>
-  <td><img src="./public/icons/@Poky.png" alt="Pato coronado — @Pokymon.dev" height="64" /></td>
-  <td><img src="./public/icons/titulo-frontend.svg" height="64" alt="FRONTEND — portfolio-web" /></td>
-</tr></table>
+<p align="center">
+  <img src="./public/icons/@Poky.png" alt="Pato coronado — @Pokymon.dev" height="72" />
+</p>
+<p align="center">
+  <img src="./public/icons/titulo-frontend.svg" height="64" alt="FRONTEND — portfolio-web" />
+</p>
 
 <h1 align="center">portfolio-web</h1>
 
