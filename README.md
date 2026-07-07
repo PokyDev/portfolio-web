@@ -53,14 +53,13 @@ Renderizado: SSG/ISR para el sitio público, CSR autenticado para el portal.
 - `app/hooks/` — hooks compartidos (p. ej. tema claro/oscuro).
 - `app/tokens.css` — tokens de diseño centralizados.
 - `public/icons/` — iconografía de marca.
-- `.env.example` — variables de entorno de referencia.
 
 ## Desarrollo local
 
-`npm install`, copiar `.env.example` a `.env.local`
-(`NEXT_PUBLIC_BACKEND_URL=http://localhost:8080`), `npm run dev` →
+`npm install`, crear `.env.local` (no versionado, no distribuido) con
+`NEXT_PUBLIC_BACKEND_URL=http://localhost:8080`, `npm run dev` →
 `localhost:3000`. El backend se consume vía proxy Nginx en `:8080`, nunca
-directamente en `:3001`.
+directamente en `:3001`. No se distribuye ningún archivo `.env.example`.
 
 ## Repo relacionado
 
@@ -71,7 +70,7 @@ directamente en `:3001`.
 | Día | Fecha | Frente | Tarea | Descripción |
 |---|---|---|---|---|
 | 0 | ≤ 05-jul-2026 | INFRA | ✅ Configuración de entorno local | Completado según `config_enviroment.md`: PostgreSQL 16 en Docker, Nginx como proxy inverso en `:8080` con soporte WebSocket y hardening de `:3001` (bind a loopback + header secreto), Next.js 16 con TypeScript/Tailwind, Fastify 5 + Socket.io integrados y probados a través del proxy, Prisma inicializado con migración de prueba, variables de entorno formalizadas con `.env.example` por app, y script automatizado de test de sockets. |
-| 1 | 06-jul-2026 | AMBOS | Repositorios GitHub + higiene de versionado | Crear `portfolio-web` y `portfolio-api` según esta spec: `git init` por app, verificación de `.gitignore` (exclusión de `.env*`, inclusión de `.env.example`), README con la estructura de las secciones 2.2 y 3.2, push inicial a `main`, y vinculación de remotos con GitHub CLI (auth ya realizada). |
+| 1 | 06-jul-2026 | AMBOS | ✅ Repositorios GitHub + higiene de versionado | Crear `portfolio-web` y `portfolio-api` según esta spec: `git init` por app, verificación de `.gitignore` (exclusión total de `.env*`, sin excepción para `.env.example` — ninguna variable de entorno se sube a GitHub, ni siquiera como ejemplo; se mantienen ocultas todo el tiempo), README con la estructura de las secciones 2.2 y 3.2, push inicial a `main`, y vinculación de remotos con GitHub CLI (auth ya realizada). |
 | 2 | 07-jul-2026 | API | Modelo de datos y migraciones Prisma | Reemplazar el modelo de prueba `HealthCheck` por el esquema real: `users` (roles admin/client), `tickets`, `ticket_messages`, `projects`, `conversations`, `messages`, `deliverables`, `deliverable_feedback`, `timeline_phases`. Ejecutar `prisma migrate dev`, crear seed mínimo (usuario admin), y documentar el modelo como spec en el repo. |
 | 3 | 08-jul-2026 | API | Autenticación núcleo | Hashing Argon2id, generación criptográfica de contraseña provisional (12 caracteres, 4 tipos), endpoint de login, emisión de JWT de corta duración + refresh token, middleware RBAC (`admin`/`client`) y rate limiting con bloqueo progresivo en intentos fallidos (RNF-03, RNF-03b, RNF-03c). |
 | 4 | 09-jul-2026 | API | Correo transaccional + 2FA + reset | Alta y validación del proveedor (Resend o Mailtrap) con correo de prueba; flujo de verificación de correo por código/link; activación de 2FA TOTP (RF-13b); flujo completo de restablecimiento de contraseña autónomo (RF-13c). |
