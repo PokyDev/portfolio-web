@@ -1,8 +1,14 @@
 <p align="center">
   <img src="./public/icons/@Poky.png" alt="Pato coronado — @Pokymon.dev" height="72" />
 </p>
+
 <p align="center">
   <img src="./public/icons/titulo-frontend.svg" height="64" alt="FRONTEND — portfolio-web" />
+</p>
+
+<p align="center">
+  <img src="./public/icons/GitHub.png" alt="GitHub" height="72" />
+  <img src="./public/icons/@Next.png" alt="Next.js" height="72" />
 </p>
 
 <p align="center">
