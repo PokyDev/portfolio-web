@@ -39,3 +39,7 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# AI agent context files (local only, never committed)
+CLAUDE.md
+AGENTS.md
