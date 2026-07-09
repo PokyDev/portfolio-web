@@ -17,6 +17,8 @@ export interface Proyecto {
   etiquetaEnlace: string;
   estrellas?: number;
   descargas?: number;
+  /** Miniatura de la tarjeta: captura en /public/photos (opcional) */
+  miniatura?: string;
   tecnologias: string[];
 }
 
@@ -25,6 +27,8 @@ export interface Experiencia {
   empresa: string;
   periodo: string;
   descripcion: string;
+  /** Destino de la tarjeta clickeable: URL de la empresa/perfil (muestra en esta fase) */
+  enlace: string;
   tecnologias: string[];
 }
 
@@ -67,6 +71,7 @@ export const EXPERIENCIAS: readonly Experiencia[] = [
     periodo: "2024 — presente",
     descripcion:
       "Sitios y sistemas a medida para clientes locales, de la propuesta al despliegue, con gestión directa del cliente: requerimientos, cronograma y entregables.",
+    enlace: "https://www.linkedin.com/in/pokymon-dev",
     tecnologias: ["Next.js", "Fastify", "PostgreSQL", "Nginx"],
   },
   {
@@ -75,6 +80,7 @@ export const EXPERIENCIAS: readonly Experiencia[] = [
     periodo: "2023 — 2024",
     descripcion:
       "Componentes UI reutilizables para un panel administrativo en producción; reduje el tiempo de carga inicial en un 35 % optimizando bundles.",
+    enlace: "https://estudio-regional.example.com",
     tecnologias: ["React", "TypeScript", "Tailwind CSS"],
   },
 ] as const;
@@ -88,6 +94,7 @@ export const PROYECTOS: readonly Proyecto[] = [
     enlace: "/proyectos/plataforma-portafolio",
     etiquetaEnlace: "Ver caso de estudio",
     estrellas: 24,
+    miniatura: "/photos/Portfolio.png",
     tecnologias: ["Next.js", "Fastify", "Socket.io", "PostgreSQL", "Nginx"],
   },
   {
@@ -98,6 +105,7 @@ export const PROYECTOS: readonly Proyecto[] = [
     enlace: "/proyectos/gestor-inventario",
     etiquetaEnlace: "Ver caso de estudio",
     descargas: 1200,
+    miniatura: "/photos/CoragemShop.png",
     tecnologias: ["React", "Node.js", "Prisma", "PostgreSQL"],
   },
   {
@@ -108,6 +116,7 @@ export const PROYECTOS: readonly Proyecto[] = [
     enlace: "https://github.com/PokyDev/poky-cli",
     etiquetaEnlace: "Ver repositorio",
     estrellas: 8,
+    miniatura: "/photos/DeployMonitor.png",
     tecnologias: ["Node.js", "TypeScript"],
   },
   {

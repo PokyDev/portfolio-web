@@ -341,17 +341,57 @@
 }
 
 /* ============================================================
-   Experiencia
+   Experiencia — tarjetas clickeables
    ============================================================ */
 
-/* Dos hijos: fecha a la izquierda (pegada arriba) y detalle a la derecha.
-   En pantallas angostas la fecha pasa a quedar sobre el detalle. */
 .experiencia {
   margin-bottom: 2.25rem;
 }
 
 .experiencia:last-child {
   margin-bottom: 0;
+}
+
+/* Tarjeta "invisible" en reposo: el padding se compensa con margen negativo
+   para que el contenido no se desplace respecto al layout original, pero el
+   área de hover/click sea más amplia que el texto. El fondo y el radio solo
+   se perciben al hacer hover. */
+.experienciaTarjeta {
+  display: block;
+  padding: 1rem 1.25rem;
+  margin: -1rem -1.25rem;
+  border-radius: var(--radius-lg);
+  cursor: pointer;
+  transition:
+    background-color var(--transition-base) var(--ease-standard),
+    opacity var(--transition-base) var(--ease-standard);
+}
+
+.experienciaTarjeta .subtitulo {
+  transition: color var(--transition-base) var(--ease-standard);
+}
+
+/* Solo en dispositivos con puntero real: en táctil no hay hover que
+   justifique atenuar al resto de tarjetas. */
+@media (hover: hover) {
+  .experienciaTarjeta:hover {
+    /* Tinte derivado del accent: indigo en claro, cornflower en oscuro */
+    background: color-mix(in oklch, var(--color-accent) 8%, transparent);
+  }
+
+  .experienciaTarjeta:hover .subtitulo {
+    color: var(--color-accent);
+  }
+
+  /* Al hacer hover sobre una tarjeta, las hermanas se atenúan */
+  .listaExperiencias:hover .experienciaTarjeta:not(:hover) {
+    opacity: 0.5;
+  }
+}
+
+.experienciaTarjeta:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 2px;
 }
 
 .periodo {
@@ -367,15 +407,17 @@
   margin-top: 0.5rem;
 }
 
+/* Dos columnas: fecha a la izquierda (pegada arriba) y detalle a la derecha.
+   En pantallas angostas la fecha queda sobre el detalle. */
 @media (min-width: 640px) {
-  .experiencia {
+  .experienciaTarjeta {
     display: grid;
     grid-template-columns: 8.5rem 1fr;
     gap: 1.25rem;
     align-items: start;
   }
 
-  .experiencia .periodo {
+  .experienciaTarjeta .periodo {
     margin-bottom: 0;
     /* alinea ópticamente la fecha con el título del detalle */
     margin-top: 0.2rem;
@@ -391,20 +433,105 @@
   gap: 1.25rem;
 }
 
+/* Tarjeta con el mismo esqueleto que .experienciaTarjeta: columna fija a la
+   izquierda (aquí la miniatura, allá la fecha) y detalle a la derecha. En
+   móvil la miniatura queda arriba del detalle, como la fecha en experiencia. */
 .tarjetaEnlace {
-  display: block;
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
   padding: 1.5rem;
   border: 1px solid var(--color-border);
   border-radius: var(--radius-lg);
   background: var(--color-bg-elevated);
   transition:
     border-color var(--transition-fast) var(--ease-standard),
-    transform var(--transition-fast) var(--ease-standard);
+    transform var(--transition-fast) var(--ease-standard),
+    opacity var(--transition-base) var(--ease-standard);
+}
+
+.proyectoCuerpo {
+  min-width: 0;
+}
+
+.proyectoMiniatura {
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  transition: border-color var(--transition-fast) var(--ease-standard);
+}
+
+.miniaturaImagen {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  /* Las capturas son páginas completas: anclar arriba muestra el header,
+     la zona más reconocible, en vez del centro arbitrario */
+  object-position: top;
+}
+
+/* Empty-state: mismo marco que la miniatura real, pero en "borrador" —
+   borde discontinuo, tinte suave del accent y un glifo de código centrado.
+   Todo tokenizado: funciona en claro y oscuro sin reglas extra. */
+.miniaturaVacia {
+  display: grid;
+  place-items: center;
+  border-style: dashed;
+  background: color-mix(in oklch, var(--color-accent) 6%, transparent);
+  color: var(--color-muted);
+  font-family: var(--font-heading);
+  font-size: 1.15rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  user-select: none;
+  transition:
+    border-color var(--transition-fast) var(--ease-standard),
+    color var(--transition-fast) var(--ease-standard);
+}
+
+.tarjetaEnlace:hover .proyectoMiniatura {
+  border-color: var(--color-accent);
+}
+
+.tarjetaEnlace:hover .miniaturaVacia {
+  color: var(--color-accent);
+}
+
+@media (min-width: 640px) {
+  .tarjetaEnlace {
+    display: grid;
+    grid-template-columns: 8.5rem 1fr;
+    gap: 1.25rem;
+    align-items: start;
+  }
+
+  .proyectoMiniatura {
+    aspect-ratio: 16 / 10;
+    /* alinea ópticamente la captura con el título, como el periodo
+       en las tarjetas de experiencia */
+    margin-top: 0.2rem;
+  }
+
+  /* Sin miniatura (p. ej. widget-clima) el detalle conserva su columna:
+     todos los cuerpos quedan alineados verticalmente entre tarjetas */
+  .proyectoCuerpo {
+    grid-column: 2;
+  }
 }
 
 .tarjetaEnlace:hover {
   border-color: var(--color-accent);
   transform: translateY(-2px);
+}
+
+/* Mismo patrón que las tarjetas de experiencia: al hacer hover sobre una,
+   las hermanas se atenúan (solo con puntero real, no en táctil). */
+@media (hover: hover) {
+  .proyectos:hover .tarjetaEnlace:not(:hover) {
+    opacity: 0.5;
+  }
 }
 
 .tarjetaEnlace:focus-visible {
@@ -476,28 +603,37 @@
   margin-inline: auto;
 }
 
+/* CTA en la dupla de marca lavender/indigo, invertida según el tema:
+   claro → fondo indigo (accent) con texto lavender; oscuro → fondo lavender
+   (fg) con texto indigo profundo. --cta-bg centraliza el fondo para que el
+   halo del hover siempre derive del color real del botón. */
 .cta {
+  --cta-bg: var(--color-accent);
   display: inline-flex;
   align-items: center;
   margin-top: 1.5rem;
   padding: 0.75rem 1.5rem;
   font-size: 0.95rem;
   font-weight: 700;
-  color: var(--color-cta-fg);
-  background: var(--color-cta);
+  color: var(--color-accent-fg);
+  background: var(--cta-bg);
   border-radius: var(--radius-md);
   transition:
     transform var(--transition-fast) var(--ease-standard),
     box-shadow var(--transition-fast) var(--ease-standard);
 }
 
+:global(.dark) .cta {
+  --cta-bg: var(--color-fg); /* lavender; el texto (accent-fg) ya es indigo */
+}
+
 .cta:hover {
   transform: translateY(-1px);
-  box-shadow: 0 4px 14px color-mix(in oklch, var(--color-cta) 35%, transparent);
+  box-shadow: 0 4px 14px color-mix(in oklch, var(--cta-bg) 35%, transparent);
 }
 
 .cta:focus-visible {
-  outline: 2px solid var(--color-cta);
+  outline: 2px solid var(--color-accent);
   outline-offset: 2px;
 }
 

@@ -20,28 +20,50 @@ function TarjetaProyecto({ proyecto }: { proyecto: Proyecto }) {
       className={styles.tarjetaEnlace}
       {...(externo && { target: "_blank", rel: "noopener noreferrer" })}
     >
-      <h3 className={styles.proyectoTitulo}>{proyecto.titulo}</h3>
-      <p className={styles.parrafo}>{proyecto.descripcion}</p>
-      <div className={styles.proyectoMeta}>
-        {proyecto.estrellas !== undefined && (
-          <span className={styles.metrica}>⭐ {proyecto.estrellas}</span>
-        )}
-        {proyecto.descargas !== undefined && (
-          <span className={styles.metrica}>
-            ⇩ {proyecto.descargas.toLocaleString("es")} descargas
-          </span>
-        )}
+      {proyecto.miniatura ? (
+        <div className={styles.proyectoMiniatura}>
+          <Image
+            src={proyecto.miniatura}
+            alt={`Captura de ${proyecto.titulo}`}
+            width={480}
+            height={300}
+            className={styles.miniaturaImagen}
+          />
+        </div>
+      ) : (
+        // Empty-state decorativo: conserva el ritmo visual de la columna
+        // de miniaturas cuando el proyecto aún no tiene captura.
+        <div
+          className={`${styles.proyectoMiniatura} ${styles.miniaturaVacia}`}
+          aria-hidden="true"
+        >
+          {"</>"}
+        </div>
+      )}
+      <div className={styles.proyectoCuerpo}>
+        <h3 className={styles.proyectoTitulo}>{proyecto.titulo}</h3>
+        <p className={styles.parrafo}>{proyecto.descripcion}</p>
+        <ul className={styles.chips} aria-label="Tecnologías usadas">
+          {proyecto.tecnologias.map((tecnologia) => (
+            <li key={tecnologia} className={styles.chip}>
+              {tecnologia}
+            </li>
+          ))}
+        </ul>
+        <div className={styles.proyectoMeta}>
+          {proyecto.estrellas !== undefined && (
+            <span className={styles.metrica}>⭐ {proyecto.estrellas}</span>
+          )}
+          {proyecto.descargas !== undefined && (
+            <span className={styles.metrica}>
+              ⇩ {proyecto.descargas.toLocaleString("es")} descargas
+            </span>
+          )}
+        </div>
+        <span className={styles.proyectoEnlace}>
+          {proyecto.etiquetaEnlace} →
+        </span>
       </div>
-      <ul className={styles.chips} aria-label="Tecnologías usadas">
-        {proyecto.tecnologias.map((tecnologia) => (
-          <li key={tecnologia} className={styles.chip}>
-            {tecnologia}
-          </li>
-        ))}
-      </ul>
-      <span className={styles.proyectoEnlace}>
-        {proyecto.etiquetaEnlace} →
-      </span>
     </a>
   );
 }
@@ -61,28 +83,45 @@ export default function Landing() {
 
         <section id="experiencia" className={styles.seccion}>
           <h2 className={styles.tituloSeccion}>Experiencia laboral</h2>
-          <ol className={styles.listaLimpia}>
-            {EXPERIENCIAS.map((experiencia) => (
-              <li
-                key={`${experiencia.rol}-${experiencia.empresa}`}
-                className={styles.experiencia}
-              >
-                <p className={styles.periodo}>{experiencia.periodo}</p>
-                <div className={styles.experienciaDetalle}>
-                  <h3 className={styles.subtitulo}>
-                    {experiencia.rol} · {experiencia.empresa}
-                  </h3>
-                  <p className={styles.parrafo}>{experiencia.descripcion}</p>
-                  <ul className={styles.chips} aria-label="Tecnologías usadas">
-                    {experiencia.tecnologias.map((tecnologia) => (
-                      <li key={tecnologia} className={styles.chip}>
-                        {tecnologia}
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              </li>
-            ))}
+          <ol className={`${styles.listaLimpia} ${styles.listaExperiencias}`}>
+            {EXPERIENCIAS.map((experiencia) => {
+              // Mismo criterio que TarjetaProyecto: destinos externos en pestaña nueva.
+              const externo = experiencia.enlace.startsWith("http");
+
+              return (
+                <li
+                  key={`${experiencia.rol}-${experiencia.empresa}`}
+                  className={styles.experiencia}
+                >
+                  <a
+                    href={experiencia.enlace}
+                    className={styles.experienciaTarjeta}
+                    {...(externo && {
+                      target: "_blank",
+                      rel: "noopener noreferrer",
+                    })}
+                  >
+                    <p className={styles.periodo}>{experiencia.periodo}</p>
+                    <div className={styles.experienciaDetalle}>
+                      <h3 className={styles.subtitulo}>
+                        {experiencia.rol} · {experiencia.empresa}
+                      </h3>
+                      <p className={styles.parrafo}>{experiencia.descripcion}</p>
+                      <ul
+                        className={styles.chips}
+                        aria-label="Tecnologías usadas"
+                      >
+                        {experiencia.tecnologias.map((tecnologia) => (
+                          <li key={tecnologia} className={styles.chip}>
+                            {tecnologia}
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  </a>
+                </li>
+              );
+            })}
           </ol>
         </section>
 
@@ -107,7 +146,7 @@ export default function Landing() {
             </a>{" "}
             o revisa mi trayectoria completa.
           </p>
-          {/* Único CTA naranja de la vista (regla "menos es más" de la paleta) */}
+          {/* Único CTA de la vista — dupla lavender/indigo invertida por tema */}
           <a href="/cv.pdf" download className={styles.cta}>
             Descargar CV (PDF)
           </a>
