@@ -1,172 +1,127 @@
-"use client";
-
-import { useCallback, useEffect, useRef, useState } from "react";
-import { useTheme } from "../../hooks/useTheme";
+import Image from "next/image";
+import Aside from "./Aside";
+import {
+  EXPERIENCIAS,
+  IDENTIDAD,
+  PROYECTOS,
+  SOBRE_MI,
+  type Proyecto,
+} from "./data";
 import styles from "./landing.module.css";
 
-type Status = "idle" | "loading" | "success" | "error";
+function TarjetaProyecto({ proyecto }: { proyecto: Proyecto }) {
+  // Toda tarjeta es clickeable: interna (caso de estudio, interfaz 2) o
+  // externa (repo/página). Las externas abren en pestaña nueva.
+  const externo = proyecto.enlace.startsWith("http");
 
-interface HealthResult {
-  ok: boolean;
-  statusCode: number | null;
-  body: string;
-  timestamp: string;
-}
-
-const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL;
-const HIDE_DELAY_MS = 5000;
-const FADE_DURATION_MS = 250; // debe matchear --transition-base en tokens.css
-
-function formatBody(raw: string): string {
-  try {
-    return JSON.stringify(JSON.parse(raw), null, 2);
-  } catch {
-    return raw;
-  }
+  return (
+    <a
+      href={proyecto.enlace}
+      className={styles.tarjetaEnlace}
+      {...(externo && { target: "_blank", rel: "noopener noreferrer" })}
+    >
+      <h3 className={styles.proyectoTitulo}>{proyecto.titulo}</h3>
+      <p className={styles.parrafo}>{proyecto.descripcion}</p>
+      <div className={styles.proyectoMeta}>
+        {proyecto.estrellas !== undefined && (
+          <span className={styles.metrica}>⭐ {proyecto.estrellas}</span>
+        )}
+        {proyecto.descargas !== undefined && (
+          <span className={styles.metrica}>
+            ⇩ {proyecto.descargas.toLocaleString("es")} descargas
+          </span>
+        )}
+      </div>
+      <ul className={styles.chips} aria-label="Tecnologías usadas">
+        {proyecto.tecnologias.map((tecnologia) => (
+          <li key={tecnologia} className={styles.chip}>
+            {tecnologia}
+          </li>
+        ))}
+      </ul>
+      <span className={styles.proyectoEnlace}>
+        {proyecto.etiquetaEnlace} →
+      </span>
+    </a>
+  );
 }
 
 export default function Landing() {
-  const { toggleTheme } = useTheme();
-  const [status, setStatus] = useState<Status>("idle");
-  const [panelVisible, setPanelVisible] = useState(false);
-  const [result, setResult] = useState<HealthResult | null>(null);
-  const [attemptId, setAttemptId] = useState(0);
-
-  const hideTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const resetTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-
-  const isBusy = status !== "idle";
-
-  useEffect(() => {
-    return () => {
-      if (hideTimerRef.current) clearTimeout(hideTimerRef.current);
-      if (resetTimerRef.current) clearTimeout(resetTimerRef.current);
-    };
-  }, []);
-
-  const handleTestBackend = useCallback(async () => {
-    if (isBusy) return;
-
-    setStatus("loading");
-    setAttemptId((id) => id + 1);
-
-    const timestamp = new Date().toLocaleTimeString();
-
-    let next: HealthResult;
-    try {
-      if (!BACKEND_URL) {
-        throw new Error("NEXT_PUBLIC_BACKEND_URL no está configurada");
-      }
-      const response = await fetch(`${BACKEND_URL}/health`);
-      const text = await response.text();
-      next = {
-        ok: response.ok,
-        statusCode: response.status,
-        body: text,
-        timestamp,
-      };
-    } catch (err) {
-      next = {
-        ok: false,
-        statusCode: null,
-        body: err instanceof Error ? err.message : "Error desconocido",
-        timestamp,
-      };
-    }
-
-    setResult(next);
-    setStatus(next.ok ? "success" : "error");
-    setPanelVisible(true);
-
-    hideTimerRef.current = setTimeout(() => {
-      setPanelVisible(false);
-      resetTimerRef.current = setTimeout(() => {
-        setStatus("idle");
-        setResult(null);
-      }, FADE_DURATION_MS);
-    }, HIDE_DELAY_MS);
-  }, [isBusy]);
-
-  const dotStatusClass =
-    status === "loading"
-      ? styles.dotLoading
-      : status === "success"
-        ? styles.dotSuccess
-        : status === "error"
-          ? styles.dotError
-          : "";
-
   return (
-    <main className={styles.page}>
-      <div className={styles.stage}>
-        <div
-          className={`${styles.cardShell} ${panelVisible ? styles.cardShellShifted : ""}`}
-        >
-          <section className={styles.card}>
-            <span className={styles.eyebrow}>
-              <span className={`${styles.dot} ${dotStatusClass}`} />
-              Estado del sistema
-            </span>
-            <p className={styles.phase}>
-              Fase actual: configuración de entorno local
-            </p>
-            <div className={styles.actions}>
-              <button
-                type="button"
-                className={styles.button}
-                onClick={handleTestBackend}
-                disabled={isBusy}
-              >
-                {status === "loading" ? "Probando…" : "Probar backend"}
-              </button>
-              <button
-                type="button"
-                className={`${styles.button} ${styles.buttonSecondary}`}
-                onClick={toggleTheme}
-              >
-                <span className="dark:hidden">🌙 Modo oscuro</span>
-                <span className="hidden dark:inline">☀️ Modo claro</span>
-              </button>
-            </div>
-          </section>
+    <div className={styles.layout}>
+      <Aside />
 
-          <div
-            className={`${styles.panel} ${panelVisible ? styles.panelVisible : ""}`}
-            role="status"
-            aria-live="polite"
-          >
-            {result && (
-              <>
-                <p className={styles.panelEyebrow}>Respuesta del servidor</p>
-                <p
-                  className={
-                    result.ok ? styles.lineSuccess : styles.lineError
-                  }
-                >
-                  <span className={styles.prompt}>$</span> curl {BACKEND_URL}
-                  /health
-                </p>
-                <pre className={styles.output}>{formatBody(result.body)}</pre>
-                <p className={styles.meta}>
-                  {result.timestamp}
-                  {" — "}
-                  {result.statusCode !== null
-                    ? `HTTP ${result.statusCode}`
-                    : "sin respuesta"}
-                </p>
-                <div className={styles.progressTrack}>
-                  <div
-                    key={attemptId}
-                    className={`${styles.progressBar} ${
-                      panelVisible ? styles.progressBarRunning : ""
-                    }`}
-                  />
+      <main className={styles.contenido}>
+        <section id="sobre-mi" className={styles.seccion}>
+          <h2 className={styles.tituloSeccion}>Sobre mí</h2>
+          <p className={`${styles.parrafo} ${styles.parrafoAmplio}`}>
+            {SOBRE_MI}
+          </p>
+        </section>
+
+        <section id="experiencia" className={styles.seccion}>
+          <h2 className={styles.tituloSeccion}>Experiencia laboral</h2>
+          <ol className={styles.listaLimpia}>
+            {EXPERIENCIAS.map((experiencia) => (
+              <li
+                key={`${experiencia.rol}-${experiencia.empresa}`}
+                className={styles.experiencia}
+              >
+                <p className={styles.periodo}>{experiencia.periodo}</p>
+                <div className={styles.experienciaDetalle}>
+                  <h3 className={styles.subtitulo}>
+                    {experiencia.rol} · {experiencia.empresa}
+                  </h3>
+                  <p className={styles.parrafo}>{experiencia.descripcion}</p>
+                  <ul className={styles.chips} aria-label="Tecnologías usadas">
+                    {experiencia.tecnologias.map((tecnologia) => (
+                      <li key={tecnologia} className={styles.chip}>
+                        {tecnologia}
+                      </li>
+                    ))}
+                  </ul>
                 </div>
-              </>
-            )}
+              </li>
+            ))}
+          </ol>
+        </section>
+
+        <section id="proyectos" className={styles.seccion}>
+          <h2 className={styles.tituloSeccion}>Proyectos</h2>
+          <div className={styles.proyectos}>
+            {PROYECTOS.map((proyecto) => (
+              <TarjetaProyecto key={proyecto.slug} proyecto={proyecto} />
+            ))}
           </div>
-        </div>
-      </div>
-    </main>
+        </section>
+
+        <section
+          id="contacto"
+          className={`${styles.seccion} ${styles.seccionCentrada}`}
+        >
+          <h2 className={styles.tituloSeccion}>Contacto</h2>
+          <p className={styles.parrafo}>
+            ¿Un proyecto en mente? Escríbeme a{" "}
+            <a href={`mailto:${IDENTIDAD.email}`} className={styles.enlace}>
+              {IDENTIDAD.email}
+            </a>{" "}
+            o revisa mi trayectoria completa.
+          </p>
+          {/* Único CTA naranja de la vista (regla "menos es más" de la paleta) */}
+          <a href="/cv.pdf" download className={styles.cta}>
+            Descargar CV (PDF)
+          </a>
+        </section>
+
+        <footer className={styles.footer}>
+          <Image
+            src="/icons/@Poky.svg"
+            alt="Sello de @Pokymon.dev"
+            width={44}
+            height={44}
+          />
+        </footer>
+      </main>
+    </div>
   );
 }

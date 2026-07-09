@@ -1,0 +1,26 @@
+.spotlight {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background: radial-gradient(
+    var(--spotlight-size) circle at var(--x, 50%) var(--y, 50%),
+    var(--spotlight-color),
+    transparent 70%
+  );
+  opacity: 0;
+  mix-blend-mode: var(--spotlight-blend);
+  transition: opacity var(--transition-base) var(--ease-standard);
+}
+
+/* Solo aparece cuando el puntero ya se movió (evita un halo huérfano al cargar) */
+.active {
+  opacity: var(--spotlight-opacity);
+}
+
+/* Sin puntero fino o con reduced-motion el efecto no existe (spec §5) */
+@media (pointer: coarse), (prefers-reduced-motion: reduce) {
+  .spotlight {
+    display: none;
+  }
+}

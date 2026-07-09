@@ -1,280 +1,513 @@
-.page {
-  min-height: 100%;
-  flex: 1;
+/* ============================================================
+   Layout general (specs/Design/landing_page.md §2)
+   Móvil: una columna — identidad, sociales, nav sticky, contenido.
+   ≥ lg: aside pegado (siempre visible, alto del viewport) + contenido.
+   ============================================================ */
+
+.layout {
+  --padding-x: clamp(1.25rem, 6vw, 4rem);
+  position: relative;
+  z-index: 1; /* por encima de la capa Spotlight (z 0) */
+  width: 100%;
+  max-width: 72rem;
+  margin: 0 auto;
+  padding: 0 var(--padding-x);
   display: flex;
+  flex-direction: column;
+}
+
+/* En móvil los bloques del aside participan directo del flujo de .layout
+   (display: contents): así la nav puede ser sticky a nivel de página y los
+   bloques se reordenan con `order` (identidad → sociales → nav → contenido). */
+.aside {
+  display: contents;
+}
+
+.identidad {
+  order: 1;
+  padding-top: 2.5rem;
+}
+
+.sociales {
+  order: 2;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  margin-top: 1.5rem;
+}
+
+.nav {
+  order: 3;
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  margin: 1.5rem calc(-1 * var(--padding-x)) 0;
+  padding: 0.6rem var(--padding-x);
+  background: color-mix(in oklch, var(--color-bg) 88%, transparent);
+  backdrop-filter: blur(8px);
+  border-bottom: 1px solid var(--color-border);
+}
+
+.contenido {
+  order: 4;
+  min-width: 0;
+}
+
+@media (min-width: 1024px) {
+  .layout {
+    flex-direction: row;
+    align-items: flex-start;
+    gap: clamp(3rem, 6vw, 6rem);
+  }
+
+  /* "Fixed" de la spec implementado con sticky: mismo resultado visual
+     (siempre visible, alto del viewport) sin sacar al aside del container. */
+  .aside {
+    display: flex;
+    flex-direction: column;
+    position: sticky;
+    top: 0;
+    height: 100vh;
+    flex: 0 0 20rem;
+    padding: 5rem 0;
+  }
+
+  .identidad,
+  .sociales,
+  .nav {
+    order: 0; /* vuelve a mandar el orden del DOM: identidad, nav, sociales */
+  }
+
+  .identidad {
+    padding-top: 0;
+  }
+
+  .nav {
+    position: static;
+    margin: 3.5rem 0 0;
+    padding: 0;
+    background: transparent;
+    backdrop-filter: none;
+    border-bottom: none;
+  }
+
+  .sociales {
+    margin-top: auto; /* sociales + toggle anclados al fondo del aside */
+  }
+
+  .contenido {
+    flex: 1;
+    padding-top: 5rem;
+  }
+}
+
+/* ============================================================
+   Aside — identidad
+   ============================================================ */
+
+.avatar {
+  display: grid;
+  place-items: center;
+  width: 4rem;
+  height: 4rem;
+  border-radius: 50%;
+  background: var(--color-accent);
+  color: var(--color-accent-fg);
+  font-family: var(--font-heading);
+  font-size: 1.7rem;
+  font-weight: 700;
+  margin-bottom: 1.25rem;
+}
+
+.nombre {
+  font-family: var(--font-heading);
+  font-size: clamp(2rem, 3.5vw, 2.5rem);
+  font-weight: 700;
+  line-height: 1.1;
+  color: var(--color-fg);
+}
+
+.alias {
+  margin-top: 0.35rem;
+  font-size: 1.05rem;
+  font-weight: 600;
+  color: var(--color-accent);
+}
+
+.habilidad {
+  margin-top: 0.9rem;
+  font-size: 1.15rem;
+  font-weight: 500;
+  color: var(--color-fg);
+}
+
+.tagline {
+  margin-top: 0.5rem;
+  font-size: 1rem;
+  line-height: 1.55;
+  color: var(--color-muted);
+  max-width: 36ch;
+}
+
+/* ============================================================
+   Aside — navegación con scrollspy (§3)
+   ============================================================ */
+
+.navLista {
+  display: flex;
+  gap: 1.4rem;
+  overflow-x: auto;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.navLink {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.7rem;
+  padding: 0.5rem 0;
+  font-size: 0.85rem;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  color: var(--color-muted);
+  transition:
+    color var(--transition-fast) var(--ease-standard),
+    transform var(--transition-fast) var(--ease-standard);
+}
+
+.navLink:hover {
+  color: var(--color-accent);
+  transform: translateX(0.2rem);
+}
+
+/* Línea-guión que precede al label: se alarga en la sección activa */
+.navGuion {
+  display: none;
+  width: 1.5rem;
+  height: 1px;
+  background: currentColor;
+  transition: width var(--transition-fast) var(--ease-standard);
+}
+
+.navLinkActivo {
+  color: var(--color-accent);
+}
+
+.navLinkActivo .navGuion {
+  width: 3rem;
+}
+
+@media (min-width: 1024px) {
+  .navLista {
+    flex-direction: column;
+    gap: 0.1rem;
+    overflow: visible;
+  }
+
+  .navGuion {
+    display: block;
+  }
+}
+
+/* ============================================================
+   Aside — sociales + toggle de tema
+   ============================================================ */
+
+.social {
+  display: inline-flex;
+  padding: 0.45rem;
+  color: var(--color-muted);
+  transition:
+    color var(--transition-fast) var(--ease-standard),
+    transform var(--transition-fast) var(--ease-standard);
+}
+
+.social:hover {
+  color: var(--color-accent);
+  transform: translateY(-2px);
+}
+
+.toggleTema {
+  appearance: none;
+  cursor: pointer;
+  display: inline-flex;
   align-items: center;
   justify-content: center;
-  padding: 2rem 1.25rem;
+  margin-left: 0.6rem;
+  padding: 0.45rem;
+  line-height: 1;
+  /* En claro el icono va en Indigo (accent); en oscuro, en Lavender (fg).
+     Los SVG usan currentColor, así que basta con mover este color. */
+  color: var(--color-accent);
+  background: transparent;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  transition:
+    color var(--transition-fast) var(--ease-standard),
+    border-color var(--transition-fast) var(--ease-standard),
+    transform var(--transition-fast) var(--ease-standard);
 }
 
-.stage {
-  position: relative;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  width: 100%;
+:global(.dark) .toggleTema {
+  color: var(--color-fg);
 }
 
-.cardShell {
-  position: relative;
-  transition: transform var(--transition-base) var(--ease-standard);
+.iconoTema {
+  line-height: 0;
 }
 
-.card {
-  position: relative;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 1.5rem;
-  text-align: center;
-  width: min(24rem, 88vw);
-  padding: 2.25rem 2rem;
+.toggleTema:hover {
+  border-color: var(--color-accent);
+  transform: translateY(-2px);
+}
+
+.toggleTema:focus-visible,
+.social:focus-visible,
+.navLink:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 2px;
+  border-radius: var(--radius-sm);
+}
+
+/* ============================================================
+   Contenido — secciones y tipografía (§4)
+   ============================================================ */
+
+.seccion {
+  padding: 2.75rem 0;
+}
+
+.seccion:first-child {
+  padding-top: 2.25rem;
+}
+
+@media (min-width: 1024px) {
+  .seccion {
+    padding: 3.5rem 0;
+  }
+
+  .seccion:first-child {
+    padding-top: 0;
+  }
+}
+
+.tituloSeccion {
+  font-family: var(--font-heading);
+  font-size: clamp(1.3rem, 2.5vw, 1.55rem);
+  font-weight: 600;
+  color: var(--color-fg);
+  margin-bottom: 1.5rem;
+}
+
+.subtitulo {
+  font-family: var(--font-heading);
+  font-size: 1.05rem;
+  font-weight: 600;
+  color: var(--color-fg);
+}
+
+.parrafo {
+  font-size: 0.95rem;
+  line-height: 1.65;
+  color: var(--color-muted);
+  max-width: 62ch;
+}
+
+/* Variante de lectura cómoda — hoy la usa el párrafo de "Sobre mí" */
+.parrafoAmplio {
+  font-size: 1.05rem;
+  line-height: 1.7;
+}
+
+.enlace {
+  color: var(--color-accent);
+  font-weight: 600;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  transition: opacity var(--transition-fast) var(--ease-standard);
+}
+
+.enlace:hover {
+  opacity: 0.8;
+}
+
+.listaLimpia {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+/* ============================================================
+   Experiencia
+   ============================================================ */
+
+/* Dos hijos: fecha a la izquierda (pegada arriba) y detalle a la derecha.
+   En pantallas angostas la fecha pasa a quedar sobre el detalle. */
+.experiencia {
+  margin-bottom: 2.25rem;
+}
+
+.experiencia:last-child {
+  margin-bottom: 0;
+}
+
+.periodo {
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--color-muted);
+  margin-bottom: 0.35rem;
+}
+
+.experienciaDetalle .parrafo {
+  margin-top: 0.5rem;
+}
+
+@media (min-width: 640px) {
+  .experiencia {
+    display: grid;
+    grid-template-columns: 8.5rem 1fr;
+    gap: 1.25rem;
+    align-items: start;
+  }
+
+  .experiencia .periodo {
+    margin-bottom: 0;
+    /* alinea ópticamente la fecha con el título del detalle */
+    margin-top: 0.2rem;
+  }
+}
+
+/* ============================================================
+   Proyectos — tarjetas
+   ============================================================ */
+
+.proyectos {
+  display: grid;
+  gap: 1.25rem;
+}
+
+.tarjetaEnlace {
+  display: block;
+  padding: 1.5rem;
   border: 1px solid var(--color-border);
   border-radius: var(--radius-lg);
   background: var(--color-bg-elevated);
-  box-shadow: 0 1px 2px color-mix(in oklch, var(--color-fg) 6%, transparent);
   transition:
-    background-color var(--transition-theme) var(--ease-standard),
-    border-color var(--transition-theme) var(--ease-standard);
+    border-color var(--transition-fast) var(--ease-standard),
+    transform var(--transition-fast) var(--ease-standard);
 }
 
-.eyebrow {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.5rem;
-  font-family: var(--font-mono);
-  font-size: 0.7rem;
-  font-weight: 500;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-  color: var(--color-muted);
+.tarjetaEnlace:hover {
+  border-color: var(--color-accent);
+  transform: translateY(-2px);
 }
 
-.dot {
-  width: 0.45rem;
-  height: 0.45rem;
-  border-radius: 50%;
-  background: var(--color-muted);
-  transition: background-color var(--transition-fast) var(--ease-standard);
-}
-
-.dotLoading {
-  background: var(--color-accent);
-  animation: pulse 1.1s var(--ease-standard) infinite;
-}
-
-.dotSuccess {
-  background: var(--color-success);
-}
-
-.dotError {
-  background: var(--color-error);
-}
-
-@keyframes pulse {
-  0%,
-  100% {
-    opacity: 1;
-    transform: scale(1);
-  }
-  50% {
-    opacity: 0.45;
-    transform: scale(1.35);
-  }
-}
-
-.phase {
-  font-size: 1.05rem;
-  font-weight: 500;
-  line-height: 1.5;
-  color: var(--color-fg);
-  transition: color var(--transition-theme) var(--ease-standard);
-}
-
-.actions {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  gap: 0.75rem;
-}
-
-.button {
-  appearance: none;
-  border: 1px solid transparent;
-  border-radius: var(--radius-md);
-  padding: 0.6rem 1.15rem;
-  font-size: 0.85rem;
-  font-weight: 600;
-  color: var(--color-accent-fg);
-  background: var(--color-accent);
-  cursor: pointer;
-  transition:
-    transform var(--transition-fast) var(--ease-standard),
-    box-shadow var(--transition-fast) var(--ease-standard),
-    opacity var(--transition-fast) var(--ease-standard),
-    background-color var(--transition-theme) var(--ease-standard),
-    color var(--transition-theme) var(--ease-standard);
-}
-
-.button:hover:not(:disabled) {
-  transform: translateY(-1px);
-  box-shadow: 0 4px 14px color-mix(in oklch, var(--color-accent) 35%, transparent);
-}
-
-.button:active:not(:disabled) {
-  transform: translateY(0) scale(0.96);
-}
-
-.button:focus-visible {
+.tarjetaEnlace:focus-visible {
   outline: 2px solid var(--color-accent);
   outline-offset: 2px;
 }
 
-.button:disabled {
-  opacity: 0.55;
-  cursor: not-allowed;
-  transform: none;
-  box-shadow: none;
-}
-
-.buttonSecondary {
+.proyectoTitulo {
+  font-family: var(--font-heading);
+  font-size: 1.1rem;
+  font-weight: 600;
   color: var(--color-fg);
-  background: transparent;
-  border-color: var(--color-border);
+  margin-bottom: 0.6rem;
 }
 
-.buttonSecondary:hover:not(:disabled) {
-  box-shadow: none;
-  border-color: var(--color-accent);
+.proyectoMeta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin-top: 0.75rem;
 }
 
-.panel {
-  width: min(22rem, 88vw);
-  margin-top: 1.5rem;
-  border-radius: var(--radius-lg);
-  background: var(--terminal-bg);
-  color: var(--terminal-fg);
-  padding: 1.25rem 1.5rem;
-  opacity: 0;
-  pointer-events: none;
-  transform: translateY(0.75rem);
-  transition:
-    opacity var(--transition-base) var(--ease-standard),
-    transform var(--transition-base) var(--ease-standard);
-}
-
-.panelVisible {
-  opacity: 1;
-  pointer-events: auto;
-  transform: translateY(0);
-}
-
-.panelEyebrow {
-  font-family: var(--font-mono);
-  font-size: 0.65rem;
-  font-weight: 500;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-  color: var(--terminal-accent);
-  margin: 0 0 0.75rem;
-}
-
-.prompt {
-  color: var(--terminal-muted);
-  margin-right: 0.4rem;
-}
-
-.lineSuccess,
-.lineError {
-  font-family: var(--font-mono);
-  font-size: 0.85rem;
-  margin: 0 0 0.6rem;
-}
-
-.lineSuccess {
-  color: var(--color-success);
-}
-
-.lineError {
-  color: var(--color-error);
-}
-
-.output {
-  font-family: var(--font-mono);
+.metrica {
   font-size: 0.8rem;
-  white-space: pre-wrap;
-  word-break: break-word;
-  margin: 0 0 0.75rem;
-  color: var(--terminal-fg);
+  font-weight: 600;
+  color: var(--color-muted);
 }
 
-.meta {
-  font-family: var(--font-mono);
-  font-size: 0.7rem;
-  color: var(--terminal-muted);
-  margin: 0 0 0.9rem;
+.proyectoEnlace {
+  display: inline-block;
+  margin-top: 1rem;
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--color-accent);
 }
 
-.progressTrack {
-  width: 100%;
-  height: 3px;
-  border-radius: var(--radius-sm);
-  background: color-mix(in oklch, var(--terminal-muted) 40%, transparent);
-  overflow: hidden;
+/* ============================================================
+   Chips de tecnologías / skills
+   ============================================================ */
+
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  list-style: none;
+  margin: 0.9rem 0 0;
+  padding: 0;
 }
 
-.progressBar {
-  height: 100%;
-  width: 100%;
-  transform: scaleX(1);
-  transform-origin: left;
-  background: var(--terminal-accent);
+.chip {
+  font-size: 0.75rem;
+  font-weight: 600;
+  padding: 0.28rem 0.7rem;
+  border-radius: 999px;
+  color: var(--color-accent);
+  background: color-mix(in oklch, var(--color-accent) 12%, transparent);
 }
 
-.progressBarRunning {
-  animation: shrink 5000ms linear forwards;
+/* ============================================================
+   Contacto — único CTA naranja de la vista, todo centrado
+   ============================================================ */
+
+.seccionCentrada {
+  text-align: center;
 }
 
-@keyframes shrink {
-  from {
-    transform: scaleX(1);
-  }
-  to {
-    transform: scaleX(0);
-  }
+/* .parrafo limita su ancho (62ch): centrar también la caja, no solo el texto */
+.seccionCentrada .parrafo {
+  margin-inline: auto;
 }
 
-/* A partir de aquí el panel se ancla a la derecha de la card y ambos
-   contenedores se desplazan en sentidos opuestos (ver Landing.tsx). Por
-   debajo de este ancho se mantiene el layout apilado de arriba. */
-@media (min-width: 760px) {
-  .stage {
-    flex-direction: row;
-    align-items: flex-start;
-    justify-content: center;
-  }
-
-  .cardShellShifted {
-    transform: translateX(calc(-1 * var(--dock-shift)));
-  }
-
-  .panel {
-    position: absolute;
-    top: 0;
-    left: 100%;
-    margin-top: 0;
-    margin-left: 1.5rem;
-    transform: translateX(calc(-1 * var(--panel-shift)));
-  }
-
-  .panelVisible {
-    transform: translateX(0);
-  }
+.cta {
+  display: inline-flex;
+  align-items: center;
+  margin-top: 1.5rem;
+  padding: 0.75rem 1.5rem;
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--color-cta-fg);
+  background: var(--color-cta);
+  border-radius: var(--radius-md);
+  transition:
+    transform var(--transition-fast) var(--ease-standard),
+    box-shadow var(--transition-fast) var(--ease-standard);
 }
 
-@media (prefers-reduced-motion: reduce) {
-  .cardShell,
-  .panel {
-    transition-duration: 0.001ms;
-  }
+.cta:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 14px color-mix(in oklch, var(--color-cta) 35%, transparent);
+}
+
+.cta:focus-visible {
+  outline: 2px solid var(--color-cta);
+  outline-offset: 2px;
+}
+
+/* ============================================================
+   Footer — firma de marca
+   ============================================================ */
+
+.footer {
+  display: flex;
+  justify-content: center;
+  padding: 3rem 0 2.5rem;
+  border-top: 1px solid var(--color-border);
 }

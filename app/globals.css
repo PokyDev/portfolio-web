@@ -10,13 +10,15 @@
   --color-border: var(--color-border);
   --color-accent: var(--color-accent);
   --color-accent-foreground: var(--color-accent-fg);
+  --color-cta: var(--color-cta);
+  --color-cta-foreground: var(--color-cta-fg);
   --color-success: var(--color-success);
   --color-error: var(--color-error);
   --radius-sm: var(--radius-sm);
   --radius-md: var(--radius-md);
   --radius-lg: var(--radius-lg);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --font-sans: var(--font-body);
+  --font-heading: var(--font-heading);
 }
 
 @layer base {
@@ -25,6 +27,11 @@
   }
   html {
     @apply font-sans;
+    scroll-behavior: smooth;
+  }
+  /* Deja aire sobre cada sección anclada: en < lg la nav sticky tapa el tope */
+  section[id] {
+    scroll-margin-top: 5rem;
   }
 }
 
@@ -40,6 +47,10 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
   *,
   *::before,
   *::after {
