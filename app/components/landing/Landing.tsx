@@ -1,5 +1,6 @@
 import Image from "next/image";
 import Aside from "./Aside";
+import SelloPoky from "./SelloPoky";
 import {
   EXPERIENCIAS,
   IDENTIDAD,
@@ -153,12 +154,7 @@ export default function Landing() {
         </section>
 
         <footer className={styles.footer}>
-          <Image
-            src="/icons/@Poky.svg"
-            alt="Sello de @Pokymon.dev"
-            width={44}
-            height={44}
-          />
+          <SelloPoky />
         </footer>
       </main>
     </div>

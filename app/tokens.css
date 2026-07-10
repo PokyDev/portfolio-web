@@ -12,6 +12,11 @@
   --color-success: oklch(0.65 0.16 150);
   --color-error: oklch(0.6 0.21 25);
 
+  /* Sello @Poky — firma del footer (espejo por tema). Hex de marca tal como
+     los cita frontend_development.md; el archivo @Poky.svg no se recolorea. */
+  --sello-trazo: #200F7F;   /* W: indigo de marca */
+  --sello-corazon: #BEBEFF; /* corazón: lavanda de marca */
+
   /* Spotlight + Follow (spec §5) — en claro TIÑE, no ilumina */
   --spotlight-color: oklch(0.313 0.159 278.6);    /* Indigo */
   --spotlight-opacity: 0.06;
@@ -50,6 +55,10 @@
   --color-cta-fg: oklch(0.2 0.05 55);
   --color-success: oklch(0.74 0.17 150);
   --color-error: oklch(0.72 0.19 25);
+
+  /* Sello @Poky — inversión espejo: domina el lavanda, corazón cornflower */
+  --sello-trazo: #BEBEFF;
+  --sello-corazon: #758BFD;
 
   /* Spotlight — en oscuro ILUMINA (linterna) */
   --spotlight-color: oklch(0.824 0.091 284.2);    /* Lavender-periwinkle #BEBEFF */
