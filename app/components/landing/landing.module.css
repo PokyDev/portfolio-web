@@ -9,7 +9,7 @@
   position: relative;
   z-index: 1; /* por encima de la capa Spotlight (z 0) */
   width: 100%;
-  max-width: 72rem;
+  max-width: 90rem;
   margin: 0 auto;
   padding: 0 var(--padding-x);
   display: flex;
@@ -55,9 +55,13 @@
 
 @media (min-width: 1024px) {
   .layout {
+    /* Padding vertical del aside Y margen (left/bottom) del toggle flotante:
+       compartirlo garantiza que el botón quede a ras con la línea inferior
+       del contenido del aside. */
+    --aside-padding-y: 5rem;
     flex-direction: row;
     align-items: flex-start;
-    gap: clamp(3rem, 6vw, 6rem);
+    gap: 16px;
   }
 
   /* "Fixed" de la spec implementado con sticky: mismo resultado visual
@@ -68,8 +72,9 @@
     position: sticky;
     top: 0;
     height: 100vh;
-    flex: 0 0 20rem;
-    padding: 5rem 0;
+    flex: 1 1 0;
+    min-width: 0;
+    padding: var(--aside-padding-y) 0;
   }
 
   .identidad,
@@ -92,7 +97,17 @@
   }
 
   .sociales {
-    margin-top: auto; /* sociales + toggle anclados al fondo del aside */
+    margin-top: auto; /* sociales anclados al fondo del aside */
+    /* El toggle flotante (fijo al viewport) comparte la línea inferior con
+       los sociales: se indenta la fila lo justo para no solaparse. Huella del
+       botón desde el borde del viewport: 5rem (left) + 2.75rem (diámetro) +
+       0.75rem (respiro) = 8.5rem. Se descuenta lo que ya separa al aside del
+       viewport: su padding lateral y, sobre 90rem, el centrado del layout —
+       en viewports muy anchos el indent colapsa a 0 solo. */
+    padding-left: max(
+      0px,
+      calc(8.5rem - var(--padding-x) - max(0px, (100vw - 90rem) / 2))
+    );
   }
 
   .contenido {
@@ -175,29 +190,45 @@
   color: var(--color-muted);
   transition:
     color var(--transition-fast) var(--ease-standard),
-    transform var(--transition-fast) var(--ease-standard);
+    opacity var(--transition-base) var(--ease-standard);
 }
 
 .navLink:hover {
   color: var(--color-accent);
-  transform: translateX(0.2rem);
 }
 
-/* Línea-guión que precede al label: se alarga en la sección activa */
-.navGuion {
+/* Mismo patrón que las tarjetas de Experiencia/Proyectos: con una sección
+   activa, los demás ítems se atenúan; el hover devuelve la opacidad normal. */
+.navLista:has(.navLinkActivo) .navLink:not(.navLinkActivo):not(:hover) {
+  opacity: 0.5;
+}
+
+/* Marcador que precede al label: punto en reposo que se TRANSFORMA en línea
+   (se anima ancho y alto, no un swap) al hacer hover y en la sección activa */
+.navMarcador {
   display: none;
-  width: 1.5rem;
-  height: 1px;
+  width: 0.375rem;
+  height: 0.375rem;
+  border-radius: 999px;
   background: currentColor;
-  transition: width var(--transition-fast) var(--ease-standard);
+  flex-shrink: 0;
+  transition:
+    width var(--transition-base) var(--ease-standard),
+    height var(--transition-base) var(--ease-standard);
+}
+
+.navLink:hover .navMarcador {
+  width: 2.25rem;
+  height: 2px;
 }
 
 .navLinkActivo {
   color: var(--color-accent);
 }
 
-.navLinkActivo .navGuion {
-  width: 3rem;
+.navLinkActivo .navMarcador {
+  width: 2.25rem;
+  height: 2px;
 }
 
 @media (min-width: 1024px) {
@@ -207,13 +238,13 @@
     overflow: visible;
   }
 
-  .navGuion {
+  .navMarcador {
     display: block;
   }
 }
 
 /* ============================================================
-   Aside — sociales + toggle de tema
+   Aside — sociales
    ============================================================ */
 
 .social {
@@ -230,25 +261,46 @@
   transform: translateY(-2px);
 }
 
+/* ============================================================
+   Toggle de tema — botón circular flotante, fijo al viewport
+   (fuera del container del aside)
+   ============================================================ */
+
 .toggleTema {
   appearance: none;
   cursor: pointer;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  margin-left: 0.6rem;
-  padding: 0.45rem;
+  position: fixed;
+  /* Márgenes iguales left/bottom: en móvil el mínimo de --padding-x del
+     layout; en desktop (media abajo) heredan --aside-padding-y para que el
+     botón quede a ras con la línea inferior del contenido del aside. */
+  left: 1.25rem;
+  bottom: 1.25rem;
+  z-index: 10; /* por encima de la nav sticky móvil (z 2) */
+  display: grid;
+  place-items: center;
+  width: 2.75rem;
+  height: 2.75rem;
   line-height: 1;
   /* En claro el icono va en Indigo (accent); en oscuro, en Lavender (fg).
      Los SVG usan currentColor, así que basta con mover este color. */
   color: var(--color-accent);
-  background: transparent;
+  /* Tinte del accent + blur: legible cuando flota sobre contenido en móvil */
+  background: color-mix(in oklch, var(--color-accent) 8%, transparent);
+  backdrop-filter: blur(8px);
   border: 1px solid var(--color-border);
-  border-radius: var(--radius-md);
+  border-radius: 999px;
   transition:
     color var(--transition-fast) var(--ease-standard),
+    background-color var(--transition-fast) var(--ease-standard),
     border-color var(--transition-fast) var(--ease-standard),
     transform var(--transition-fast) var(--ease-standard);
+}
+
+@media (min-width: 1024px) {
+  .toggleTema {
+    left: var(--aside-padding-y);
+    bottom: var(--aside-padding-y);
+  }
 }
 
 :global(.dark) .toggleTema {
@@ -261,15 +313,21 @@
 
 .toggleTema:hover {
   border-color: var(--color-accent);
+  background: color-mix(in oklch, var(--color-accent) 18%, transparent);
   transform: translateY(-2px);
 }
 
-.toggleTema:focus-visible,
 .social:focus-visible,
 .navLink:focus-visible {
   outline: 2px solid var(--color-accent);
   outline-offset: 2px;
   border-radius: var(--radius-sm);
+}
+
+/* Sin border-radius extra: el outline sigue el radio circular del botón */
+.toggleTema:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 2px;
 }
 
 /* ============================================================
@@ -278,6 +336,12 @@
 
 .seccion {
   padding: 2.75rem 0;
+}
+
+/* Separador entre secciones: mismo trazo que el footer para no introducir
+   un segundo lenguaje de líneas en la vista */
+.seccion + .seccion {
+  border-top: 1px solid var(--color-border);
 }
 
 .seccion:first-child {
@@ -345,7 +409,7 @@
    ============================================================ */
 
 .experiencia {
-  margin-bottom: 2.25rem;
+  margin-bottom: 3.5rem;
 }
 
 .experiencia:last-child {
@@ -430,24 +494,30 @@
 
 .proyectos {
   display: grid;
-  gap: 1.25rem;
+  /* Mismo ritmo vertical que la lista de experiencias (2.25rem entre ítems) */
+  gap: 3.5rem;
 }
 
-/* Tarjeta con el mismo esqueleto que .experienciaTarjeta: columna fija a la
-   izquierda (aquí la miniatura, allá la fecha) y detalle a la derecha. En
-   móvil la miniatura queda arriba del detalle, como la fecha en experiencia. */
+/* Tarjeta con el mismo esqueleto y comportamiento que .experienciaTarjeta:
+   columna fija a la izquierda (aquí la miniatura, allá la fecha), detalle a la
+   derecha, e "invisible" en reposo — padding compensado con margen negativo
+   para que el contenido alinee con la columna y el fondo solo aparezca al
+   hacer hover. En móvil la miniatura queda arriba del detalle. */
 .tarjetaEnlace {
   display: flex;
   flex-direction: column;
   gap: 1.25rem;
-  padding: 1.5rem;
-  border: 1px solid var(--color-border);
+  padding: 1rem 1.25rem;
+  margin: -1rem -1.25rem;
   border-radius: var(--radius-lg);
-  background: var(--color-bg-elevated);
+  cursor: pointer;
   transition:
-    border-color var(--transition-fast) var(--ease-standard),
-    transform var(--transition-fast) var(--ease-standard),
+    background-color var(--transition-base) var(--ease-standard),
     opacity var(--transition-base) var(--ease-standard);
+}
+
+.tarjetaEnlace .proyectoTitulo {
+  transition: color var(--transition-base) var(--ease-standard);
 }
 
 .proyectoCuerpo {
@@ -521,14 +591,18 @@
   }
 }
 
-.tarjetaEnlace:hover {
-  border-color: var(--color-accent);
-  transform: translateY(-2px);
-}
-
-/* Mismo patrón que las tarjetas de experiencia: al hacer hover sobre una,
-   las hermanas se atenúan (solo con puntero real, no en táctil). */
+/* Mismo patrón que las tarjetas de experiencia: fondo-tinte y título en
+   accent solo al hacer hover; las hermanas se atenúan (solo con puntero
+   real, no en táctil). */
 @media (hover: hover) {
+  .tarjetaEnlace:hover {
+    background: color-mix(in oklch, var(--color-accent) 8%, transparent);
+  }
+
+  .tarjetaEnlace:hover .proyectoTitulo {
+    color: var(--color-accent);
+  }
+
   .proyectos:hover .tarjetaEnlace:not(:hover) {
     opacity: 0.5;
   }

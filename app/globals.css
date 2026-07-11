@@ -35,6 +35,17 @@
   }
 }
 
+/* ============================================================
+   Scrollbar — solo propiedades estándar (nada de ::-webkit-scrollbar):
+   las overlay/Fluent de Chromium en Windows 11 ignoran los
+   pseudo-elementos webkit, pero sí respetan scrollbar-color, así que
+   este es el único camino que se ve igual para todos los usuarios.
+   ============================================================ */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--scrollbar-thumb) var(--scrollbar-track);
+}
+
 /*
  * El cambio de tema usa la View Transitions API (ver useTheme.ts): el navegador
  * toma una foto del estado anterior y nuevo y hace un cross-fade nativo entre

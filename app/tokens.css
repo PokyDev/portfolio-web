@@ -29,6 +29,12 @@
   --terminal-muted: oklch(0.6 0.02 255);
   --terminal-accent: oklch(0.78 0.15 78);
 
+  /* Scrollbar — vía scrollbar-color estándar (único mecanismo que las
+     overlay/Fluent de Windows 11 no ignoran). Referencia tokens temados:
+     el espejo claro/oscuro es automático. */
+  --scrollbar-track: transparent;
+  --scrollbar-thumb: var(--color-border);
+
   --radius-sm: 0.375rem;
   --radius-md: 0.625rem;
   --radius-lg: 1rem;

@@ -1,6 +1,7 @@
 import Image from "next/image";
 import Aside from "./Aside";
 import SelloPoky from "./SelloPoky";
+import ThemeToggle from "./ThemeToggle";
 import {
   EXPERIENCIAS,
   IDENTIDAD,
@@ -73,6 +74,7 @@ export default function Landing() {
   return (
     <div className={styles.layout}>
       <Aside />
+      <ThemeToggle />
 
       <main className={styles.contenido}>
         <section id="sobre-mi" className={styles.seccion}>
