@@ -43,16 +43,25 @@ function IconoSol() {
   );
 }
 
-// Botón circular flotante, fijo en la esquina inferior izquierda del viewport
-// (fuera del container del aside). Sus márgenes viven en el CSS module:
-// iguales en left/bottom y, en desktop, a ras con la línea inferior del aside.
-export default function ThemeToggle() {
+// Botón circular de tema en dos variantes:
+// - "flotante" (default): fijo en la esquina inferior izquierda del viewport,
+//   fuera del container del aside, SOLO en desktop (≥ 1024px). Sus márgenes
+//   left/bottom viven en el CSS module, a ras con la línea inferior del aside.
+// - "panel": el mismo botón sin posicionamiento, para el footer de la sidebar
+//   móvil (NavMovil) — en móvil el toggle ya no flota sobre el contenido.
+export default function ThemeToggle({
+  variante = "flotante",
+}: {
+  variante?: "flotante" | "panel";
+}) {
   const { toggleTheme } = useTheme();
 
   return (
     <button
       type="button"
-      className={styles.toggleTema}
+      className={`${styles.toggleTema} ${
+        variante === "flotante" ? styles.toggleFlotante : ""
+      }`}
       onClick={toggleTheme}
       aria-label="Cambiar tema"
     >

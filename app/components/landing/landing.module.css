@@ -1,6 +1,7 @@
 /* ============================================================
    Layout general (specs/Design/landing_page.md §2)
-   Móvil: una columna — identidad, sociales, nav sticky, contenido.
+   Móvil: una columna — identidad, barra sticky (sociales + hamburguesa),
+   contenido; las secciones viven en la sidebar derecha de NavMovil.
    ≥ lg: aside pegado (siempre visible, alto del viewport) + contenido.
    ============================================================ */
 
@@ -17,8 +18,11 @@
 }
 
 /* En móvil los bloques del aside participan directo del flujo de .layout
-   (display: contents): así la nav puede ser sticky a nivel de página y los
-   bloques se reordenan con `order` (identidad → sociales → nav → contenido). */
+   (display: contents), intercalados con `order` con la barra de NavMovil
+   (identidad → barra móvil → contenido). La nav de secciones y los sociales
+   del aside son SOLO desktop: en móvil los reemplazan la sidebar y la barra
+   sticky de NavMovil (decisión jul 2026 — la fila horizontal de secciones
+   con scroll propio se descartó por UX). */
 .aside {
   display: contents;
 }
@@ -29,23 +33,11 @@
 }
 
 .sociales {
-  order: 2;
-  display: flex;
-  align-items: center;
-  gap: 0.4rem;
-  margin-top: 1.5rem;
+  display: none;
 }
 
 .nav {
-  order: 3;
-  position: sticky;
-  top: 0;
-  z-index: 2;
-  margin: 1.5rem calc(-1 * var(--padding-x)) 0;
-  padding: 0.6rem var(--padding-x);
-  background: color-mix(in oklch, var(--color-bg) 88%, transparent);
-  backdrop-filter: blur(8px);
-  border-bottom: 1px solid var(--color-border);
+  display: none;
 }
 
 .contenido {
@@ -88,15 +80,14 @@
   }
 
   .nav {
-    position: static;
+    display: block;
     margin: 3.5rem 0 0;
-    padding: 0;
-    background: transparent;
-    backdrop-filter: none;
-    border-bottom: none;
   }
 
   .sociales {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
     margin-top: auto; /* sociales anclados al fondo del aside */
     /* El toggle flotante (fijo al viewport) comparte la línea inferior con
        los sociales: se indenta la fila lo justo para no solaparse. Huella del
@@ -168,10 +159,11 @@
    Aside — navegación con scrollspy (§3)
    ============================================================ */
 
+/* La nav del aside es solo desktop: lista vertical desde la base */
 .navLista {
   display: flex;
-  gap: 1.4rem;
-  overflow-x: auto;
+  flex-direction: column;
+  gap: 0.1rem;
   list-style: none;
   margin: 0;
   padding: 0;
@@ -204,9 +196,10 @@
 }
 
 /* Marcador que precede al label: punto en reposo que se TRANSFORMA en línea
-   (se anima ancho y alto, no un swap) al hacer hover y en la sección activa */
+   (se anima ancho y alto, no un swap) al hacer hover y en la sección activa.
+   Lo comparten .navLink (aside desktop) y .botonSeccion (sidebar móvil). */
 .navMarcador {
-  display: none;
+  display: block;
   width: 0.375rem;
   height: 0.375rem;
   border-radius: 999px;
@@ -231,18 +224,6 @@
   height: 2px;
 }
 
-@media (min-width: 1024px) {
-  .navLista {
-    flex-direction: column;
-    gap: 0.1rem;
-    overflow: visible;
-  }
-
-  .navMarcador {
-    display: block;
-  }
-}
-
 /* ============================================================
    Aside — sociales
    ============================================================ */
@@ -262,20 +243,14 @@
 }
 
 /* ============================================================
-   Toggle de tema — botón circular flotante, fijo al viewport
-   (fuera del container del aside)
+   Toggle de tema — botón circular en dos variantes: flotante
+   (fijo al viewport, solo desktop) y de panel (footer de la
+   sidebar móvil, sin posicionamiento)
    ============================================================ */
 
 .toggleTema {
   appearance: none;
   cursor: pointer;
-  position: fixed;
-  /* Márgenes iguales left/bottom: en móvil el mínimo de --padding-x del
-     layout; en desktop (media abajo) heredan --aside-padding-y para que el
-     botón quede a ras con la línea inferior del contenido del aside. */
-  left: 1.25rem;
-  bottom: 1.25rem;
-  z-index: 10; /* por encima de la nav sticky móvil (z 2) */
   display: grid;
   place-items: center;
   width: 2.75rem;
@@ -284,7 +259,6 @@
   /* En claro el icono va en Indigo (accent); en oscuro, en Lavender (fg).
      Los SVG usan currentColor, así que basta con mover este color. */
   color: var(--color-accent);
-  /* Tinte del accent + blur: legible cuando flota sobre contenido en móvil */
   background: color-mix(in oklch, var(--color-accent) 8%, transparent);
   backdrop-filter: blur(8px);
   border: 1px solid var(--color-border);
@@ -296,10 +270,21 @@
     transform var(--transition-fast) var(--ease-standard);
 }
 
+/* Variante flotante: SOLO desktop — en móvil el toggle vive en el footer
+   de la sidebar (NavMovil) y ya no se monta sobre el contenido. Márgenes
+   left/bottom = --aside-padding-y: el botón queda a ras con la línea
+   inferior del contenido del aside. */
+.toggleFlotante {
+  display: none;
+}
+
 @media (min-width: 1024px) {
-  .toggleTema {
+  .toggleFlotante {
+    display: grid;
+    position: fixed;
     left: var(--aside-padding-y);
     bottom: var(--aside-padding-y);
+    z-index: 10;
   }
 }
 
@@ -328,6 +313,327 @@
 .toggleTema:focus-visible {
   outline: 2px solid var(--color-accent);
   outline-offset: 2px;
+}
+
+/* ============================================================
+   Navegación móvil (< 1024px) — NavMovil: barra sticky
+   (sociales | separador | hamburguesa) + sidebar derecha
+   ============================================================ */
+
+/* La barra ocupa el lugar de los sociales en el flujo (bajo la identidad).
+   Fondo SÓLIDO del tema: con el color-mix translúcido que usaba la antigua
+   nav, el contenido que pasaba por detrás la aclaraba en tema claro y
+   difería del background de la página (feedback jul 2026). */
+.barraMovil {
+  order: 2;
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin: 1.5rem calc(-1 * var(--padding-x)) 0;
+  padding: 0.5rem var(--padding-x);
+  background: var(--color-bg);
+  border-bottom: 1px solid var(--color-border);
+}
+
+.socialesBarra {
+  display: flex;
+  align-items: center;
+  gap: 0.15rem;
+  min-width: 0;
+  margin-right: auto; /* empuja separador + hamburguesa a la derecha */
+}
+
+/* Huella más compacta que en el aside: los 6 iconos, el separador y la
+   hamburguesa deben caber sin scroll horizontal incluso a 320px */
+.socialesBarra .social {
+  padding: 0.35rem;
+}
+
+.separadorBarra {
+  align-self: stretch;
+  flex-shrink: 0;
+  width: 1px;
+  margin-block: 0.3rem;
+  background: var(--color-border);
+}
+
+/* Hamburguesa: 3 líneas que se transforman en X mientras el panel esté
+   abierto (morph de transform, no swap de icono) */
+.hamburguesa {
+  appearance: none;
+  background: none;
+  border: none;
+  cursor: pointer;
+  flex-shrink: 0;
+  display: grid;
+  gap: 5px;
+  padding: 0.6rem 0.4rem;
+  color: var(--color-fg);
+  transition: color var(--transition-fast) var(--ease-standard);
+}
+
+.hamburguesa:hover {
+  color: var(--color-accent);
+}
+
+.hamburguesa span {
+  width: 1.25rem;
+  height: 2px;
+  border-radius: 999px;
+  background: currentColor;
+  transition:
+    transform var(--transition-base) var(--ease-standard),
+    opacity var(--transition-base) var(--ease-standard);
+}
+
+/* 7px = alto de línea (2px) + gap (5px): las exteriores viajan al centro
+   mientras rotan; la central se desvanece */
+.hamburguesaAbierta span:nth-child(1) {
+  transform: translateY(7px) rotate(45deg);
+}
+
+.hamburguesaAbierta span:nth-child(2) {
+  opacity: 0;
+}
+
+.hamburguesaAbierta span:nth-child(3) {
+  transform: translateY(-7px) rotate(-45deg);
+}
+
+/* Backdrop: velo esmerilado derivado del fondo (sirve en ambos temas).
+   Siempre montado — opacity + visibility diferida hacen el fade de ida y
+   vuelta; cerrado no captura toques (pointer-events). */
+.fondoPanel {
+  position: fixed;
+  inset: 0;
+  z-index: 20;
+  background: color-mix(in oklch, var(--color-bg) 55%, transparent);
+  backdrop-filter: blur(2px);
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transition:
+    opacity var(--transition-base) var(--ease-standard),
+    visibility 0s linear var(--transition-base);
+}
+
+.fondoPanelVisible {
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
+  transition:
+    opacity var(--transition-base) var(--ease-standard),
+    visibility 0s;
+}
+
+/* Panel: entra deslizándose de derecha a izquierda y sale a la inversa.
+   La visibility se difiere al terminar la transición de salida: mientras
+   se desliza sigue visible; cerrado además va `inert` desde el JSX. */
+.panelMovil {
+  position: fixed;
+  top: 0;
+  bottom: 0;
+  right: 0;
+  z-index: 30;
+  display: flex;
+  flex-direction: column;
+  width: min(20rem, 82vw);
+  padding: 1.1rem 1.5rem 1.5rem;
+  background: var(--color-bg-elevated);
+  border-left: 1px solid var(--color-border);
+  transform: translateX(100%);
+  visibility: hidden;
+  transition:
+    transform var(--transition-base) var(--ease-standard),
+    visibility 0s linear var(--transition-base);
+}
+
+.panelMovilAbierto {
+  transform: translateX(0);
+  visibility: visible;
+  transition:
+    transform var(--transition-base) var(--ease-standard),
+    visibility 0s;
+}
+
+/* Cabecera del panel: identidad compacta (avatar + nombre + alias, como el
+   aside) con la X de cierre a la derecha. El border-bottom espeja el
+   border-top del footer del panel. */
+.panelCabecera {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  margin-bottom: 1.5rem;
+  padding-bottom: 1.25rem;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.avatarPanel {
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  width: 2.75rem;
+  height: 2.75rem;
+  border-radius: 50%;
+  background: var(--color-accent);
+  color: var(--color-accent-fg);
+  font-family: var(--font-heading);
+  font-size: 1.15rem;
+  font-weight: 700;
+}
+
+.identidadPanel {
+  min-width: 0;
+}
+
+.nombrePanel {
+  font-family: var(--font-heading);
+  font-size: 1.05rem;
+  font-weight: 700;
+  line-height: 1.2;
+  color: var(--color-fg);
+}
+
+.aliasPanel {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--color-accent);
+}
+
+/* Cierre dentro del panel: la hamburguesa de la barra queda bajo el velo
+   (la barra sticky vive bajo el panel y su posición vertical varía), así
+   que la X visible vive en la cabecera — mismo lenguaje de líneas. */
+.cerrarPanel {
+  appearance: none;
+  background: none;
+  border: none;
+  cursor: pointer;
+  margin-left: auto;
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  width: 2.25rem;
+  height: 2.25rem;
+  color: var(--color-fg);
+  transition: color var(--transition-fast) var(--ease-standard);
+}
+
+.cerrarPanel:hover {
+  color: var(--color-accent);
+}
+
+.cerrarPanel span {
+  grid-area: 1 / 1;
+  width: 1.25rem;
+  height: 2px;
+  border-radius: 999px;
+  background: currentColor;
+}
+
+.cerrarPanel span:first-child {
+  transform: rotate(45deg);
+}
+
+.cerrarPanel span:last-child {
+  transform: rotate(-45deg);
+}
+
+.navPanel {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+}
+
+.listaPanel {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+/* Botones de sección: mismo lenguaje que .navLink (uppercase + marcador
+   punto→línea + accent en activo/hover), en formato botón a lo ancho */
+.botonSeccion {
+  appearance: none;
+  background: none;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+  width: 100%;
+  padding: 0.85rem 0.9rem;
+  border-radius: var(--radius-md);
+  font-family: inherit;
+  font-size: 0.9rem;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  text-align: left;
+  color: var(--color-muted);
+  transition:
+    color var(--transition-fast) var(--ease-standard),
+    background-color var(--transition-base) var(--ease-standard);
+}
+
+.botonSeccion:hover {
+  color: var(--color-accent);
+}
+
+.botonSeccion:hover .navMarcador {
+  width: 2.25rem;
+  height: 2px;
+}
+
+.botonSeccionActivo {
+  color: var(--color-accent);
+  background: color-mix(in oklch, var(--color-accent) 10%, transparent);
+}
+
+.botonSeccionActivo .navMarcador {
+  width: 2.25rem;
+  height: 2px;
+}
+
+/* Footer del panel: mismo trazo que el footer del contenido — sello @Poky
+   (espejo de tema vía --sello-*) + toggle de tema en variante panel */
+.panelFooter {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 1.5rem;
+  padding-top: 1.25rem;
+  border-top: 1px solid var(--color-border);
+}
+
+.hamburguesa:focus-visible,
+.cerrarPanel:focus-visible,
+.botonSeccion:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 2px;
+  border-radius: var(--radius-sm);
+}
+
+@media (min-width: 1024px) {
+  .barraMovil,
+  .fondoPanel,
+  .panelMovil {
+    display: none;
+  }
+}
+
+/* Sin animación de apertura/cierre si el usuario reduce el movimiento */
+@media (prefers-reduced-motion: reduce) {
+  .panelMovil,
+  .fondoPanel,
+  .hamburguesa span {
+    transition: none;
+  }
 }
 
 /* ============================================================

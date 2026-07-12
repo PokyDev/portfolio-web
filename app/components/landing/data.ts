@@ -53,6 +53,13 @@ export const SECCIONES: readonly Seccion[] = [
   { id: "contacto", label: "Contacto" },
 ] as const;
 
+// Referencia estable a nivel de módulo para los dos consumidores del
+// scrollspy (Aside en desktop, NavMovil en móvil): si se derivara en cada
+// render, el efecto del scrollspy se reinstalaría en cada actualización.
+export const IDS_SECCIONES: readonly string[] = SECCIONES.map(
+  (seccion) => seccion.id,
+);
+
 export const REDES: readonly RedSocial[] = [
   { nombre: "GitHub", url: "https://github.com/PokyDev" },
   { nombre: "LinkedIn", url: "https://www.linkedin.com/in/pokymon-dev" },

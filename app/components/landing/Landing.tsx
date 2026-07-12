@@ -1,5 +1,6 @@
 import Image from "next/image";
 import Aside from "./Aside";
+import NavMovil from "./NavMovil";
 import SelloPoky from "./SelloPoky";
 import ThemeToggle from "./ThemeToggle";
 import {
@@ -74,6 +75,9 @@ export default function Landing() {
   return (
     <div className={styles.layout}>
       <Aside />
+      {/* Barra sticky + sidebar de secciones, solo móvil (< 1024px). La barra
+          participa del flujo de .layout con `order`, como los bloques del aside */}
+      <NavMovil />
       <ThemeToggle />
 
       <main className={styles.contenido}>
