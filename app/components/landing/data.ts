@@ -56,9 +56,11 @@ export const SECCIONES: readonly Seccion[] = [
 export const REDES: readonly RedSocial[] = [
   { nombre: "GitHub", url: "https://github.com/PokyDev" },
   { nombre: "LinkedIn", url: "https://www.linkedin.com/in/pokymon-dev" },
-  { nombre: "Instagram", url: "https://www.instagram.com/pokymon.dev" },
   { nombre: "YouTube", url: "https://www.youtube.com/@pokymon-dev" },
-  { nombre: "CodePen", url: "https://codepen.io/pokymon-dev" },
+  { nombre: "Instagram", url: "https://www.instagram.com/pokymon.dev" },
+  // Placeholder: reemplazar por el número real (formato internacional sin "+").
+  { nombre: "WhatsApp", url: "https://wa.me/000000000000" },
+  { nombre: "npm", url: "https://www.npmjs.com/~pokymon-dev" },
 ] as const;
 
 export const SOBRE_MI =

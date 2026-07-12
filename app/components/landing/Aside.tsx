@@ -53,14 +53,20 @@ function IconoRed({ nombre }: { nombre: string }) {
           <polygon points="9.75 15.02 15.5 11.75 9.75 8.48 9.75 15.02" />
         </svg>
       );
-    case "CodePen":
+    case "WhatsApp":
       return (
         <svg {...comun}>
-          <polygon points="12 2 22 8.5 22 15.5 12 22 2 15.5 2 8.5 12 2" />
-          <line x1="12" y1="22" x2="12" y2="15.5" />
-          <polyline points="22 8.5 12 15.5 2 8.5" />
-          <polyline points="2 15.5 12 8.5 22 15.5" />
-          <line x1="12" y1="2" x2="12" y2="8.5" />
+          <path d="M3 21l1.65-3.8a9 9 0 1 1 3.4 2.9L3 21" />
+          <path d="M9 10a.5.5 0 0 0 1 0V9a.5.5 0 0 0-1 0v1a5 5 0 0 0 5 5h1a.5.5 0 0 0 0-1h-1a.5.5 0 0 0 0 1" />
+        </svg>
+      );
+    case "npm":
+      return (
+        <svg {...comun}>
+          <path d="M1 8h22v7h-12v2h-4v-2H1z" />
+          <path d="M7 8v7" />
+          <path d="M12 8v7" />
+          <path d="M17 8v4" />
         </svg>
       );
     default:

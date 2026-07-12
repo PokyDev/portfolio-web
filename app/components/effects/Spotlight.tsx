@@ -6,7 +6,7 @@ import styles from "./spotlight.module.css";
 // Efecto Spotlight + Follow (specs/Design/frontend_development.md §5): halo
 // radial que sigue al cursor. En oscuro ilumina (screen); en claro tiñe
 // (multiply). Los colores/opacidad/tamaño vienen de los tokens --spotlight-*.
-const LERP = 0.15; // factor de interpolación por frame: latencia suave sin transition
+const LERP = 0.8; // factor de interpolación por frame: latencia suave sin transition
 const EPSILON = 0.5; // px — por debajo de esto el halo ya "llegó" y el loop se detiene
 
 export default function Spotlight() {
