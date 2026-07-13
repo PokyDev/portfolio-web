@@ -38,11 +38,11 @@ export interface RedSocial {
 }
 
 export const IDENTIDAD = {
-  nombre: "Javier",
+  nombre: "Javier Socha",
   alias: "@Pokymon.dev",
-  habilidad: "Desarrollador Web full-stack",
-  tagline: "Construyo plataformas web completas, del diseño al despliegue.",
-  email: "contacto@pokymon.dev",
+  habilidad: "Ingeniero de Software",
+  tagline: "Me dedico a solucionar problemas con implementaciones web especializadas",
+  email: "andressocha.correo@gmail.com",
 } as const;
 
 // Ids estables: los consumen las <section> de Landing y el scrollspy del aside.

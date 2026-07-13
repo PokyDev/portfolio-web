@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
 import { Inter, Stack_Sans_Text } from "next/font/google";
-import Script from "next/script";
 import Spotlight from "./components/effects/Spotlight";
 import "./globals.css";
 
@@ -29,7 +28,12 @@ export const metadata: Metadata = {
 };
 
 // Aplica el tema guardado antes de hidratar, para evitar un flash del tema
-// incorrecto (FOUC) mientras React arranca.
+// incorrecto (FOUC) mientras React arranca. Se renderiza como <script> plano
+// (no next/script): next/script con strategy="beforeInteractive" encola la
+// ejecución vía self.__next_s hasta que el runtime de Next carga sus propios
+// chunks async, y para entonces el navegador ya pintó con el tema claro por
+// defecto. Un <script> nativo, en cambio, corre en cuanto el parser lo
+// encuentra — antes de pintar cualquier contenido posterior del body.
 const THEME_INIT_SCRIPT = `
   try {
     var theme = window.localStorage.getItem("theme");
@@ -51,9 +55,8 @@ export default function RootLayout({
       suppressHydrationWarning
     >
       <body className="min-h-full flex flex-col">
-        <Script
+        <script
           id="theme-init"
-          strategy="beforeInteractive"
           dangerouslySetInnerHTML={{ __html: THEME_INIT_SCRIPT }}
         />
         <Spotlight />
