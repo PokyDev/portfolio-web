@@ -664,19 +664,24 @@
   }
 }
 
-.tituloSeccion {
-  font-family: var(--font-heading);
-  font-size: clamp(1.3rem, 2.5vw, 1.55rem);
-  font-weight: 600;
-  color: var(--color-fg);
-  margin-bottom: 1.5rem;
-}
-
 .subtitulo {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
   font-family: var(--font-heading);
   font-size: 1.05rem;
   font-weight: 600;
   color: var(--color-fg);
+}
+
+/* Flecha "esto es clickeable" junto a los títulos de Experiencia/Proyectos:
+   en reposo va en muted, casi imperceptible; el hover de la tarjeta la lleva
+   a accent y la desplaza en su propia diagonal, mismo momento que el título. */
+.indicadorEnlace {
+  color: var(--color-muted);
+  transition:
+    color var(--transition-base) var(--ease-standard),
+    transform var(--transition-base) var(--ease-standard);
 }
 
 .parrafo {
@@ -684,12 +689,39 @@
   line-height: 1.65;
   color: var(--color-muted);
   max-width: 62ch;
+  margin-bottom:1rem;
 }
 
 /* Variante de lectura cómoda — hoy la usa el párrafo de "Sobre mí" */
 .parrafoAmplio {
   font-size: 1.05rem;
   line-height: 1.7;
+}
+
+/* Términos de SOBRE_MI que enlazan a proyectos reales (Coragem.shop,
+   Bartolome.space): negrita fija, el color solo cambia al accent en hover.
+   En claro, heredar el muted del párrafo + negrita ya distingue bien. En
+   oscuro el muted queda demasiado cerca del cuerpo del texto, así que se
+   fuerza a --color-fg (lavender casi blanco) para que resalte en reposo. */
+.terminoDestacado {
+  font-weight: 700;
+  color: inherit;
+  text-decoration: none;
+  transition: color var(--transition-fast) var(--ease-standard);
+}
+
+:global(.dark) .terminoDestacado {
+  color: var(--color-fg);
+}
+
+.terminoDestacado:hover {
+  color: var(--color-accent);
+}
+
+.terminoDestacado:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 2px;
+  border-radius: var(--radius-sm);
 }
 
 .enlace {
@@ -750,6 +782,15 @@
   }
 
   .experienciaTarjeta:hover .subtitulo {
+    color: var(--color-accent);
+  }
+
+  .experienciaTarjeta:hover .indicadorEnlace {
+    color: var(--color-accent);
+    transform: translate(2px, -2px);
+  }
+
+  .experienciaTarjeta:hover .etiquetaTecnologias {
     color: var(--color-accent);
   }
 
@@ -909,6 +950,15 @@
     color: var(--color-accent);
   }
 
+  .tarjetaEnlace:hover .indicadorEnlace {
+    color: var(--color-accent);
+    transform: translate(2px, -2px);
+  }
+
+  .tarjetaEnlace:hover .etiquetaTecnologias {
+    color: var(--color-accent);
+  }
+
   .proyectos:hover .tarjetaEnlace:not(:hover) {
     opacity: 0.5;
   }
@@ -920,6 +970,9 @@
 }
 
 .proyectoTitulo {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
   font-family: var(--font-heading);
   font-size: 1.1rem;
   font-weight: 600;
@@ -949,6 +1002,23 @@
 }
 
 /* ============================================================
+   Etiqueta "Tecnologías" — precede a .chips en Experiencia/Proyectos
+   ============================================================ */
+
+/* Siempre visible, como el título: mismo patrón que .subtitulo/.proyectoTitulo,
+   solo cambia a accent en el hover de la tarjeta con una transición de color. */
+.etiquetaTecnologias {
+  display: block;
+  margin-top: 0.9rem;
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--color-muted);
+  transition: color var(--transition-base) var(--ease-standard);
+}
+
+/* ============================================================
    Chips de tecnologías / skills
    ============================================================ */
 
@@ -961,17 +1031,84 @@
   padding: 0;
 }
 
+/* Contenedor posicional del chip: el tooltip explicativo se ancla a él */
+.chipContenedor {
+  position: relative;
+}
+
 .chip {
+  display: inline-block;
   font-size: 0.75rem;
   font-weight: 600;
   padding: 0.28rem 0.7rem;
   border-radius: 999px;
   color: var(--color-accent);
   background: color-mix(in oklch, var(--color-accent) 12%, transparent);
+  cursor: help;
+}
+
+.chip:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 2px;
+}
+
+/* Tooltip que explica qué es la tecnología (p. ej. "Fastify") al usuario
+   final que no la conoce: oculto por defecto, aparece con la tarjeta ya
+   destacada por el hover del chip; en teclado/táctil, con el foco. */
+.chipTooltip {
+  position: absolute;
+  bottom: calc(100% + 0.6rem);
+  left: 50%;
+  transform: translate(-50%, 4px);
+  width: max-content;
+  max-width: 16rem;
+  padding: 0.55rem 0.75rem;
+  border-radius: var(--radius-sm);
+  background: var(--color-fg);
+  color: var(--color-bg);
+  font-size: 0.75rem;
+  font-weight: 500;
+  line-height: 1.45;
+  text-align: left;
+  text-transform: none;
+  letter-spacing: normal;
+  white-space: normal;
+  pointer-events: none;
+  opacity: 0;
+  z-index: 5;
+  transition:
+    opacity var(--transition-fast) var(--ease-standard),
+    transform var(--transition-fast) var(--ease-standard);
+}
+
+.chipTooltip::after {
+  content: "";
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  border: 5px solid transparent;
+  border-top-color: var(--color-fg);
+}
+
+.chip:focus-visible + .chipTooltip {
+  opacity: 1;
+  transform: translate(-50%, 0);
+}
+
+@media (hover: hover) {
+  .chipContenedor:hover .chipTooltip {
+    opacity: 1;
+    transform: translate(-50%, 0);
+  }
 }
 
 /* ============================================================
-   Contacto — único CTA naranja de la vista, todo centrado
+   Contacto — texto+CTA centrados a la izquierda, chat demo a la
+   derecha ocupando el resto del ancho (§ propuesta chat WhatsApp
+   jul 2026). En móvil colapsa a una columna, texto arriba y chat
+   debajo. El CTA de CV sigue siendo el único CTA prominente de la
+   vista; el chat es un complemento, no compite.
    ============================================================ */
 
 .seccionCentrada {
@@ -981,6 +1118,33 @@
 /* .parrafo limita su ancho (62ch): centrar también la caja, no solo el texto */
 .seccionCentrada .parrafo {
   margin-inline: auto;
+}
+
+.contactoGrid {
+  display: flex;
+  flex-direction: column;
+  gap: 2.5rem;
+}
+
+/* Columna de texto: centrada en su propio ancho (texto y CTA), tanto en
+   móvil (columna única) como en desktop (junto al chat) */
+.contactoTexto {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+@media (min-width: 700px) {
+  .contactoGrid {
+    flex-direction: row;
+    align-items: center;
+    gap: 3rem;
+  }
+
+  .contactoTexto {
+    flex: 1 1 18rem;
+    max-width: 22rem;
+  }
 }
 
 /* CTA en la dupla de marca lavender/indigo, invertida según el tema:

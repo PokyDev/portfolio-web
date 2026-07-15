@@ -1,0 +1,159 @@
+/* ============================================================
+   ContactoChat — envoltorio de estado del chat de la sección
+   Contacto: alterna entre un placeholder (texto + botón circular
+   de apertura) y el chat (ChatDemo), en el mismo espacio.
+
+   La apertura/cierre ya no es una sola animación: son 4 etapas
+   secuenciales para que el texto nunca se escale (un scaleY sobre
+   contenido con texto lo deforma). El "cascarón" (fondo + borde,
+   sin contenido) es lo único que se escala; todo lo demás vive en
+   una capa separada sin transform, que solo cambia opacidad:
+
+     A. Cascarón — línea central que se expande hacia arriba/abajo
+        (scaleY 0→1, transform-origin: center). Contenido invisible.
+     B. Fondo de header/footer — fade-in de opacidad.
+     C. Contenido de header/footer — entra con opacidad + desplazamiento
+        (header desde arriba, footer desde abajo), simultáneo.
+     D. Área de mensajes — fade-in; la primera vez, además el saludo
+        del bot se tipea carácter por carácter (ver ChatDemo.tsx).
+
+   El cierre repite el orden invertido (D→C→B→A) con los mismos
+   movimientos en sentido contrario. La máquina de fases vive en
+   ContactoChat.tsx (tipo FaseChat) y controla estas clases.
+   ============================================================ */
+
+.chatBox {
+  position: relative;
+  flex: 1 1 20rem;
+  width: 100%;
+  height: 28rem;
+}
+
+@media (max-width: 639px) {
+  .chatBox {
+    height: 24rem;
+  }
+}
+
+/* ---------------- Placeholder (chat cerrado) ---------------- */
+
+.placeholder {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1.5rem;
+  padding: 2rem;
+  text-align: center;
+  border: 1px dashed var(--color-border);
+  border-radius: var(--radius-lg);
+  /* Mismo lenguaje que el empty-state de proyectos (miniaturaVacia):
+     borde discontinuo + tinte suave del accent */
+  background: color-mix(in oklch, var(--color-accent) 5%, transparent);
+  opacity: 1;
+  visibility: visible;
+  /* Estado por defecto (chat cerrado): visibilidad cambia de inmediato,
+     la opacidad se anima al reaparecer */
+  transition:
+    opacity var(--transition-base) var(--ease-standard),
+    visibility 0s;
+}
+
+.placeholderOculto {
+  opacity: 0;
+  visibility: hidden;
+  /* Al abrir el chat: se difiere el cambio a "hidden" hasta que termine
+     el fundido, para no cortar la transición de golpe */
+  transition:
+    opacity var(--transition-base) var(--ease-standard),
+    visibility 0s linear var(--transition-base);
+}
+
+.placeholderTexto {
+  max-width: 26ch;
+  font-size: 0.95rem;
+  line-height: 1.55;
+  color: var(--color-muted);
+}
+
+/* Botón circular de apertura: mismo lenguaje que .toggleTema/.chatEnviar
+   (círculo, currentColor), con mayor peso visual por ser la puerta de
+   entrada al chat. Deliberadamente NO usa las clases de .cta: no compite
+   con "Descargar CV" como segundo CTA prominente de la vista. */
+.toggle {
+  appearance: none;
+  cursor: pointer;
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  width: 3.5rem;
+  height: 3.5rem;
+  color: var(--color-accent-fg);
+  background: var(--color-accent);
+  border: none;
+  border-radius: 999px;
+  transition:
+    transform var(--transition-fast) var(--ease-standard),
+    box-shadow var(--transition-fast) var(--ease-standard);
+}
+
+.toggle:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 14px
+    color-mix(in oklch, var(--color-accent) 35%, transparent);
+}
+
+.toggle:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 2px;
+}
+
+/* ---------------- Etapa A: cascarón ---------------- */
+
+/* Único elemento con fondo/borde/radio del panel — se expande como línea
+   central. El contenido real (ChatDemo, en .chatContenedor) nunca se
+   escala: vive en una capa aparte superpuesta que solo anima opacidad. */
+.cascaron {
+  position: absolute;
+  inset: 0;
+  transform-origin: center;
+  transform: scaleY(0);
+  visibility: hidden;
+  background: var(--color-bg-elevated);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  /* Estado por defecto (cerrado): al contraerse, la visibilidad se
+     difiere hasta que termina la animación de escala */
+  transition:
+    transform var(--transition-base) var(--ease-standard),
+    visibility 0s linear var(--transition-base);
+}
+
+.cascaronVisible {
+  transform: scaleY(1);
+  visibility: visible;
+  /* Al abrir: visible de inmediato, la escala se anima desde 0 */
+  transition:
+    transform var(--transition-base) var(--ease-standard),
+    visibility 0s;
+}
+
+/* Capa de contenido real (ChatDemo): superpuesta exactamente sobre el
+   cascarón, sin transform propio — cada pieza interna (header, footer,
+   mensajes) anima su propia opacidad/desplazamiento en chatDemo.module.css. */
+.chatContenedor {
+  position: absolute;
+  inset: 0;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .placeholder,
+  .placeholderOculto,
+  .cascaron,
+  .cascaronVisible {
+    transition: none;
+  }
+}

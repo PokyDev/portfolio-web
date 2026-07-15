@@ -22,7 +22,7 @@ const stackSansText = Stack_Sans_Text({
 });
 
 export const metadata: Metadata = {
-  title: "Javier — Desarrollador Web full-stack | @Pokymon.dev",
+  title: "@Pokymon.dev | Portafolio",
   description:
     "Portafolio de Javier (@Pokymon.dev), desarrollador web full-stack: proyectos con casos de estudio, habilidades técnicas y contacto directo.",
 };

@@ -37,11 +37,40 @@ export interface RedSocial {
   url: string;
 }
 
+// Guion fijo del chat demo de la sección Contacto (maqueta de diseño de la
+// futura interfaz "Tickets", ver frontend_development.md §6). Solo los
+// mensajes del bot van hardcodeados: cada índice se envía en respuesta al
+// N-ésimo mensaje del visitante (el índice 0 se envía solo, al montar).
+export interface MensajeBotDemo {
+  texto: string;
+}
+
+export const BOT_DEMO = {
+  nombre: "Bot de Pokymon.dev",
+  iniciales: "PB",
+  estado: "En línea · vista previa",
+} as const;
+
+export const GUION_CHAT_DEMO: readonly MensajeBotDemo[] = [
+  {
+    texto:
+      "¡Hola! Soy el bot de Pokymon.dev. Contame en una frase qué necesitás para tu proyecto.",
+  },
+  {
+    texto:
+      "Genial, ¿cuál es tu presupuesto estimado y el plazo con el que contás?",
+  },
+  {
+    texto:
+      "Con esa información ya podría abrir un ticket priorizado automáticamente. Ese flujo con IA real llega con el sistema de tickets — por ahora esto es una vista previa del diseño. ¡Gracias por probarlo!",
+  },
+] as const;
+
 export const IDENTIDAD = {
   nombre: "Javier Socha",
   alias: "@Pokymon.dev",
-  habilidad: "Ingeniero de Software",
-  tagline: "Me dedico a solucionar problemas con implementaciones web especializadas",
+  habilidad: "Ingeniero en Desarrollo de Sistemas Informáticos",
+  tagline: "Construyo soluciones inspiradas en ofrecer la mejor experiencia de usuario posible.",
   email: "andressocha.correo@gmail.com",
 } as const;
 
@@ -70,8 +99,32 @@ export const REDES: readonly RedSocial[] = [
   { nombre: "npm", url: "https://www.npmjs.com/~pokymon-dev" },
 ] as const;
 
-export const SOBRE_MI =
-  "Soy Javier, desarrollador web full-stack y estudiante de Ingeniería en Sistemas. Me gusta entender el problema antes de escribir la primera línea: hablar con quien lo sufre, acotarlo y resolverlo sin adornos. Trabajo con especificaciones claras, iteraciones cortas y la manía de dejar todo documentado.";
+export interface EnlaceDestacado {
+  /** Debe coincidir EXACTO con la subcadena que aparece dentro de SOBRE_MI */
+  texto: string;
+  url: string;
+}
+
+export const ENLACES_DESTACADOS: readonly EnlaceDestacado[] = [
+  { texto: "Coragem", url: "https://coragem.shop" },
+  { texto: "Bartolome", url: "https://bartolome.space" },
+] as const;
+
+export const SOBRE_MI = [
+  "¡Hola! Soy Javier y me gusta solucionar problemas. " +
+  "Soy un Ingeniero en Desarrollo de Sistemas Informáticos con interes en " +
+  "la creación de soluciones digitales que puedan impulsar negocios, me enfoco en constuir automatizaciones " +
+  "que de verdad puedan aportar utilidad real, me siento orgulloso de crear productos solidos, seguros y confiables y  " +
+  "disfruto de trabajar con la misma dedicación en el diseño e ingenieria de mis proyectos, combinando excelente UI/UX " +
+  "con buena arquitectura, codigo limpio y escalable.",
+
+  "He trabajado en varios entornos desde startups hasta empresas consolidades con complejas necesidades de automatización, " +
+  "algunos productos en los que he estado presente desde desarrollo hasta mantenimiento han sido Coragem y Bartolome " +
+  "Actualmente trabajo como freelancer dispuesto a asumir nuevos desafios y siempre con ganas de poner en practica mi conocimiento.",
+
+  "En mi tiempo libre disfruto de salir a caminar con mi mascota y disfrutar de la naturaleza, me gusta viajar a lugares tranquilos, " +
+  "pasar tiempo de calidad con mi pareja y siempre estoy interesado en aprender como implementar tecnologías modernas."
+];
 
 export const EXPERIENCIAS: readonly Experiencia[] = [
   {
@@ -93,6 +146,33 @@ export const EXPERIENCIAS: readonly Experiencia[] = [
     tecnologias: ["React", "TypeScript", "Tailwind CSS"],
   },
 ] as const;
+
+// Explicación breve de cada tecnología usada en EXPERIENCIAS/PROYECTOS: el
+// visitante del portafolio no siempre sabe qué es "Fastify" o "Prisma". Se
+// muestra como tooltip sobre el chip (componente Tecnologia.tsx).
+export const DESCRIPCIONES_TECNOLOGIAS: Readonly<Record<string, string>> = {
+  "Next.js":
+    "Framework de React para construir sitios web rápidos, con buen SEO y renderizado optimizado.",
+  React: "Librería de JavaScript para construir interfaces de usuario interactivas.",
+  TypeScript:
+    "JavaScript con tipado estático: ayuda a prevenir errores antes de que lleguen a producción.",
+  "Tailwind CSS":
+    "Sistema de estilos que permite diseñar interfaces de forma rápida y consistente.",
+  Fastify:
+    "Framework de Node.js para el servidor: procesa la lógica de negocio y las peticiones del sitio.",
+  "Node.js":
+    "Entorno que permite ejecutar JavaScript fuera del navegador, típicamente en el servidor.",
+  "Socket.io":
+    "Tecnología de comunicación en tiempo real, usada por ejemplo en chats en vivo.",
+  PostgreSQL:
+    "Base de datos relacional donde se guarda la información de forma segura y organizada.",
+  Prisma:
+    "Herramienta (ORM) que conecta el código de la aplicación con la base de datos.",
+  Nginx:
+    "Servidor que enruta el tráfico web y protege los servicios internos del sitio.",
+  "Web Components":
+    "Estándar web para crear componentes de interfaz reutilizables sin depender de un framework.",
+} as const;
 
 export const PROYECTOS: readonly Proyecto[] = [
   {
