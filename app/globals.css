@@ -22,16 +22,6 @@
 }
 
 @layer base {
-  html,
-  body {
-    /* .chipTooltip (chips de tecnología) se centra sobre el chip con
-       left: 50% + transform, y en chips cerca del borde se sale del
-       viewport hasta 256px a un lado — invisible en reposo (opacity: 0)
-       pero su caja igual cuenta para el ancho scrolleable del documento,
-       dejando un tramo "vacío" al arrastrar/scrollear en horizontal
-       (sobre todo en móvil, donde rompía el centrado del layout). */
-    overflow-x: hidden;
-  }
   body {
     @apply bg-background text-foreground;
   }

@@ -26,15 +26,28 @@ export default function NavMovil() {
   // desplazamiento suave quedaría bloqueado).
   const refSeccionPendiente = useRef<string | null>(null);
 
-  // Con el panel abierto: scroll del body bloqueado, cierre con Escape y
-  // foco dentro del panel (al cerrar vuelve a la hamburguesa, sin provocar
-  // scroll para no interferir con el desplazamiento suave a una sección).
+  // Con el panel abierto: scroll de la página bloqueado (también el
+  // arrastre táctil — `overflow: hidden` en el body no lo frena en iOS/
+  // Android, así que se fija el body en su posición actual con
+  // `position: fixed` y se restaura el scroll al cerrar), cierre con
+  // Escape y foco dentro del panel (al cerrar vuelve a la hamburguesa,
+  // sin provocar scroll para no interferir con el desplazamiento suave a
+  // una sección).
   useEffect(() => {
     if (!abierto) return;
 
     const hamburguesa = refHamburguesa.current;
-    const overflowPrevio = document.body.style.overflow;
-    document.body.style.overflow = "hidden";
+    const scrollY = window.scrollY;
+    const estiloPrevio = {
+      position: document.body.style.position,
+      top: document.body.style.top,
+      width: document.body.style.width,
+      overflowY: document.body.style.overflowY,
+    };
+    document.body.style.position = "fixed";
+    document.body.style.top = `-${scrollY}px`;
+    document.body.style.width = "100%";
+    document.body.style.overflowY = "hidden";
     refCerrar.current?.focus({ preventScroll: true });
 
     const alPulsarTecla = (evento: KeyboardEvent) => {
@@ -43,7 +56,14 @@ export default function NavMovil() {
     window.addEventListener("keydown", alPulsarTecla);
 
     return () => {
-      document.body.style.overflow = overflowPrevio;
+      document.body.style.position = estiloPrevio.position;
+      document.body.style.top = estiloPrevio.top;
+      document.body.style.width = estiloPrevio.width;
+      document.body.style.overflowY = estiloPrevio.overflowY;
+      // `position: fixed` congela el scroll visual en scrollY pero
+      // window.scrollY pasa a 0 mientras dura — hay que restaurarlo antes
+      // de que el navegador salte solo al tope al quitar el fixed.
+      window.scrollTo(0, scrollY);
       window.removeEventListener("keydown", alPulsarTecla);
       hamburguesa?.focus({ preventScroll: true });
 
