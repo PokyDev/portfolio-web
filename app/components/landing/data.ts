@@ -134,7 +134,7 @@ export const EXPERIENCIAS: readonly Experiencia[] = [
     descripcion:
       "Diseño y desarrollo de una plataforma tipo SaaS para la gestión operativa de un restaurante, donde se centralizan procesos " +
       "principales como: gestión de comandas, control de inventario, definición de horarios y liquidación de turnadores.",
-    enlace: "https://www.linkedin.com/in/pokymon-dev",
+    enlace: "https://bartolome.space/",
     tecnologias: ["Ember.js", "Fastify", "PostgreSQL", "Apache", "Socket.io"],
   },
   {
@@ -144,7 +144,7 @@ export const EXPERIENCIAS: readonly Experiencia[] = [
     descripcion:
       "Desarrollo de una aplicación web responsiva para gestionar catalogo e inventario de una tienda de bisuteria, con galeria propia que soporta " +
       "formatos modernos optimizados como HEIC/HEIF y WebP a través del consumo de la API de Cloudinary.",
-    enlace: "https://estudio-regional.example.com",
+    enlace: "https://coragem.shop/",
     tecnologias: ["Next.js", "TypeScript", "Fastify", "Cloudinary", "Tailwind CSS"],
   },
 ] as const;
