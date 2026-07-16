@@ -118,7 +118,7 @@ export const SOBRE_MI = [
   "disfruto de trabajar con la misma dedicación en el diseño e ingenieria de mis proyectos, combinando excelente UI/UX " +
   "con buena arquitectura, codigo limpio y escalable.",
 
-  "He trabajado en varios entornos desde startups hasta empresas consolidades con complejas necesidades de automatización, " +
+  "He trabajado en varios entornos desde startups hasta empresas consolidadas con complejas necesidades de automatización, " +
   "algunos productos en los que he estado presente desde desarrollo hasta mantenimiento han sido Coragem y Bartolome " +
   "Actualmente trabajo como freelancer dispuesto a asumir nuevos desafios y siempre con ganas de poner en practica mi conocimiento.",
 
@@ -128,22 +128,24 @@ export const SOBRE_MI = [
 
 export const EXPERIENCIAS: readonly Experiencia[] = [
   {
-    rol: "Desarrollador web freelance",
-    empresa: "Independiente",
-    periodo: "2024 — presente",
+    rol: "Desarrollador Full Stack",
+    empresa: "Bartolome Parrila",
+    periodo: "2024 — 2025",
     descripcion:
-      "Sitios y sistemas a medida para clientes locales, de la propuesta al despliegue, con gestión directa del cliente: requerimientos, cronograma y entregables.",
+      "Diseño y desarrollo de una plataforma tipo SaaS para la gestión operativa de un restaurante, donde se centralizan procesos " +
+      "principales como: gestión de comandas, control de inventario, definición de horarios y liquidación de turnadores.",
     enlace: "https://www.linkedin.com/in/pokymon-dev",
-    tecnologias: ["Next.js", "Fastify", "PostgreSQL", "Nginx"],
+    tecnologias: ["Ember.js", "Fastify", "PostgreSQL", "Apache", "Socket.io"],
   },
   {
-    rol: "Desarrollador frontend (práctica)",
-    empresa: "Estudio de software regional",
-    periodo: "2023 — 2024",
+    rol: "Ingeniero de Software",
+    empresa: "Coragem Bisuteria",
+    periodo: "2025 — 2026",
     descripcion:
-      "Componentes UI reutilizables para un panel administrativo en producción; reduje el tiempo de carga inicial en un 35 % optimizando bundles.",
+      "Desarrollo de una aplicación web responsiva para gestionar catalogo e inventario de una tienda de bisuteria, con galeria propia que soporta " +
+      "formatos modernos optimizados como HEIC/HEIF y WebP a través del consumo de la API de Cloudinary.",
     enlace: "https://estudio-regional.example.com",
-    tecnologias: ["React", "TypeScript", "Tailwind CSS"],
+    tecnologias: ["Next.js", "TypeScript", "Fastify", "Cloudinary", "Tailwind CSS"],
   },
 ] as const;
 
@@ -154,6 +156,8 @@ export const DESCRIPCIONES_TECNOLOGIAS: Readonly<Record<string, string>> = {
   "Next.js":
     "Framework de React para construir sitios web rápidos, con buen SEO y renderizado optimizado.",
   React: "Librería de JavaScript para construir interfaces de usuario interactivas.",
+  "Ember.js":
+    "Framework de JavaScript para aplicaciones web ambiciosas, con convenciones y estructura definidas desde el inicio.",
   TypeScript:
     "JavaScript con tipado estático: ayuda a prevenir errores antes de que lleguen a producción.",
   "Tailwind CSS":
@@ -170,6 +174,10 @@ export const DESCRIPCIONES_TECNOLOGIAS: Readonly<Record<string, string>> = {
     "Herramienta (ORM) que conecta el código de la aplicación con la base de datos.",
   Nginx:
     "Servidor que enruta el tráfico web y protege los servicios internos del sitio.",
+  Apache:
+    "Servidor web muy usado en internet; en proyectos de desarrollo suele emplearse como proxy inverso, de forma similar a Nginx.",
+  Cloudinary:
+    "Servicio en la nube para alojar, optimizar y transformar imágenes y videos automáticamente.",
   "Web Components":
     "Estándar web para crear componentes de interfaz reutilizables sin depender de un framework.",
 } as const;

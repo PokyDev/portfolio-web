@@ -178,8 +178,15 @@ export default function Landing() {
                     <p className={styles.periodo}>{experiencia.periodo}</p>
                     <div className={styles.experienciaDetalle}>
                       <h3 className={styles.subtitulo}>
-                        {experiencia.rol} · {experiencia.empresa}
-                        <IconoTarjetaClickeable />
+                        <span className={styles.experienciaRol}>
+                          {experiencia.rol}
+                        </span>
+                        <span className={styles.experienciaEmpresaGrupo}>
+                          <span className={styles.experienciaEmpresa}>
+                            {experiencia.empresa}
+                          </span>
+                          <IconoTarjetaClickeable />
+                        </span>
                       </h3>
                       <p className={styles.parrafo}>{experiencia.descripcion}</p>
                       <span

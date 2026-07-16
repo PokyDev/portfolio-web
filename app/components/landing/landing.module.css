@@ -664,14 +664,54 @@
   }
 }
 
+/* Título de Experiencia: rol a la izquierda, empresa (con su separador) a
+   la derecha, para que el punto de inicio y de fin del título quede
+   alineado entre tarjetas sin importar cuánto texto tenga cada campo —
+   antes, con todo en línea, dos tarjetas con rol/empresa de largos
+   distintos terminaban en columnas muy dispares. space-between reparte el
+   ancho disponible entre los dos bloques; el gap fijo es el mínimo si el
+   texto es largo y no queda hueco. El separador vive dentro del grupo de
+   la empresa (no como tercer ítem suelto) para que, si el título envuelve
+   en pantallas angostas, "| Empresa" caiga junto a la siguiente línea en
+   vez de quedar el separador solo, huérfano, al final de la primera. */
 .subtitulo {
-  display: inline-flex;
+  display: flex;
+  flex-wrap: wrap;
   align-items: center;
-  gap: 0.45rem;
+  justify-content: space-between;
+  gap: 0.3rem 0.6rem;
+  width: 100%;
   font-family: var(--font-heading);
   font-size: 1.05rem;
   font-weight: 600;
   color: var(--color-fg);
+}
+
+.experienciaRol {
+  color: inherit;
+}
+
+.experienciaEmpresaGrupo {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+}
+
+/* Empresa dentro del título de Experiencia: se queda en la familia indigo/
+   cornflower de la marca (nada de naranja, que es solo para CTAs). En el
+   hover de la tarjeta converge al mismo accent puro que toma el rol, así
+   ambos "se activan" juntos. */
+.experienciaEmpresa {
+  /* Claro: fg es casi negro (L .25) y el accent claro (L .313) queda muy
+     cerca — se mezcla con blanco para alejarla del negro y que resalte. */
+  color: color-mix(in oklch, var(--color-accent) 60%, white 40%);
+  transition: color var(--transition-base) var(--ease-standard);
+}
+
+:global(.dark) .experienciaEmpresa {
+  /* Oscuro: fg ya es lavanda casi blanco, así que basta con acercar el
+     accent a fg para diferenciarlo del rol sin perder contraste. */
+  color: color-mix(in oklch, var(--color-accent) 80%, var(--color-fg) 20%);
 }
 
 /* Flecha "esto es clickeable" junto a los títulos de Experiencia/Proyectos:
@@ -782,6 +822,12 @@
   }
 
   .experienciaTarjeta:hover .subtitulo {
+    color: var(--color-accent);
+  }
+
+  /* La empresa converge al mismo accent puro que el rol: se sale de la
+     mezcla con fg en reposo y queda del mismo tono al activar la tarjeta. */
+  .experienciaTarjeta:hover .experienciaEmpresa {
     color: var(--color-accent);
   }
 
