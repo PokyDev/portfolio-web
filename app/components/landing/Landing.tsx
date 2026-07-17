@@ -1,6 +1,7 @@
 import Image from "next/image";
 import Aside from "./Aside";
 import ContactoChat from "./ContactoChat";
+import DeployMonitorMiniatura from "./miniaturas/DeployMonitorMiniatura";
 import NavMovil from "./NavMovil";
 import SelloPoky from "./SelloPoky";
 import Tecnologia from "./Tecnologia";
@@ -73,7 +74,14 @@ function TarjetaProyecto({ proyecto }: { proyecto: Proyecto }) {
       className={styles.tarjetaEnlace}
       {...(externo && { target: "_blank", rel: "noopener noreferrer" })}
     >
-      {proyecto.miniatura ? (
+      {proyecto.slug === "deploy-monitor" ? (
+        // Experimento de diseño (temporal): miniatura como componente en vez
+        // de captura .png — ver app/components/landing/miniaturas. Si
+        // convence, se generaliza a las demás tarjetas.
+        <div className={styles.proyectoMiniatura}>
+          <DeployMonitorMiniatura />
+        </div>
+      ) : proyecto.miniatura ? (
         <div className={styles.proyectoMiniatura}>
           <Image
             src={proyecto.miniatura}

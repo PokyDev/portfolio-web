@@ -1,0 +1,64 @@
+/* Réplica a escala reducida de landing.css de DeployMonitor. Colores del
+   tema oscuro de esa app (tokens.css de DeployMonitor) hardcodeados a
+   propósito: son la marca fija de ese proyecto, no seguimos con ellos el
+   theme claro/oscuro del portafolio. Escala vía container queries porque
+   el contenedor padre (.proyectoMiniatura en landing.module.css) cambia de
+   ancho fijo (desktop) a 100% (móvil). */
+
+.miniatura {
+  container-type: inline-size;
+  position: relative;
+  width: 100%;
+  height: 100%;
+  background-color: #111111;
+  overflow: hidden;
+}
+
+/* Malla técnica de fondo — mismo patrón que .landing__grid en DeployMonitor */
+.malla {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0.45;
+  background-image:
+    linear-gradient(#2e2e2e 1px, transparent 1px),
+    linear-gradient(90deg, #2e2e2e 1px, transparent 1px);
+  background-size: clamp(10px, 4cqw, 20px) clamp(10px, 4cqw, 20px);
+  -webkit-mask-image: radial-gradient(ellipse 80% 70% at 50% 45%, #000 30%, transparent 78%);
+  mask-image: radial-gradient(ellipse 80% 70% at 50% 45%, #000 30%, transparent 78%);
+}
+
+.contenido {
+  position: relative;
+  z-index: 1;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: clamp(4px, 3cqw, 12px);
+  padding: clamp(6px, 4cqw, 16px);
+}
+
+.icono {
+  width: clamp(28px, 30cqw, 72px);
+  height: auto;
+  object-fit: contain;
+  filter:
+    drop-shadow(0 0 clamp(4px, 3cqw, 10px) rgba(212, 175, 55, 0.5))
+    drop-shadow(0 0 clamp(8px, 6cqw, 20px) rgba(212, 175, 55, 0.25));
+}
+
+.wordmark {
+  font-family: var(--font-title-dm), system-ui, sans-serif;
+  font-size: clamp(9px, 10cqw, 26px);
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  line-height: 1;
+  color: #f0f0f0;
+  white-space: nowrap;
+}
+
+.wordmarkAccent {
+  color: #d4af37;
+}

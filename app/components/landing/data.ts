@@ -156,6 +156,13 @@ export const DESCRIPCIONES_TECNOLOGIAS: Readonly<Record<string, string>> = {
   "Next.js":
     "Framework de React para construir sitios web rápidos, con buen SEO y renderizado optimizado.",
   React: "Librería de JavaScript para construir interfaces de usuario interactivas.",
+  "React.js": "Librería de JavaScript para construir interfaces de usuario interactivas.",
+  TauriV2:
+    "Framework para construir aplicaciones de escritorio ligeras con un frontend web y un núcleo en Rust, en vez de empaquetar un navegador completo.",
+  Rust:
+    "Lenguaje de programación de bajo nivel enfocado en rendimiento y seguridad de memoria, usado aquí para el núcleo de la aplicación de escritorio.",
+  "Xterm.js":
+    "Librería que renderiza una terminal interactiva completa dentro de una interfaz web, usada por ejemplo para exponer una consola SSH en vivo.",
   "Ember.js":
     "Framework de JavaScript para aplicaciones web ambiciosas, con convenciones y estructura definidas desde el inicio.",
   TypeScript:
@@ -184,15 +191,18 @@ export const DESCRIPCIONES_TECNOLOGIAS: Readonly<Record<string, string>> = {
 
 export const PROYECTOS: readonly Proyecto[] = [
   {
-    slug: "plataforma-portafolio",
-    titulo: "Pokymon.dev",
+    slug: "deploy-monitor",
+    titulo: "DeployMonitor",
     descripcion:
-      "Esta plataforma: sitio público con casos de estudio y tickets de pre-venta, más un portal de cliente con chat en vivo, cronograma y entregables.",
-    enlace: "/proyectos/plataforma-portafolio",
-    etiquetaEnlace: "Ver caso de estudio",
-    estrellas: 24,
-    miniatura: "/photos/Portfolio.png",
-    tecnologias: ["Next.js", "Fastify", "Socket.io", "PostgreSQL", "Nginx"],
+      "Aplicación de escritorio para monitoreo de instancias a través de conexion SSH con claves privadas .pem, " +
+      "cuenta con una terminal interactiva propia, permite conexión y monitoreo, ademas de contar con un gestor de scripts " +
+      "para crear, modificar y ejecutar archivos sobre las instancias, se creo para facilitar la ejecución y monitoreo desde un entorno local" +
+      ".",
+    enlace: "https://github.com/PokyDev/DeployMonitor",
+    etiquetaEnlace: "Revisar proyecto",
+    estrellas: 1,
+    miniatura: "/photos/deploy-monitor.png",
+    tecnologias: ["TauriV2", "React.js", "TypeScript", "Rust", "Xterm.js"],
   },
   {
     slug: "gestor-inventario",

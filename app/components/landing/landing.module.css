@@ -810,7 +810,6 @@
 .experienciaTarjeta {
   display: block;
   padding: 1rem 1.25rem;
-  margin: -1rem -1.25rem;
   border-radius: var(--radius-lg);
   cursor: pointer;
   transition:
@@ -910,7 +909,6 @@
   flex-direction: column;
   gap: 1.25rem;
   padding: 1rem 1.25rem;
-  margin: -1rem -1.25rem;
   border-radius: var(--radius-lg);
   cursor: pointer;
   transition:
