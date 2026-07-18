@@ -1,6 +1,7 @@
 import Image from "next/image";
 import Aside from "./Aside";
 import ContactoChat from "./ContactoChat";
+import CoragemMiniatura from "./miniaturas/CoragemMiniatura";
 import DeployMonitorMiniatura from "./miniaturas/DeployMonitorMiniatura";
 import NavMovil from "./NavMovil";
 import SelloPoky from "./SelloPoky";
@@ -81,6 +82,10 @@ function TarjetaProyecto({ proyecto }: { proyecto: Proyecto }) {
         <div className={styles.proyectoMiniatura}>
           <DeployMonitorMiniatura />
         </div>
+      ) : proyecto.slug === "coragem-bisuteria" ? (
+        <div className={styles.proyectoMiniatura}>
+          <CoragemMiniatura />
+        </div>
       ) : proyecto.miniatura ? (
         <div className={styles.proyectoMiniatura}>
           <Image
@@ -117,11 +122,21 @@ function TarjetaProyecto({ proyecto }: { proyecto: Proyecto }) {
         </ul>
         <div className={styles.proyectoMeta}>
           {proyecto.estrellas !== undefined && (
-            <span className={styles.metrica}>⭐ {proyecto.estrellas}</span>
+            <span className={styles.metrica}>
+              <span className={styles.metricaIcono} aria-hidden="true">⭐</span>
+              {proyecto.estrellas} estrella/s
+            </span>
           )}
           {proyecto.descargas !== undefined && (
             <span className={styles.metrica}>
-              ⇩ {proyecto.descargas.toLocaleString("es")} descargas
+              <span className={styles.metricaIcono} aria-hidden="true">⇩</span>
+              {proyecto.descargas.toLocaleString("es")} descargas
+            </span>
+          )}
+          {proyecto.usuariosMensuales !== undefined && (
+            <span className={styles.metrica}>
+              <span className={styles.metricaIcono} aria-hidden="true">👥</span>
+              {proyecto.usuariosMensuales.toLocaleString("es")} usuarios/mes
             </span>
           )}
         </div>

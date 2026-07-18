@@ -1041,9 +1041,21 @@
 }
 
 .metrica {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3em;
   font-size: 0.8rem;
   font-weight: 600;
   color: var(--color-muted);
+}
+
+/* Los emojis traen su propia métrica vertical (suelen asentarse más abajo
+   que el texto); centrarlos en su propia línea dentro del flex de
+   .metrica los alinea visualmente con la altura del texto. */
+.metricaIcono {
+  display: inline-flex;
+  align-items: center;
+  line-height: 1;
 }
 
 .proyectoEnlace {

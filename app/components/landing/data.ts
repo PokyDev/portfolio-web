@@ -17,6 +17,8 @@ export interface Proyecto {
   etiquetaEnlace: string;
   estrellas?: number;
   descargas?: number;
+  /** Usuarios activos por mes; hoy hardcodeado, más adelante vía fetch a métricas reales */
+  usuariosMensuales?: number;
   /** Miniatura de la tarjeta: captura en /public/photos (opcional) */
   miniatura?: string;
   tecnologias: string[];
@@ -145,7 +147,7 @@ export const EXPERIENCIAS: readonly Experiencia[] = [
       "Desarrollo de una aplicación web responsiva para gestionar catalogo e inventario de una tienda de bisuteria, con galeria propia que soporta " +
       "formatos modernos optimizados como HEIC/HEIF y WebP a través del consumo de la API de Cloudinary.",
     enlace: "https://coragem.shop/",
-    tecnologias: ["Next.js", "TypeScript", "Fastify", "Cloudinary", "Tailwind CSS"],
+    tecnologias: ["Next.js", "TypeScript", "Fastify", "Cloudinary", "PostgreSQL", "Prisma", "Nginx", "Neon", "Vercel", "Cloudflare", "AWS"],
   },
 ] as const;
 
@@ -187,6 +189,16 @@ export const DESCRIPCIONES_TECNOLOGIAS: Readonly<Record<string, string>> = {
     "Servicio en la nube para alojar, optimizar y transformar imágenes y videos automáticamente.",
   "Web Components":
     "Estándar web para crear componentes de interfaz reutilizables sin depender de un framework.",
+  Neon:
+    "Servicio de base de datos PostgreSQL en la nube (con capa gratuita) que escala automáticamente sin necesidad de administrar un servidor propio.",
+  Vercel:
+    "Plataforma en la nube para desplegar sitios web, con builds automáticos e infraestructura distribuida globalmente.",
+  Cloudflare:
+    "Red global que acelera la entrega del sitio y lo protege de ataques, además de gestionar el DNS del dominio.",
+  AWS:
+    "Amazon Web Services: conjunto de servicios de computación en la nube usados para alojar y escalar aplicaciones.",
+  "AWS EC2":
+    "Servicio de Amazon Web Services que provee servidores virtuales en la nube para alojar aplicaciones.",
 } as const;
 
 export const PROYECTOS: readonly Proyecto[] = [
@@ -205,15 +217,17 @@ export const PROYECTOS: readonly Proyecto[] = [
     tecnologias: ["TauriV2", "React.js", "TypeScript", "Rust", "Xterm.js"],
   },
   {
-    slug: "gestor-inventario",
-    titulo: "StockDex",
+    slug: "coragem-bisuteria",
+    titulo: "Coragem | Sitio Oficial",
     descripcion:
-      "Inventario y facturación para un comercio local que llevaba todo en papel: control de stock en tiempo real y cierres de caja automáticos.",
-    enlace: "/proyectos/gestor-inventario",
-    etiquetaEnlace: "Ver caso de estudio",
-    descargas: 1200,
+      "Aplicación web responsiva para gestionar el catalogo de la tienda, permite busqueda filtrada por categorias y directamente por nombre de producto, " +
+      "tiene funciones de administrador para gestión profunda con galeria interna que soporta formatos modernos HEIC/HEIF. Ademas, cuenta con un sistema para gestión " +
+      "de inventario. Fue una solución directa a la falta de un catalogo web que permitiera mostrar los productos de forma profesional e intuitiva.",
+    enlace: "https://coragem.shop/",
+    etiquetaEnlace: "Revisar proyecto",
+    usuariosMensuales: 680,
     miniatura: "/photos/CoragemShop.png",
-    tecnologias: ["React", "Node.js", "Prisma", "PostgreSQL"],
+    tecnologias: ["Next.js", "Node.js", "Prisma", "PostgreSQL", "Neon", "Cloudinary", "AWS EC2", "Nginx", "Vercel", "Cloudflare"],
   },
   {
     slug: "cli-scaffolder",

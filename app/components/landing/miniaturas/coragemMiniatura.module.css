@@ -1,0 +1,74 @@
+/* Réplica a escala reducida del imagotipo de Coragem. Fondo (#0f1a2a) y
+   glow del ícono (teal/pink) tomados de los tokens reales de esa landing
+   (globals.css → .dark). Hardcodeados a propósito: son la marca fija de
+   ese proyecto, no seguimos con ellos el theme claro/oscuro del
+   portafolio. Escala vía container queries porque el contenedor padre
+   (.proyectoMiniatura en landing.module.css) cambia de ancho fijo
+   (desktop) a 100% (móvil) — mismo patrón que DeployMonitorMiniatura. */
+
+.miniatura {
+  container-type: inline-size;
+  position: relative;
+  width: 100%;
+  height: 100%;
+  background-color: #0f1a2a;
+  overflow: hidden;
+}
+
+.contenido {
+  position: relative;
+  z-index: 1;
+  height: 100%;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  gap: clamp(4px, 3cqw, 10px);
+  padding: clamp(6px, 4cqw, 16px);
+}
+
+/* Ícono vertical (368×591) — se escala por altura, no por ancho, para
+   igualar aprox. la altura del wordmark y mantener su proporción real. */
+.icono {
+  height: clamp(22px, 24cqw, 58px);
+  width: auto;
+  object-fit: contain;
+  filter:
+    drop-shadow(0 0 clamp(3px, 2.5cqw, 8px) rgba(78, 196, 196, 0.55))
+    drop-shadow(0 0 clamp(6px, 5cqw, 16px) rgba(196, 122, 158, 0.3));
+}
+
+.wordmark {
+  position: relative;
+  font-family: var(--font-title-coragem), system-ui, sans-serif;
+  font-size: clamp(9px, 10cqw, 25px);
+  font-weight: 400;
+  text-transform: uppercase;
+  letter-spacing: 0.01em;
+  line-height: 1;
+  color: #ffffff;
+  white-space: nowrap;
+}
+
+.letraG {
+  color: #45b4c4;
+}
+
+.letraE {
+  color: #a2d8d6;
+}
+
+.letraM {
+  color: #b193a6;
+}
+
+/* Símbolo © en una parte inferior, junto al texto — tipografía neutra
+   (no la decorativa) para que se lea limpio en tamaños pequeños. */
+.copyright {
+  font-family: system-ui, sans-serif;
+  font-size: 0.4em;
+  font-weight: 400;
+  color: rgba(255, 255, 255, 0.55);
+  vertical-align: bottom;
+  margin-left: 0.2em;
+}
