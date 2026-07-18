@@ -3,6 +3,7 @@ import Aside from "./Aside";
 import ContactoChat from "./ContactoChat";
 import CoragemMiniatura from "./miniaturas/CoragemMiniatura";
 import DeployMonitorMiniatura from "./miniaturas/DeployMonitorMiniatura";
+import PortfolioMiniatura from "./miniaturas/PortfolioMiniatura";
 import NavMovil from "./NavMovil";
 import SelloPoky from "./SelloPoky";
 import Tecnologia from "./Tecnologia";
@@ -85,6 +86,10 @@ function TarjetaProyecto({ proyecto }: { proyecto: Proyecto }) {
       ) : proyecto.slug === "coragem-bisuteria" ? (
         <div className={styles.proyectoMiniatura}>
           <CoragemMiniatura />
+        </div>
+      ) : proyecto.slug === "pokydev-portfolio" ? (
+        <div className={styles.proyectoMiniatura}>
+          <PortfolioMiniatura />
         </div>
       ) : proyecto.miniatura ? (
         <div className={styles.proyectoMiniatura}>

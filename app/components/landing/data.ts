@@ -199,6 +199,8 @@ export const DESCRIPCIONES_TECNOLOGIAS: Readonly<Record<string, string>> = {
     "Amazon Web Services: conjunto de servicios de computación en la nube usados para alojar y escalar aplicaciones.",
   "AWS EC2":
     "Servicio de Amazon Web Services que provee servidores virtuales en la nube para alojar aplicaciones.",
+  "Oracle Cloud":
+    "Plataforma de computación en la nube de Oracle, usada para alojar servidores y servicios backend.",
 } as const;
 
 export const PROYECTOS: readonly Proyecto[] = [
@@ -230,15 +232,17 @@ export const PROYECTOS: readonly Proyecto[] = [
     tecnologias: ["Next.js", "Node.js", "Prisma", "PostgreSQL", "Neon", "Cloudinary", "AWS EC2", "Nginx", "Vercel", "Cloudflare"],
   },
   {
-    slug: "cli-scaffolder",
-    titulo: "poky-cli",
+    slug: "pokydev-portfolio",
+    titulo: "Portafolio Web | @Pokymon.dev",
     descripcion:
-      "CLI que genera proyectos web con la estructura y convenciones que uso en cada encargo.",
-    enlace: "https://github.com/PokyDev/poky-cli",
-    etiquetaEnlace: "Ver repositorio",
-    estrellas: 8,
-    miniatura: "/photos/DeployMonitor.png",
-    tecnologias: ["Node.js", "TypeScript"],
+      "Portafolio web personal para exponer y gestionar proyectos, ademas dispone un panel CRM interno donde se pueden visualizar entregables, " +
+      "cronograma, historias de usuario, contratos, licencias y persiste un agente accesible a través de chat conectado a un sistemas de tickets que " +
+      "le permiten al usuario contactarse con el desarrollador para iniciar proyectos.",
+    enlace: "https://github.com/PokyDev/portfolio-web",
+    etiquetaEnlace: "Revisar Proyecto",
+    estrellas: 1,
+    miniatura: "/photos/pokydev-portfolio.png",
+    tecnologias: ["Next.js", "Node.js", "TypeScript", "Neon", "PostgreSQL", "Vercel", "Oracle Cloud", "Nginx"],
   },
   {
     slug: "widget-clima",
