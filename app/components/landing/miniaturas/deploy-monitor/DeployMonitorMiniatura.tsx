@@ -1,6 +1,7 @@
 import Image from "next/image";
 import { Stack_Sans_Notch } from "next/font/google";
 import styles from "./deployMonitorMiniatura.module.css";
+import animacion from "./deployMonitorAnimacion.module.css";
 
 // Fuente exclusiva de esta miniatura: reintroduce Stack Sans Notch (el
 // portafolio usa Stack Sans Text a nivel global, ver layout.tsx) porque el
@@ -21,15 +22,15 @@ const stackSansNotch = Stack_Sans_Notch({
 export default function DeployMonitorMiniatura() {
   return (
     <div className={`${styles.miniatura} ${stackSansNotch.variable}`}>
-      <div className={styles.malla} aria-hidden="true" />
-      <div className={styles.contenido}>
+      <div className={`${styles.malla} ${animacion.malla}`} aria-hidden="true" />
+      <div className={`${styles.contenido} ${animacion.contenido}`}>
         <Image
           src="/miniature-icons/ssh-manager-icon-128x128.png"
           alt=""
           aria-hidden="true"
           width={128}
           height={128}
-          className={styles.icono}
+          className={`${styles.icono} ${animacion.icono}`}
         />
         <p className={styles.wordmark}>
           Deploy<span className={styles.wordmarkAccent}>Monitor</span>

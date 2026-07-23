@@ -1,9 +1,12 @@
 import Image from "next/image";
 import Aside from "./Aside";
 import ContactoChat from "./ContactoChat";
-import CoragemMiniatura from "./miniaturas/CoragemMiniatura";
-import DeployMonitorMiniatura from "./miniaturas/DeployMonitorMiniatura";
-import PortfolioMiniatura from "./miniaturas/PortfolioMiniatura";
+
+import BartolomeMiniatura from "./miniaturas/bartolome/BartolomeMiniatura";
+import CoragemMiniatura from "./miniaturas/coragem/CoragemMiniatura";
+import DeployMonitorMiniatura from "./miniaturas/deploy-monitor/DeployMonitorMiniatura";
+import PortfolioMiniatura from "./miniaturas/portfolio/PortfolioMiniatura";
+
 import NavMovil from "./NavMovil";
 import SelloPoky from "./SelloPoky";
 import Tecnologia from "./Tecnologia";
@@ -73,7 +76,18 @@ function TarjetaProyecto({ proyecto }: { proyecto: Proyecto }) {
   return (
     <a
       href={proyecto.enlace}
-      className={styles.tarjetaEnlace}
+      className={
+        proyecto.slug === "deploy-monitor"
+          ? // Clase global (sin hash) además de la del módulo: la anima-
+            // ción de la miniatura vive en su propio directorio y necesita
+            // enganchar el hover de la tarjeta completa desde fuera del
+            // scope de landing.module.css — ver deployMonitorAnimacion.
+            `${styles.tarjetaEnlace} dm-tarjeta-hover`
+          : proyecto.slug === "coragem-bisuteria"
+            ? // Mismo motivo que dm-tarjeta-hover — ver coragemAnimacion.
+              `${styles.tarjetaEnlace} coragem-tarjeta-hover`
+            : styles.tarjetaEnlace
+      }
       {...(externo && { target: "_blank", rel: "noopener noreferrer" })}
     >
       {proyecto.slug === "deploy-monitor" ? (
@@ -90,6 +104,10 @@ function TarjetaProyecto({ proyecto }: { proyecto: Proyecto }) {
       ) : proyecto.slug === "pokydev-portfolio" ? (
         <div className={styles.proyectoMiniatura}>
           <PortfolioMiniatura />
+        </div>
+      ) : proyecto.slug === "bartolome-parrilla" ? (
+        <div className={styles.proyectoMiniatura}>
+          <BartolomeMiniatura />
         </div>
       ) : proyecto.miniatura ? (
         <div className={styles.proyectoMiniatura}>

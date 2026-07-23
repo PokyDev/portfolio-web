@@ -245,13 +245,15 @@ export const PROYECTOS: readonly Proyecto[] = [
     tecnologias: ["Next.js", "Node.js", "TypeScript", "Neon", "PostgreSQL", "Vercel", "Oracle Cloud", "Nginx"],
   },
   {
-    slug: "widget-clima",
-    titulo: "Clima embebible",
+    slug: "bartolome-parrilla",
+    titulo: "Bartolome Parrila Site",
     descripcion:
-      "Widget de clima sin dependencias para incrustar en cualquier sitio con una etiqueta script.",
-    enlace: "https://codepen.io/pokymon-dev/pen/clima-embebible",
-    etiquetaEnlace: "Visitar página",
-    tecnologias: ["TypeScript", "Web Components"],
+      "Sitio oficial del restaurante Bartolome Parrilla, es una aplicación web de tipo SaaS, permite navegar a través de una interfaz para gestionar: " +
+      "comandas, inventario y liquidación de turnadores cada fin de semana, tiene un sistema automatizado que filtra comandas para separarlas en pedidos para cocina y pedidos " +
+      "para parrilla, el sistema esta pulido para mantener el inventario ordenado y evitar descuadre con la materia prima.",
+    enlace: "https://github.com/PokyDev",
+    etiquetaEnlace: "Revisar Proyecto",
+    tecnologias: ["Ember.js", "Javascript", "Node.js", "Fastify", "Typescript", "Apache", "Socket.io"],
   },
 ] as const;
 

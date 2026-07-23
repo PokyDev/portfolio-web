@@ -1,0 +1,99 @@
+/* Animación de aparición en hover de DeployMonitorMiniatura, separada de
+   deployMonitorMiniatura.module.css para no sobrecargar ese archivo.
+   DeployMonitorMiniatura.tsx combina estas clases con las suyas.
+
+   El disparador es la tarjeta completa (.tarjetaEnlace en landing.module.css,
+   fuera del scope de este módulo), no la miniatura en sí — por eso se
+   engancha vía :global(.dm-tarjeta-hover), la clase sin hash que Landing.tsx
+   agrega solo a la tarjeta de este proyecto.
+
+   El diseño final debe verse siempre, sin depender del hover (es la razón
+   de ser de las miniaturas-componente): el estado base de .malla y
+   .contenido YA es el visible.
+
+   Entrada suave (evita el salto instantáneo a "oculto" al iniciar el
+   hover): cada @keyframes arranca su 0% en el mismo valor que el estado
+   base (visible), así el navegador interpola con calma hacia oculto en
+   vez de saltar de golpe — el salto brusco ocurría antes porque el
+   fotograma inicial YA era "oculto" y se aplicaba de inmediato al activar
+   el hover, sin interpolación.
+
+   Salida suave (evita el snap-back al quitar el hover): .malla y
+   .contenido declaran `transition` en su regla base (siempre presente).
+   Cuando el hover termina, la animación se retira y el valor computado
+   pasa del punto medio en que iba la animación al valor base — como ese
+   cambio ocurre con `transition` ya declarado en la regla de destino, el
+   navegador lo anima en vez de aplicarlo de golpe (una animación activa
+   tiene prioridad sobre una transition en la misma propiedad, así que
+   mientras el hover está activo manda la animación; al soltarlo, manda
+   la transition).
+
+   Secuencia dentro del hover:
+   1. La malla se oculta con calma y se reconstruye desde su centro (mismo
+      punto que su máscara radial) con un clip-path circular animado.
+   2. Icono + wordmark se ocultan al mismo ritmo y reaparecen con fade una
+      vez la malla casi terminó de reconstruirse.
+   3. Con el hover aún activo, el icono flota en bucle. */
+
+.malla {
+  clip-path: circle(75% at 50% 45%);
+  transition: clip-path 0.6s var(--ease-standard);
+}
+
+.contenido {
+  opacity: 1;
+  transition: opacity 0.6s var(--ease-standard);
+}
+
+.icono {
+  transition: transform 0.5s var(--ease-standard);
+}
+
+@keyframes dmMallaCiclo {
+  0% {
+    clip-path: circle(75% at 50% 45%);
+  }
+  20% {
+    clip-path: circle(0% at 50% 45%);
+  }
+  100% {
+    clip-path: circle(75% at 50% 45%);
+  }
+}
+
+@keyframes dmContenidoCiclo {
+  0% {
+    opacity: 1;
+  }
+  12% {
+    opacity: 0;
+  }
+  70% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+@keyframes dmFlotar {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-8%);
+  }
+}
+
+:global(.dm-tarjeta-hover):hover .malla {
+  animation: dmMallaCiclo 0.9s var(--ease-standard);
+}
+
+:global(.dm-tarjeta-hover):hover .contenido {
+  animation: dmContenidoCiclo 1.3s var(--ease-standard);
+}
+
+:global(.dm-tarjeta-hover):hover .icono {
+  animation: dmFlotar 2.6s ease-in-out 1.3s infinite;
+}

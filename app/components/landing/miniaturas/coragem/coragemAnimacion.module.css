@@ -1,0 +1,55 @@
+/* Animación de aparición en hover de CoragemMiniatura, separada de
+   coragemMiniatura.module.css por el mismo motivo que
+   deployMonitorAnimacion: no sobrecargar el módulo base.
+
+   El diseño base (ícono + wordmark) NO cambia con el hover — se mantiene
+   siempre visible tal cual. El hover solo complementa el fondo con dos
+   ramas de hojas (ver coragemHojas.tsx, adaptado de la referencia que
+   aportó el usuario en background_example.tsx) en los tonos de marca de
+   Coragem (teal/rosa) a baja opacidad, apareciendo tallo → hojas en
+   cascada a lo largo de cada rama, y desapareciendo todo junto al soltar
+   el hover. Siempre por detrás de .contenido (z-index inferior) — el
+   ícono y el wordmark nunca quedan tapados.
+
+   El disparador es la tarjeta completa (.tarjetaEnlace en landing.module.css),
+   no la miniatura en sí — se engancha vía :global(.coragem-tarjeta-hover).
+
+   Entrada en cascada vía variable CSS por elemento: cada tallo/hoja recibe
+   su propio `--stagger-delay` por inline style (calculado en JS a partir de
+   su posición en la rama). La regla base de salida NO referencia esa
+   variable (transition sin delay) — así, al soltar el hover, todos los
+   elementos revierten a la vez con la misma transition, sin arrastrar el
+   delay de entrada. La regla de hover sí la referencia, así que solo la
+   entrada queda escalonada. Mismo principio de asimetría entrada/salida
+   que deployMonitorAnimacion y la iteración anterior de esta miniatura. */
+
+.fondoHojas {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.ramaSvg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.tallo,
+.hoja {
+  opacity: 0;
+  transition: opacity 0.5s var(--ease-standard);
+}
+
+:global(.coragem-tarjeta-hover):hover .tallo {
+  opacity: 0.22;
+  transition: opacity 0.7s var(--ease-standard) var(--stagger-delay, 0s);
+}
+
+:global(.coragem-tarjeta-hover):hover .hoja {
+  opacity: 0.18;
+  transition: opacity 0.7s var(--ease-standard) var(--stagger-delay, 0s);
+}

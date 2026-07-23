@@ -1,0 +1,71 @@
+/* Réplica a escala reducida del imagotipo de Coragem, en composición
+   apilada (ícono → nombre → "ACCESSORIES") igual al logo real del cliente
+   (ver public/miniature-icons/references/coragem-reference.jpeg). Fondo
+   (#0f1a2a) y glow del ícono (teal/pink) tomados de los tokens reales de
+   esa landing (globals.css → .dark) — hardcodeados a propósito, son la
+   marca fija de ese proyecto, no el theme claro/oscuro del portafolio.
+   Escala vía container queries porque el contenedor padre
+   (.proyectoMiniatura en landing.module.css) cambia de ancho fijo
+   (desktop) a 100% (móvil) — mismo patrón que DeployMonitorMiniatura. */
+
+.miniatura {
+  container-type: inline-size;
+  position: relative;
+  width: 100%;
+  height: 100%;
+  background-color: #0f1a2a;
+  overflow: hidden;
+}
+
+.contenido {
+  position: relative;
+  z-index: 1;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: clamp(2px, 1.5cqw, 5px);
+  padding: clamp(6px, 4cqw, 16px);
+}
+
+/* Ícono vertical (368×591) — se escala por altura y mantiene su
+   proporción real. */
+.icono {
+  height: clamp(26px, 26cqw, 62px);
+  width: auto;
+  object-fit: contain;
+  margin-bottom: clamp(2px, 1.5cqw, 6px);
+  filter:
+    drop-shadow(0 0 clamp(3px, 2.5cqw, 8px) rgba(78, 196, 196, 0.55))
+    drop-shadow(0 0 clamp(6px, 5cqw, 16px) rgba(196, 122, 158, 0.3));
+}
+
+/* Texto A: "Coragem", solo la C en mayúscula (mismo casing que el logo
+   real) — el elemento tipográfico dominante bajo el ícono. */
+.nombre {
+  font-family: var(--font-title-coragem), Georgia, serif;
+  font-size: clamp(10px, 11cqw, 26px);
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  line-height: 1;
+  color: #ffffff;
+  white-space: nowrap;
+}
+
+/* Texto B: "ACCESSORIES" en versalitas espaciadas, jerarquía de
+   subtítulo (sin símbolo © — descartado por el cliente). Color rosa-taupe
+   cálido tomado del propio degradé del ícono (mismo tono que el glow rosa
+   de .icono, rgba(196, 122, 158)) — así el texto queda emparentado con el
+   ícono y contrasta con el blanco de .nombre sobre el fondo oscuro. */
+.subtitulo {
+  position: relative;
+  font-family: var(--font-title-coragem), Georgia, serif;
+  font-size: clamp(5px, 4.2cqw, 10px);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.25em;
+  line-height: 1;
+  color: #c47a9e;
+  white-space: nowrap;
+}
