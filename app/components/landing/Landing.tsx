@@ -86,7 +86,13 @@ function TarjetaProyecto({ proyecto }: { proyecto: Proyecto }) {
           : proyecto.slug === "coragem-bisuteria"
             ? // Mismo motivo que dm-tarjeta-hover — ver coragemAnimacion.
               `${styles.tarjetaEnlace} coragem-tarjeta-hover`
-            : styles.tarjetaEnlace
+            : proyecto.slug === "pokydev-portfolio"
+              ? // Mismo motivo que dm-/coragem-tarjeta-hover — ver portfolioAnimacion.
+                `${styles.tarjetaEnlace} portfolio-tarjeta-hover`
+              : proyecto.slug === "bartolome-parrilla"
+                ? // Mismo motivo que dm-/coragem-/portfolio-tarjeta-hover — ver bartolomeAnimacion.
+                  `${styles.tarjetaEnlace} bartolome-tarjeta-hover`
+                : styles.tarjetaEnlace
       }
       {...(externo && { target: "_blank", rel: "noopener noreferrer" })}
     >

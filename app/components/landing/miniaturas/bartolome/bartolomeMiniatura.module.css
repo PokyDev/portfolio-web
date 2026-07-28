@@ -1,7 +1,6 @@
-/* Miniatura de Bartolome Parrila: wordmark SVG propio
-   (public/icons/bartolome/@titulo-bartolome.svg) centrado sobre fondo
-   blanco fijo. Fondo blanco a propósito (marca del cliente pensada para
-   fondo claro) — no sigue el theme claro/oscuro del portafolio, mismo
+/* Miniatura de Bartolome Parrila: panel oficial del cliente
+   (public/icons/bartolome/bartolome_panel.png) centrado sobre fondo
+   blanco fijo — no sigue el theme claro/oscuro del portafolio, mismo
    criterio que DeployMonitorMiniatura/CoragemMiniatura/PortfolioMiniatura.
    Escala vía container queries porque el contenedor padre
    (.proyectoMiniatura en landing.module.css) cambia de ancho fijo
@@ -26,8 +25,8 @@
   padding: clamp(8px, 6cqw, 20px);
 }
 
-.wordmark {
-  height: clamp(20px, 24cqw, 56px);
+.logo {
+  height: clamp(28px, 60cqw, 80px);
   width: auto;
   object-fit: contain;
 }

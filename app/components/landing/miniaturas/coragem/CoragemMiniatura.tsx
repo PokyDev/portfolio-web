@@ -1,7 +1,7 @@
 import Image from "next/image";
 import { Noto_Serif } from "next/font/google";
 import styles from "./coragemMiniatura.module.css";
-import CoragemHojas from "./coragemHojas";
+import animacion from "./coragemAnimacion.module.css";
 
 // Fuente exclusiva de esta miniatura (no es la tipografía del portafolio):
 // el cliente pidió reemplazar la fuente decorativa anterior (Bagel Fat One)
@@ -20,14 +20,16 @@ const notoSerif = Noto_Serif({
 // apilado con el wordmark en dos líneas (nombre + "ACCESSORIES"), igual a
 // la composición del logo real (ver public/miniature-icons/references).
 //
-// El diseño base se mantiene siempre visible sin depender del hover (mismo
-// principio que DeployMonitor). El hover solo complementa el fondo con
-// CoragemHojas — ver ese archivo y coragemAnimacion.module.css.
+// El fondo de ramas/hojas (CoragemHojas) se descartó por completo — el
+// usuario no quedó conforme con ese diseño. Mismo patrón que DeployMonitor:
+// el diseño base (ícono + wordmark) se mantiene siempre visible sin
+// depender del hover; el hover primero apaga todo con un fade puro de
+// opacidad, espera un momento, y luego dispara la animación de entrada
+// (desliza de abajo hacia arriba con fade) — ver coragemAnimacion.module.css.
 export default function CoragemMiniatura() {
   return (
     <div className={`${styles.miniatura} ${notoSerif.variable}`}>
-      <CoragemHojas />
-      <div className={styles.contenido}>
+      <div className={`${styles.contenido} ${animacion.contenido}`}>
         <Image
           src="/miniature-icons/coragem_icon.png"
           alt=""

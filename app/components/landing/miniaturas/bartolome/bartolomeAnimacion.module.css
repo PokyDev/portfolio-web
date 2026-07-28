@@ -1,0 +1,31 @@
+/* Animación de hover de BartolomeMiniatura, separada de
+   bartolomeMiniatura.module.css por el mismo motivo que
+   deployMonitorAnimacion/coragemAnimacion: no sobrecargar el módulo base.
+
+   El disparador es la tarjeta completa (.tarjetaEnlace en landing.module.css),
+   no la miniatura en sí — se engancha vía :global(.bartolome-tarjeta-hover),
+   la clase sin hash que Landing.tsx agrega solo a la tarjeta de este
+   proyecto.
+
+   A diferencia de dm-/coragem-/portfolio-tarjeta-hover, acá no hay ciclo de
+   reconstrucción previo: el logo simplemente flota (translateY en bucle)
+   mientras dure el hover, mismo `dmFlotar` que ya usa DeployMonitor pero
+   sin el `animation-delay` (no hay nada que esperar antes). */
+
+.logo {
+  transition: transform 0.5s var(--ease-standard);
+}
+
+@keyframes bartolomeFlotar {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-8%);
+  }
+}
+
+:global(.bartolome-tarjeta-hover):hover .logo {
+  animation: bartolomeFlotar 2.6s ease-in-out infinite;
+}
