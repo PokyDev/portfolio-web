@@ -1,10 +1,32 @@
-/* Miniatura de Bartolome Parrila: panel oficial del cliente
-   (public/icons/bartolome/bartolome_panel.png) centrado sobre fondo
-   blanco fijo — no sigue el theme claro/oscuro del portafolio, mismo
-   criterio que DeployMonitorMiniatura/CoragemMiniatura/PortfolioMiniatura.
-   Escala vía container queries porque el contenedor padre
-   (.proyectoMiniatura en landing.module.css) cambia de ancho fijo
-   (desktop) a 100% (móvil). */
+/* Miniatura de Bartolome Parrila: imagotipo ícono llama+B (izquierda) +
+   bloque de texto (derecha: "Bartolome" / separador / "KairoSoft") sobre
+   fondo blanco fijo — no sigue el theme claro/oscuro del portafolio,
+   mismo criterio que DeployMonitorMiniatura/CoragemMiniatura/
+   PortfolioMiniatura. Escala vía container queries porque el contenedor
+   padre (.proyectoMiniatura en landing.module.css) cambia de ancho fijo
+   (desktop) a 100% (móvil).
+
+   .estadoReposo (ícono solo, centrado) y .estadoHover (el imagotipo
+   completo) son 2 capas superpuestas (position:absolute, mismo lugar)
+   que se cruzan por opacity en vez de ser la misma capa animándose de
+   ida y vuelta — ver bartolomeAnimacion.module.css para el porqué (al
+   soltar el hover no se "desarma" la coreografía en reversa).
+
+   .imagotipo es flex (icono + .textoWrapper). .textoWrapper anima su
+   `width` de 0 a --bartolome-ancho-bloque en hover (ver
+   bartolomeAnimacion.module.css) — un ancho FIJO calculado a partir del
+   mismo clamp() de font-size (ver más abajo), no "auto"/max-content: se
+   probó primero con un grid-template-columns 0fr->1fr (el truco estándar
+   para animar hacia un ancho intrínseco), pero ese truco solo funciona
+   cuando el grid container tiene un ancho definido — acá .imagotipo es un
+   flex item de ancho intrínseco (shrink-to-fit), así que el track 1fr no
+   tenía espacio libre real que repartir y no crecía. Con un ancho fijo
+   (aunque sea una aproximación vía clamp) la transición sí es sólida. El
+   ancho está calibrado contra "Bartolome" (línea 1) — "KairoSoft" (línea
+   2) usa la MISMA tipografía/tamaño a propósito (ver .textoPrimario,
+   .textoSecundario más abajo), así que puede terminar un poco más angosta
+   sin que rompa nada, solo queda alineada a la izquierda dentro del mismo
+   ancho fijo. */
 
 .miniatura {
   container-type: inline-size;
@@ -19,14 +41,154 @@
   position: relative;
   z-index: 1;
   height: 100%;
+}
+
+.estadoReposo,
+.estadoHover {
+  position: absolute;
+  inset: 0;
   display: flex;
   align-items: center;
   justify-content: center;
   padding: clamp(8px, 6cqw, 20px);
 }
 
-.logo {
-  height: clamp(28px, 60cqw, 80px);
+.iconoReposo {
+  /* Mismo clamp que la altura de .imagotipo (el ícono en hover) — el
+     ícono en reposo tiene que verse exactamente del mismo tamaño en el
+     que arranca la animación, si no el cambio de tamaño al entrar en
+     hover se nota como un salto. */
+  height: clamp(20px, 45cqw, 60px);
   width: auto;
   object-fit: contain;
+}
+
+.imagotipo {
+  display: flex;
+  align-items: stretch;
+  gap: var(--bartolome-gap-icono-texto, 6px);
+  /* El ícono comparte la tarjeta (134px de ancho total en desktop, ver
+     .proyectoMiniatura en landing.module.css) con el bloque de texto —
+     se achicó el techo de este clamp (antes 80px, solo ícono) para
+     dejarle aire real al texto en ese ancho mínimo; medido en vivo
+     (Chrome DevTools) para que ícono + gap + texto quepan sin
+     recortarse. */
+  height: clamp(20px, 45cqw, 60px);
+  /* Ancho fijo del bloque de texto en su estado revelado (no
+     "auto"/max-content — ver nota arriba sobre por qué). Calculado a
+     partir del mismo % de cqw que --font-size-primario (9cqw) multiplicado
+     por el ancho medido de "Bartolome" en Inter 700 (~5.02x el font-size):
+     9 * 5.02 ≈ 45cqw. Si cambian los clamps de ícono/fuente hay que
+     volver a verificar que la suma siga cabiendo en el ancho real de la
+     tarjeta más chica (134px desktop). */
+  --bartolome-ancho-bloque: clamp(35px, 45cqw, 90px);
+}
+
+.icono {
+  height: 100%;
+  width: auto;
+  object-fit: contain;
+  flex-shrink: 0;
+}
+
+.textoWrapper {
+  /* Ancho fijo (no max-content): --bartolome-ancho-bloque se define en
+     bartolomeAnimacion.module.css porque su valor de reposo (0) es parte
+     del estado de hover, no de la estructura.
+     flex-shrink:0 -- sin esto, flexbox lo achica silenciosamente para
+     que el conjunto quepa en la tarjeta en vez de respetar el ancho
+     animado (así se descubrió el ajuste de arriba: sin este freno, el
+     texto se veía cortado siempre al mismo ancho residual, sin importar
+     qué valor tuviera --bartolome-ancho-bloque). */
+  flex-shrink: 0;
+  overflow: hidden;
+}
+
+.bloqueTextos {
+  position: relative;
+  height: 100%;
+  width: var(--bartolome-ancho-bloque);
+  display: flex;
+  flex-direction: column;
+  /* centrado, no space-between: repartir los 3 renglones a lo largo de
+     todo el alto del ícono dejaba huecos raros entre el separador y cada
+     línea de texto — más simple (y más parecido a un logo real) tenerlos
+     agrupados y centrados en ese alto. */
+  justify-content: center;
+  gap: var(--bartolome-espaciado-lineas, 2px);
+}
+
+/* --- tipografía y color --- */
+
+.textoPrimario,
+.textoSecundario {
+  margin: 0;
+  white-space: nowrap;
+  font-family: var(--font-body), system-ui, sans-serif;
+  color: #000000;
+  line-height: 1.1;
+  font-weight: 700;
+  /* centrado, no left (el default de un <p>): al no forzar más el mismo
+     ancho entre líneas (ver nota de font-size abajo), "KairoSoft" puede
+     terminar más angosta que "Bartolome" dentro del mismo
+     --bartolome-ancho-bloque — centrada se ve intencional, pegada a la
+     izquierda se veía como si estuviera mal alineada. */
+  text-align: center;
+  /* Misma fuente y mismo font-size para ambas líneas a propósito — antes
+     el secundario tenía otro peso/tamaño calibrado con un ratio medido
+     (opentype.js) para que las 2 líneas midieran el mismo ancho, pero eso
+     se descartó: se prioriza que ambas líneas se vean con la MISMA
+     tipografía por sobre que midan exactamente lo mismo (si "KairoSoft"
+     termina un poco más angosto que "Bartolome" a este mismo peso/tamaño,
+     no pasa nada, ambas quedan alineadas a la izquierda dentro del mismo
+     --bartolome-ancho-bloque). 9cqw -- mismo % que alimenta
+     --bartolome-ancho-bloque (9 * 5.02 ≈ 45cqw, calibrado contra
+     "Bartolome"). */
+  font-size: clamp(7px, 9cqw, 18px);
+}
+
+.letraB {
+  color: var(--bartolome-color-b, #a50008);
+}
+
+.letraS {
+  color: var(--bartolome-color-s, #ff6500);
+}
+
+/* --- separador "---- x ----" ---
+   Gradiente único conceptual (#ffcb00 -> #ffa300 -> #ff9d00 -> #f05e00 ->
+   #fd5600 -> #d50101, 6 stops equiespaciados) repartido por posición entre
+   las 3 piezas para que se lea continuo: línea izq. = tramo 0%-40% del
+   gradiente completo, "x" = 40%-60%, línea der. = 60%-100%. Si se cambia
+   el orden/los colores del gradiente, actualizar las 3 reglas juntas. */
+
+.separador {
+  display: flex;
+  align-items: center;
+  gap: var(--bartolome-separador-gap-x, 6px);
+  /* el espacio arriba/abajo del separador lo da el `gap` de
+     .bloqueTextos (mismo valor para las 3 filas), no un margin propio. */
+}
+
+.separadorLinea {
+  flex: 1 1 auto;
+  height: 1.5px;
+}
+
+.separadorLinea:first-child {
+  background-image: linear-gradient(to right, #ffcb00 0%, #ffa300 50%, #ff9d00 100%);
+}
+
+.separadorLinea:last-child {
+  background-image: linear-gradient(to right, #f05e00 0%, #fd5600 50%, #d50101 100%);
+}
+
+.separadorX {
+  font-size: clamp(7px, 8cqw, 12px);
+  font-weight: 700;
+  line-height: 1;
+  background-image: linear-gradient(to right, #ff9d00, #f05e00);
+  background-clip: text;
+  -webkit-background-clip: text;
+  color: transparent;
 }
