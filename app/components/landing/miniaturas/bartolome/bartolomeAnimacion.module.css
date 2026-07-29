@@ -81,11 +81,26 @@
   transition: opacity 0.2s var(--ease-standard);
 }
 
-:global(.bartolome-tarjeta-hover):hover .estadoReposo {
+/* :hover real solo cuenta con puntero de verdad — en táctil, un tap
+   sostenido + drag sobre la tarjeta no debe disparar esto por su cuenta
+   (quedaría "pegado" y desincronizado del ícono del botón de abajo). Ahí
+   el único disparador es .animar-forzado, vía el botón (ver el resto de
+   los pares :hover/.animar-forzado más abajo, mismo criterio). */
+@media (hover: hover) {
+  :global(.bartolome-tarjeta-hover):hover .estadoReposo {
+    opacity: 0;
+  }
+
+  :global(.bartolome-tarjeta-hover):hover .estadoHover {
+    opacity: 1;
+  }
+}
+
+:global(.bartolome-tarjeta-hover.animar-forzado) .estadoReposo {
   opacity: 0;
 }
 
-:global(.bartolome-tarjeta-hover):hover .estadoHover {
+:global(.bartolome-tarjeta-hover.animar-forzado) .estadoHover {
   opacity: 1;
 }
 
@@ -143,26 +158,52 @@
   }
 }
 
-:global(.bartolome-tarjeta-hover):hover .textoWrapper {
+@media (hover: hover) {
+  :global(.bartolome-tarjeta-hover):hover .textoWrapper {
+    width: var(--bartolome-ancho-bloque);
+  }
+
+  :global(.bartolome-tarjeta-hover):hover .textoPrimario {
+    animation: bartolomeTecleo1 var(--bartolome-t-linea1) steps(9, jump-end)
+      var(--bartolome-delay-linea1) forwards;
+  }
+
+  :global(.bartolome-tarjeta-hover):hover .separadorLinea {
+    transition-delay: var(--bartolome-delay-separador);
+    transform: scaleX(1);
+  }
+
+  :global(.bartolome-tarjeta-hover):hover .separadorX {
+    transition-delay: calc(var(--bartolome-delay-separador) + 0.1s);
+    opacity: 1;
+  }
+
+  :global(.bartolome-tarjeta-hover):hover .textoSecundario {
+    animation: bartolomeTecleo2 var(--bartolome-t-linea2) steps(9, jump-end)
+      var(--bartolome-delay-linea2) forwards;
+  }
+}
+
+:global(.bartolome-tarjeta-hover.animar-forzado) .textoWrapper {
   width: var(--bartolome-ancho-bloque);
 }
 
-:global(.bartolome-tarjeta-hover):hover .textoPrimario {
+:global(.bartolome-tarjeta-hover.animar-forzado) .textoPrimario {
   animation: bartolomeTecleo1 var(--bartolome-t-linea1) steps(9, jump-end)
     var(--bartolome-delay-linea1) forwards;
 }
 
-:global(.bartolome-tarjeta-hover):hover .separadorLinea {
+:global(.bartolome-tarjeta-hover.animar-forzado) .separadorLinea {
   transition-delay: var(--bartolome-delay-separador);
   transform: scaleX(1);
 }
 
-:global(.bartolome-tarjeta-hover):hover .separadorX {
+:global(.bartolome-tarjeta-hover.animar-forzado) .separadorX {
   transition-delay: calc(var(--bartolome-delay-separador) + 0.1s);
   opacity: 1;
 }
 
-:global(.bartolome-tarjeta-hover):hover .textoSecundario {
+:global(.bartolome-tarjeta-hover.animar-forzado) .textoSecundario {
   animation: bartolomeTecleo2 var(--bartolome-t-linea2) steps(9, jump-end)
     var(--bartolome-delay-linea2) forwards;
 }

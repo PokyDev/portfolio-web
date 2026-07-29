@@ -86,14 +86,32 @@
   }
 }
 
-:global(.dm-tarjeta-hover):hover .malla {
+/* :hover real solo cuenta con puntero de verdad — en táctil, un tap
+   sostenido + drag sobre la tarjeta no debe disparar esto por su cuenta
+   (quedaría "pegado" y desincronizado del ícono del botón de abajo). Ahí
+   el único disparador es .animar-forzado, vía el botón. */
+@media (hover: hover) {
+  :global(.dm-tarjeta-hover):hover .malla {
+    animation: dmMallaCiclo 0.9s var(--ease-standard);
+  }
+
+  :global(.dm-tarjeta-hover):hover .contenido {
+    animation: dmContenidoCiclo 1.3s var(--ease-standard);
+  }
+
+  :global(.dm-tarjeta-hover):hover .icono {
+    animation: dmFlotar 2.6s ease-in-out 1.3s infinite;
+  }
+}
+
+:global(.dm-tarjeta-hover.animar-forzado) .malla {
   animation: dmMallaCiclo 0.9s var(--ease-standard);
 }
 
-:global(.dm-tarjeta-hover):hover .contenido {
+:global(.dm-tarjeta-hover.animar-forzado) .contenido {
   animation: dmContenidoCiclo 1.3s var(--ease-standard);
 }
 
-:global(.dm-tarjeta-hover):hover .icono {
+:global(.dm-tarjeta-hover.animar-forzado) .icono {
   animation: dmFlotar 2.6s ease-in-out 1.3s infinite;
 }

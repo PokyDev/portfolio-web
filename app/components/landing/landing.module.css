@@ -978,6 +978,7 @@
   }
 
   .proyectoMiniatura {
+    grid-row: 1;
     aspect-ratio: 16 / 10;
     /* alinea ópticamente la captura con el título, como el periodo
        en las tarjetas de experiencia */
@@ -988,7 +989,96 @@
      todos los cuerpos quedan alineados verticalmente entre tarjetas */
   .proyectoCuerpo {
     grid-column: 2;
+    grid-row: 1 / 3;
   }
+
+  /* Con miniatura y cuerpo lado a lado, el botón (si existe) va debajo de
+     la miniatura, en su misma columna angosta (8.5rem) — no a todo el
+     ancho de la tarjeta — para que su width:100% siga igualando el width
+     de la miniatura. */
+  .filaAnimarMiniatura {
+    grid-column: 1;
+    grid-row: 2;
+  }
+}
+
+/* ============================================================
+   Botón "reproducir animación de la miniatura" — solo táctil
+   ============================================================
+   Sustituto del :hover para dispositivos sin puntero real (el mismo caso
+   que ya excluye .proyectos:hover .tarjetaEnlace:not(:hover) más abajo):
+   activa/pausa a demanda la animación de la miniatura vía la clase
+   .animar-forzado que ya entienden deployMonitorAnimacion/coragemAnimacion/
+   portfolioAnimacion/bartolomeAnimacion (que ya no reaccionan a :hover
+   real en táctil — ver esos archivos). Oculto por completo donde el hover
+   real ya cumple la misma función. */
+.filaAnimarMiniatura {
+  display: none;
+}
+
+@media (hover: none) {
+  .filaAnimarMiniatura {
+    display: block;
+  }
+}
+
+.botonAnimarMiniatura {
+  /* Relleno sólido del estado activo: el morado característico
+     (--color-accent) en claro, con el ícono invertido a un color claro
+     para que siga siendo legible; en oscuro es al revés (fondo lavender
+     de --color-fg, ícono en --color-accent) — ver override .dark abajo. */
+  --boton-animar-bg-activo: var(--color-accent);
+  --boton-animar-icono-activo: var(--color-accent-fg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 1.85rem;
+  border-radius: var(--radius-md);
+  /* El ícono en reposo siempre en el mismo morado que "Revisar Proyecto -"
+     (--color-accent ya es Indigo en claro / Cornflower en oscuro; no
+     necesita override por tema). */
+  color: var(--color-accent);
+  background: color-mix(in oklch, var(--color-accent) 8%, transparent);
+  border: 1px solid var(--color-border);
+  cursor: pointer;
+  transition:
+    background-color var(--transition-base) var(--ease-standard),
+    border-color var(--transition-base) var(--ease-standard),
+    color var(--transition-base) var(--ease-standard),
+    transform var(--transition-fast) var(--ease-standard);
+}
+
+:global(.dark) .botonAnimarMiniatura {
+  --boton-animar-bg-activo: var(--color-fg);
+  --boton-animar-icono-activo: var(--color-accent);
+}
+
+.botonAnimarMiniatura svg {
+  opacity: 0.85;
+  transition: opacity var(--transition-base) var(--ease-standard);
+}
+
+/* Estado activo: relleno sólido (ver --boton-animar-bg-activo) en vez del
+   lavado translúcido de reposo, e ícono recoloreado para mantener
+   contraste sobre ese fondo sólido (ver --boton-animar-icono-activo). */
+.botonAnimarMiniaturaActivo {
+  background: var(--boton-animar-bg-activo);
+  border-color: var(--boton-animar-bg-activo);
+  color: var(--boton-animar-icono-activo);
+}
+
+.botonAnimarMiniaturaActivo svg {
+  opacity: 1;
+}
+
+.botonAnimarMiniatura:active {
+  transform: scale(0.97);
+}
+
+.botonAnimarMiniatura:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 2px;
 }
 
 /* Mismo patrón que las tarjetas de experiencia: fondo-tinte y título en

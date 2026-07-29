@@ -1,15 +1,11 @@
-import Image from "next/image";
 import Aside from "./Aside";
 import ContactoChat from "./ContactoChat";
-
-import BartolomeMiniatura from "./miniaturas/bartolome/BartolomeMiniatura";
-import CoragemMiniatura from "./miniaturas/coragem/CoragemMiniatura";
-import DeployMonitorMiniatura from "./miniaturas/deploy-monitor/DeployMonitorMiniatura";
-import PortfolioMiniatura from "./miniaturas/portfolio/PortfolioMiniatura";
+import IconoTarjetaClickeable from "./IconoTarjetaClickeable";
 
 import NavMovil from "./NavMovil";
 import SelloPoky from "./SelloPoky";
 import Tecnologia from "./Tecnologia";
+import TarjetaProyecto from "./TarjetaProyecto";
 import ThemeToggle from "./ThemeToggle";
 import {
   ENLACES_DESTACADOS,
@@ -17,32 +13,8 @@ import {
   IDENTIDAD,
   PROYECTOS,
   SOBRE_MI,
-  type Proyecto,
 } from "./data";
 import styles from "./landing.module.css";
-
-// Marca visual de "esto es clickeable" junto al título de cada tarjeta:
-// una flecha diagonal que se mueve y pasa a accent en el hover de la
-// tarjeta, mismo trazo (currentColor) y mismo momento que el título.
-function IconoTarjetaClickeable() {
-  return (
-    <svg
-      width="16"
-      height="16"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth={2}
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      aria-hidden="true"
-      className={styles.indicadorEnlace}
-    >
-      <path d="M7 17 17 7" />
-      <path d="M8 7h9v9" />
-    </svg>
-  );
-}
 
 // Resalta los términos de ENLACES_DESTACADOS dentro de un párrafo de SOBRE_MI
 // como enlaces externos (target="_blank"), preservando el resto del texto.
@@ -66,115 +38,6 @@ function resaltarEnlaces(texto: string) {
       fragmento
     );
   });
-}
-
-function TarjetaProyecto({ proyecto }: { proyecto: Proyecto }) {
-  // Toda tarjeta es clickeable: interna (caso de estudio, interfaz 2) o
-  // externa (repo/página). Las externas abren en pestaña nueva.
-  const externo = proyecto.enlace.startsWith("http");
-
-  return (
-    <a
-      href={proyecto.enlace}
-      className={
-        proyecto.slug === "deploy-monitor"
-          ? // Clase global (sin hash) además de la del módulo: la anima-
-            // ción de la miniatura vive en su propio directorio y necesita
-            // enganchar el hover de la tarjeta completa desde fuera del
-            // scope de landing.module.css — ver deployMonitorAnimacion.
-            `${styles.tarjetaEnlace} dm-tarjeta-hover`
-          : proyecto.slug === "coragem-bisuteria"
-            ? // Mismo motivo que dm-tarjeta-hover — ver coragemAnimacion.
-              `${styles.tarjetaEnlace} coragem-tarjeta-hover`
-            : proyecto.slug === "pokydev-portfolio"
-              ? // Mismo motivo que dm-/coragem-tarjeta-hover — ver portfolioAnimacion.
-                `${styles.tarjetaEnlace} portfolio-tarjeta-hover`
-              : proyecto.slug === "bartolome-parrilla"
-                ? // Mismo motivo que dm-/coragem-/portfolio-tarjeta-hover — ver bartolomeAnimacion.
-                  `${styles.tarjetaEnlace} bartolome-tarjeta-hover`
-                : styles.tarjetaEnlace
-      }
-      {...(externo && { target: "_blank", rel: "noopener noreferrer" })}
-    >
-      {proyecto.slug === "deploy-monitor" ? (
-        // Experimento de diseño (temporal): miniatura como componente en vez
-        // de captura .png — ver app/components/landing/miniaturas. Si
-        // convence, se generaliza a las demás tarjetas.
-        <div className={styles.proyectoMiniatura}>
-          <DeployMonitorMiniatura />
-        </div>
-      ) : proyecto.slug === "coragem-bisuteria" ? (
-        <div className={styles.proyectoMiniatura}>
-          <CoragemMiniatura />
-        </div>
-      ) : proyecto.slug === "pokydev-portfolio" ? (
-        <div className={styles.proyectoMiniatura}>
-          <PortfolioMiniatura />
-        </div>
-      ) : proyecto.slug === "bartolome-parrilla" ? (
-        <div className={styles.proyectoMiniatura}>
-          <BartolomeMiniatura />
-        </div>
-      ) : proyecto.miniatura ? (
-        <div className={styles.proyectoMiniatura}>
-          <Image
-            src={proyecto.miniatura}
-            alt={`Captura de ${proyecto.titulo}`}
-            width={480}
-            height={300}
-            className={styles.miniaturaImagen}
-          />
-        </div>
-      ) : (
-        // Empty-state decorativo: conserva el ritmo visual de la columna
-        // de miniaturas cuando el proyecto aún no tiene captura.
-        <div
-          className={`${styles.proyectoMiniatura} ${styles.miniaturaVacia}`}
-          aria-hidden="true"
-        >
-          {"</>"}
-        </div>
-      )}
-      <div className={styles.proyectoCuerpo}>
-        <h3 className={styles.proyectoTitulo}>
-          {proyecto.titulo}
-          <IconoTarjetaClickeable />
-        </h3>
-        <p className={styles.parrafo}>{proyecto.descripcion}</p>
-        <span className={styles.etiquetaTecnologias} aria-hidden="true">
-          Tecnologías
-        </span>
-        <ul className={styles.chips} aria-label="Tecnologías usadas">
-          {proyecto.tecnologias.map((tecnologia) => (
-            <Tecnologia key={tecnologia} nombre={tecnologia} />
-          ))}
-        </ul>
-        <div className={styles.proyectoMeta}>
-          {proyecto.estrellas !== undefined && (
-            <span className={styles.metrica}>
-              <span className={styles.metricaIcono} aria-hidden="true">⭐</span>
-              {proyecto.estrellas} estrella/s
-            </span>
-          )}
-          {proyecto.descargas !== undefined && (
-            <span className={styles.metrica}>
-              <span className={styles.metricaIcono} aria-hidden="true">⇩</span>
-              {proyecto.descargas.toLocaleString("es")} descargas
-            </span>
-          )}
-          {proyecto.usuariosMensuales !== undefined && (
-            <span className={styles.metrica}>
-              <span className={styles.metricaIcono} aria-hidden="true">👥</span>
-              {proyecto.usuariosMensuales.toLocaleString("es")} usuarios/mes
-            </span>
-          )}
-        </div>
-        <span className={styles.proyectoEnlace}>
-          {proyecto.etiquetaEnlace} →
-        </span>
-      </div>
-    </a>
-  );
 }
 
 export default function Landing() {

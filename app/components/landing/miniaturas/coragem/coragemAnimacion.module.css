@@ -43,7 +43,18 @@
   }
 }
 
-:global(.coragem-tarjeta-hover):hover .contenido {
+/* :hover real solo cuenta con puntero de verdad — en táctil, un tap
+   sostenido + drag sobre la tarjeta no debe disparar esto por su cuenta
+   (quedaría "pegado" y desincronizado del ícono del botón de abajo). Ahí
+   el único disparador es .animar-forzado, vía el botón. */
+@media (hover: hover) {
+  :global(.coragem-tarjeta-hover):hover .contenido {
+    opacity: 0;
+    animation: coragemContenidoEntrada 0.5s var(--ease-standard) var(--coragem-espera) forwards;
+  }
+}
+
+:global(.coragem-tarjeta-hover.animar-forzado) .contenido {
   opacity: 0;
   animation: coragemContenidoEntrada 0.5s var(--ease-standard) var(--coragem-espera) forwards;
 }
