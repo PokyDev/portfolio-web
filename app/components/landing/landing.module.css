@@ -961,12 +961,19 @@
     color var(--transition-fast) var(--ease-standard);
 }
 
-.tarjetaEnlace:hover .proyectoMiniatura {
-  border-color: var(--color-accent);
-}
+/* Solo con puntero real: en táctil el navegador puede aplicar :hover
+   "pegajoso" con un simple tap (o al mantener presionado sobre la
+   miniatura), lo que teñiría el borde sin pasar por el botón de
+   reproducir. En táctil el borde lo controla únicamente .animar-forzado
+   — ver regla debajo del bloque @media (hover: none) de más abajo. */
+@media (hover: hover) {
+  .tarjetaEnlace:hover .proyectoMiniatura {
+    border-color: var(--color-accent);
+  }
 
-.tarjetaEnlace:hover .miniaturaVacia {
-  color: var(--color-accent);
+  .tarjetaEnlace:hover .miniaturaVacia {
+    color: var(--color-accent);
+  }
 }
 
 @media (min-width: 640px) {
@@ -1020,6 +1027,20 @@
   .filaAnimarMiniatura {
     display: block;
   }
+}
+
+/* Borde de la miniatura en táctil: atado únicamente a .animar-forzado
+   (estado `animado` del botón), nunca a :hover — ver nota arriba del
+   bloque @media (hover: hover) que gobierna el mismo borde en desktop.
+   Así el borde solo cambia con el botón, y vuelve a la normalidad al
+   pausarlo o al deseleccionar (tap fuera), sin depender del hover
+   pegajoso del navegador que un tap sostenido sobre la miniatura
+   también dispararía. */
+:global(.dm-tarjeta-hover.animar-forzado) .proyectoMiniatura,
+:global(.coragem-tarjeta-hover.animar-forzado) .proyectoMiniatura,
+:global(.portfolio-tarjeta-hover.animar-forzado) .proyectoMiniatura,
+:global(.bartolome-tarjeta-hover.animar-forzado) .proyectoMiniatura {
+  border-color: var(--color-accent);
 }
 
 .botonAnimarMiniatura {
