@@ -37,8 +37,9 @@
    4. --bartolome-t-separador: el separador se "dibuja" (scaleX 0->1 desde
       cada extremo hacia el centro).
    5. --bartolome-t-espera otra vez: pausa de 0.25s antes de la línea 2.
-   6. --bartolome-t-linea2: "KairoSoft" se revela igual que la línea 1
-      (9 caracteres, mismo steps(9)).
+   6. --bartolome-t-linea2: "Preply" se revela igual que la línea 1 pero
+      con steps(6) (6 caracteres, no 9 -- "Preply" es más corta que
+      "Bartolome"/la vieja "KairoSoft").
 
    (Hubo un cursor de tecleo -- .caret, un span reposicionable con 3
    animaciones encadenadas -- pero el usuario lo vio en vivo y no le
@@ -179,7 +180,7 @@
   }
 
   :global(.bartolome-tarjeta-hover):hover .textoSecundario {
-    animation: bartolomeTecleo2 var(--bartolome-t-linea2) steps(9, jump-end)
+    animation: bartolomeTecleo2 var(--bartolome-t-linea2) steps(6, jump-end)
       var(--bartolome-delay-linea2) forwards;
   }
 }

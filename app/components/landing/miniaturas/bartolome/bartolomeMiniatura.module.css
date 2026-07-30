@@ -1,5 +1,5 @@
 /* Miniatura de Bartolome Parrila: imagotipo ícono llama+B (izquierda) +
-   bloque de texto (derecha: "Bartolome" / separador / "KairoSoft") sobre
+   bloque de texto (derecha: "Bartolome" / separador / "Preply") sobre
    fondo blanco fijo — no sigue el theme claro/oscuro del portafolio,
    mismo criterio que DeployMonitorMiniatura/CoragemMiniatura/
    PortfolioMiniatura. Escala vía container queries porque el contenedor
@@ -22,11 +22,10 @@
    flex item de ancho intrínseco (shrink-to-fit), así que el track 1fr no
    tenía espacio libre real que repartir y no crecía. Con un ancho fijo
    (aunque sea una aproximación vía clamp) la transición sí es sólida. El
-   ancho está calibrado contra "Bartolome" (línea 1) — "KairoSoft" (línea
-   2) usa la MISMA tipografía/tamaño a propósito (ver .textoPrimario,
-   .textoSecundario más abajo), así que puede terminar un poco más angosta
-   sin que rompa nada, solo queda alineada a la izquierda dentro del mismo
-   ancho fijo. */
+   ancho está calibrado contra la línea más ancha de las dos ("Bartolome"
+   en Dancing Script o "Preply" en Bebas Neue, según cuál mida más a estos
+   pesos/tamaños — ver .textoPrimario, .textoSecundario más abajo); la más
+   angosta simplemente queda centrada dentro del mismo ancho fijo. */
 
 .miniatura {
   container-type: inline-size;
@@ -75,13 +74,12 @@
      recortarse. */
   height: clamp(20px, 45cqw, 60px);
   /* Ancho fijo del bloque de texto en su estado revelado (no
-     "auto"/max-content — ver nota arriba sobre por qué). Calculado a
-     partir del mismo % de cqw que --font-size-primario (9cqw) multiplicado
-     por el ancho medido de "Bartolome" en Inter 700 (~5.02x el font-size):
-     9 * 5.02 ≈ 45cqw. Si cambian los clamps de ícono/fuente hay que
-     volver a verificar que la suma siga cabiendo en el ancho real de la
-     tarjeta más chica (134px desktop). */
-  --bartolome-ancho-bloque: clamp(35px, 45cqw, 90px);
+     "auto"/max-content — ver nota arriba sobre por qué). Recalibrado a ojo
+     (Chrome DevTools) contra "Bartolome" en Dancing Script 700 (cursiva,
+     corre más ancha por carácter que Inter). Si cambian los clamps de
+     ícono/fuente hay que volver a verificar que la suma siga cabiendo en
+     el ancho real de la tarjeta más chica (134px desktop). */
+  --bartolome-ancho-bloque: clamp(40px, 52cqw, 100px);
 }
 
 .icono {
@@ -124,26 +122,36 @@
 .textoSecundario {
   margin: 0;
   white-space: nowrap;
-  font-family: var(--font-body), system-ui, sans-serif;
   color: #000000;
-  line-height: 1.1;
-  font-weight: 700;
-  /* centrado, no left (el default de un <p>): al no forzar más el mismo
-     ancho entre líneas (ver nota de font-size abajo), "KairoSoft" puede
-     terminar más angosta que "Bartolome" dentro del mismo
-     --bartolome-ancho-bloque — centrada se ve intencional, pegada a la
-     izquierda se veía como si estuviera mal alineada. */
+  /* centrado, no left (el default de un <p>): las 2 líneas ahora usan
+     fuentes distintas con métricas distintas (Dancing Script vs. Bebas
+     Neue), así que casi nunca van a medir exactamente lo mismo — centrada
+     se ve intencional dentro del mismo --bartolome-ancho-bloque, pegada a
+     la izquierda se vería como si estuviera mal alineada. */
   text-align: center;
-  /* Misma fuente y mismo font-size para ambas líneas a propósito — antes
-     el secundario tenía otro peso/tamaño calibrado con un ratio medido
-     (opentype.js) para que las 2 líneas midieran el mismo ancho, pero eso
-     se descartó: se prioriza que ambas líneas se vean con la MISMA
-     tipografía por sobre que midan exactamente lo mismo (si "KairoSoft"
-     termina un poco más angosto que "Bartolome" a este mismo peso/tamaño,
-     no pasa nada, ambas quedan alineadas a la izquierda dentro del mismo
-     --bartolome-ancho-bloque). 9cqw -- mismo % que alimenta
-     --bartolome-ancho-bloque (9 * 5.02 ≈ 45cqw, calibrado contra
-     "Bartolome"). */
+}
+
+.textoPrimario {
+  /* Dancing Script (cursiva, cargada en BartolomeMiniatura.tsx vía
+     next/font/google) solo trae peso estático 700 con trazo fino: a
+     igual font-size que una sans-serif se lee más chica y menos definida,
+     por eso corre con un techo de clamp mayor que .textoSecundario. */
+  font-family: var(--font-bartolome-titulo), "Segoe Script", cursive;
+  font-weight: 700;
+  line-height: 1;
+  font-size: clamp(9px, 12cqw, 22px);
+}
+
+.textoSecundario {
+  /* Bebas Neue (display condensada, next/font/google) solo trae weight
+     400 -- ya se lee "bold" por diseño (mayúsculas anchas, trazo grueso),
+     así que no hace falta forzar más peso. line-height más alto que el
+     default de la familia (viene muy apretado) para que no se sienta
+     pegada contra el separador de arriba. */
+  font-family: var(--font-bartolome-subtitulo), "Arial Narrow", sans-serif;
+  font-weight: 400;
+  line-height: 1.3;
+  letter-spacing: 0.03em;
   font-size: clamp(7px, 9cqw, 18px);
 }
 
@@ -151,8 +159,8 @@
   color: var(--bartolome-color-b, #a50008);
 }
 
-.letraS {
-  color: var(--bartolome-color-s, #ff6500);
+.letraY {
+  color: var(--bartolome-color-y, #00a884);
 }
 
 /* --- separador "---- x ----" ---

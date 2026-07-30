@@ -1,12 +1,33 @@
+import { Dancing_Script, Bebas_Neue } from "next/font/google";
 import styles from "./bartolomeMiniatura.module.css";
 import animacion from "./bartolomeAnimacion.module.css";
 
 // Imagotipo: ícono llama+B (public/icons/bartolome/bartolome_icono.png,
 // recortado del panel original del cliente para eliminar el margen
 // transparente) a la izquierda + bloque de texto a la derecha
-// ("Bartolome" / separador / "KairoSoft"). Fondo blanco fijo, no sigue el
+// ("Bartolome" / separador / "Preply"). Fondo blanco fijo, no sigue el
 // theme del portafolio (mismo criterio que las demás miniaturas-componente).
 //
+// Dos webfonts propias de este imagotipo (no las globales de layout.tsx,
+// que son solo Inter/Stack Sans Text): Dancing Script para "Bartolome"
+// (cursiva, weight 700 -- la única variante estática de esta familia con
+// trazo suficiente para leerse nítido al tamaño de miniatura) y Bebas Neue
+// para "Preply" (solo trae weight 400, pero es una display condensada que
+// ya se lee "bold" por diseño). Se cargan vía next/font/google igual que
+// las fuentes de layout.tsx (mismo mecanismo, con className/variable
+// aplicado local a este componente en vez de global).
+const dancingScript = Dancing_Script({
+  variable: "--font-bartolome-titulo",
+  subsets: ["latin"],
+  weight: "700",
+});
+
+const bebasNeue = Bebas_Neue({
+  variable: "--font-bartolome-subtitulo",
+  subsets: ["latin"],
+  weight: "400",
+});
+
 // Dos capas superpuestas (.estadoReposo / .estadoHover) en vez de una sola:
 // al soltar el hover no tiene sentido "desarmar" la coreografía de tecleo
 // en reversa (ícono volviendo a deslizar, texto "borrándose" letra por
@@ -16,7 +37,7 @@ import animacion from "./bartolomeAnimacion.module.css";
 // coreografía interna de .estadoHover.
 export default function BartolomeMiniatura() {
   return (
-    <div className={styles.miniatura}>
+    <div className={`${styles.miniatura} ${dancingScript.variable} ${bebasNeue.variable}`}>
       <div className={`${styles.contenido} ${animacion.contenido}`}>
         <div className={`${styles.estadoReposo} ${animacion.estadoReposo}`}>
           {/* eslint-disable-next-line @next/next/no-img-element -- logo local
@@ -47,7 +68,7 @@ export default function BartolomeMiniatura() {
                   <span className={`${styles.separadorLinea} ${animacion.separadorLinea}`} />
                 </div>
                 <p className={`${styles.textoSecundario} ${animacion.textoSecundario}`}>
-                  Kairo<span className={styles.letraS}>S</span>oft
+                  Prepl<span className={styles.letraY}>y</span>
                 </p>
               </div>
             </div>
