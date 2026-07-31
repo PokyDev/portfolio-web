@@ -31,7 +31,12 @@
 
 @media (max-width: 639px) {
   .chatBox {
-    height: 24rem;
+    /* flex-basis (heredado de "flex: 1 1 20rem" en la regla base) le gana
+       a height en este eje: .contactoGrid es flex-direction:column en
+       mobile, así que el eje principal del flex es la altura. Sin
+       redeclarar flex-basis acá, height queda ignorado. */
+    flex-basis: 34rem;
+    height: 34rem;
   }
 }
 
