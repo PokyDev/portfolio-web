@@ -22,7 +22,12 @@ export function useTheme() {
     // visual anterior y el nuevo, en vez de que cada color salte de golpe.
     // Sin soporte (Firefox), degrada a un cambio instantáneo sin animación.
     if ("startViewTransition" in document) {
-      document.startViewTransition(applyTheme);
+      // El navegador puede abortar la transición (p. ej. doble click antes de
+      // que la anterior se asiente, o el documento pierde visibilidad):
+      // "ready" se rechaza con InvalidStateError, pero applyTheme ya corrió
+      // de forma síncrona — el toggle es correcto, solo falta la animación.
+      const transicion = document.startViewTransition(applyTheme);
+      transicion.ready.catch(() => {});
     } else {
       applyTheme();
     }

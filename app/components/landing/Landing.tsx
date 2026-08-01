@@ -3,6 +3,7 @@ import ContactoChat from "./ContactoChat";
 import IconoTarjetaClickeable from "./IconoTarjetaClickeable";
 
 import NavMovil from "./NavMovil";
+import ScrollButtons from "./ScrollButtons";
 import SelloPoky from "./SelloPoky";
 import Tecnologia from "./Tecnologia";
 import TarjetaProyecto from "./TarjetaProyecto";
@@ -48,6 +49,7 @@ export default function Landing() {
           participa del flujo de .layout con `order`, como los bloques del aside */}
       <NavMovil />
       <ThemeToggle />
+      <ScrollButtons />
 
       <main className={styles.contenido}>
         <section
