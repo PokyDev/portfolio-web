@@ -104,10 +104,6 @@
        0.75rem (respiro) = 8.5rem. Se descuenta lo que ya separa al aside del
        viewport: su padding lateral y, sobre 90rem, el centrado del layout —
        en viewports muy anchos el indent colapsa a 0 solo. */
-    padding-left: max(
-      0px,
-      calc(8.5rem - var(--padding-x) - max(0px, (100vw - 90rem) / 2))
-    );
   }
 
   .contenido {
@@ -287,7 +283,7 @@
   display: none;
 }
 
-@media (min-width: 1024px) {
+@media (min-width: 1600px) {
   .toggleFlotante {
     display: grid;
     position: fixed;
@@ -336,7 +332,7 @@
   display: none;
 }
 
-@media (min-width: 1024px) {
+@media (min-width: 1600px) {
   .botonesScroll {
     display: grid;
     position: fixed;
@@ -401,6 +397,31 @@
   .botonScroll {
     transition: none;
   }
+}
+
+/* Variante compacta embebida en Sociales: mismo diseño/lógica que
+   .botonesScroll/.botonScroll (fade con grid-area 1/1), pero en flujo
+   (no fixed) y visible en el rango contrario al flotante: < 1600px,
+   que cubre tanto el aside desktop (1024–1600px) como socialesBarra. */
+.botonesScrollCompacto {
+  display: inline-grid;
+  place-items: center;
+}
+
+@media (min-width: 1600px) {
+  .botonesScrollCompacto {
+    display: none;
+  }
+}
+
+.botonScrollCompacto {
+  width: 1.9rem;
+  height: 1.9rem;
+}
+
+.botonScrollCompacto svg {
+  width: 14px;
+  height: 14px;
 }
 
 /* ============================================================

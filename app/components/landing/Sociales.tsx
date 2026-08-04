@@ -1,4 +1,5 @@
 import { REDES } from "./data";
+import ScrollButtons from "./ScrollButtons";
 import styles from "./landing.module.css";
 
 // Iconos stroke (estilo Feather) con currentColor: heredan el color del
@@ -86,6 +87,9 @@ export default function Sociales({ className }: { className?: string }) {
           <IconoRed nombre={nombre} />
         </a>
       ))}
+      {/* Solo visible < 1600px, ver .botonesScrollCompacto — es la misma
+          lógica de scroll que la variante flotante de desktop */}
+      <ScrollButtons variante="compacto" />
     </div>
   );
 }

@@ -1,10 +1,8 @@
 "use client";
 
-import { useScrollPosition } from "../../hooks/useScrollPosition";
+import { useScrollButtons } from "../../hooks/useScrollButtons";
 import styles from "./landing.module.css";
 
-// Mismo criterio que ICONO_TEMA_COMUN en ThemeToggle: currentColor deja el
-// color en manos de los tokens del CSS (invertidos por tema, ver .botonScroll).
 const ICONO_FLECHA_COMUN = {
   width: 20,
   height: 20,
@@ -35,58 +33,45 @@ function IconoFlechaAbajo() {
   );
 }
 
-// Botón circular fijo (solo desktop, ver .botonesScroll) que alterna entre
-// "subir al inicio" y "bajar al final" según la posición de scroll — y no
-// muestra ninguno en el medio de la página, donde ninguna de las dos
-// acciones es la obviamente útil. Ambos botones quedan siempre montados y
-// apilados en el mismo lugar (grid-area 1/1, como .cerrarPanel): el cambio
-// es de opacidad + transform, nunca un mount/unmount, para que la
-// aparición/desaparición sea un desplazamiento suave y no un salto.
-export default function ScrollButtons() {
-  const { posicion } = useScrollPosition();
+// Dos variantes, misma lógica (useScrollButtons) y mismo diseño base:
+// - "flotante" (default): fijo en la esquina, SOLO ≥1600px (ver .botonesScroll).
+// - "compacto": embebido inline en Sociales, tamaño reducido, visible
+//   exactamente en el rango contrario (< 1600px, ver .botonesScrollCompacto)
+//   — así nunca se solapa con la variante flotante.
+export default function ScrollButtons({
+  variante = "flotante",
+}: {
+  variante?: "flotante" | "compacto";
+}) {
+  const { mostrarArriba, mostrarAbajo, irArriba, irAbajo } = useScrollButtons();
 
-  const irArriba = () => {
-    const comportamiento = window.matchMedia("(prefers-reduced-motion: reduce)")
-      .matches
-      ? "auto"
-      : "smooth";
-    window.scrollTo({ top: 0, behavior: comportamiento });
-  };
-
-  const irAbajo = () => {
-    const comportamiento = window.matchMedia("(prefers-reduced-motion: reduce)")
-      .matches
-      ? "auto"
-      : "smooth";
-    window.scrollTo({
-      top: document.documentElement.scrollHeight,
-      behavior: comportamiento,
-    });
-  };
+  const contenedor =
+    variante === "compacto" ? styles.botonesScrollCompacto : styles.botonesScroll;
+  const tamano = variante === "compacto" ? styles.botonScrollCompacto : "";
 
   return (
-    <div className={styles.botonesScroll}>
+    <div className={contenedor}>
       <button
         type="button"
-        className={`${styles.botonScroll} ${
-          posicion === "abajo" ? "" : styles.botonScrollOculto
+        className={`${styles.botonScroll} ${tamano} ${
+          mostrarArriba ? "" : styles.botonScrollOculto
         }`}
         onClick={irArriba}
         aria-label="Subir al inicio de la página"
-        aria-hidden={posicion !== "abajo"}
-        tabIndex={posicion === "abajo" ? 0 : -1}
+        aria-hidden={!mostrarArriba}
+        tabIndex={mostrarArriba ? 0 : -1}
       >
         <IconoFlechaArriba />
       </button>
       <button
         type="button"
-        className={`${styles.botonScroll} ${
-          posicion === "arriba" ? "" : styles.botonScrollOculto
+        className={`${styles.botonScroll} ${tamano} ${
+          mostrarAbajo ? "" : styles.botonScrollOculto
         }`}
         onClick={irAbajo}
         aria-label="Bajar al final de la página"
-        aria-hidden={posicion !== "arriba"}
-        tabIndex={posicion === "arriba" ? 0 : -1}
+        aria-hidden={!mostrarAbajo}
+        tabIndex={mostrarAbajo ? 0 : -1}
       >
         <IconoFlechaAbajo />
       </button>
