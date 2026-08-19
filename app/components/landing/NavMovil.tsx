@@ -63,7 +63,7 @@ export default function NavMovil() {
       // `position: fixed` congela el scroll visual en scrollY pero
       // window.scrollY pasa a 0 mientras dura — hay que restaurarlo antes
       // de que el navegador salte solo al tope al quitar el fixed.
-      window.scrollTo(0, scrollY);
+      window.scrollTo({ top: scrollY, left: 0, behavior: "instant" });
       window.removeEventListener("keydown", alPulsarTecla);
       hamburguesa?.focus({ preventScroll: true });
 

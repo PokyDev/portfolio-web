@@ -8,7 +8,8 @@
 .layout {
   --padding-x: clamp(1.25rem, 6vw, 4rem);
   position: relative;
-  z-index: 1; /* por encima de la capa Spotlight (z 0) */
+  z-index: 1;
+  /* por encima de la capa Spotlight (z 0) */
   width: 100%;
   max-width: 90rem;
   margin: 0 auto;
@@ -81,7 +82,8 @@
   .identidad,
   .sociales,
   .nav {
-    order: 0; /* vuelve a mandar el orden del DOM: identidad, nav, sociales */
+    order: 0;
+    /* vuelve a mandar el orden del DOM: identidad, nav, sociales */
   }
 
   .identidad {
@@ -97,7 +99,8 @@
     display: flex;
     align-items: center;
     gap: 0.4rem;
-    margin-top: auto; /* sociales anclados al fondo del aside */
+    margin-top: auto;
+    /* sociales anclados al fondo del aside */
     /* El toggle flotante (fijo al viewport) comparte la línea inferior con
        los sociales: se indenta la fila lo justo para no solaparse. Huella del
        botón desde el borde del viewport: 5rem (left) + 2.75rem (diámetro) +
@@ -450,9 +453,9 @@
 .socialesBarra {
   display: flex;
   align-items: center;
-  gap: 0.15rem;
+  gap: 0.5rem;
   min-width: 0;
-  margin-right: auto; /* empuja separador + hamburguesa a la derecha */
+  margin-right: auto;
 }
 
 /* Huella más compacta que en el aside: los 6 iconos, el separador y la
@@ -461,12 +464,19 @@
   padding: 0.35rem;
 }
 
+@media (max-width: 400px) {
+  .separadorBarra {
+    opacity: 0%;
+  }
+}
+
 .separadorBarra {
   align-self: stretch;
   flex-shrink: 0;
   width: 1px;
   margin-block: 0.3rem;
   background: var(--color-border);
+  transition: opacity var(--transition-base) var(--ease-standard);
 }
 
 /* Hamburguesa: 3 líneas que se transforman en X mientras el panel esté
@@ -729,6 +739,7 @@
 }
 
 @media (min-width: 1024px) {
+
   .barraMovil,
   .fondoPanel,
   .panelMovil {
@@ -738,6 +749,7 @@
 
 /* Sin animación de apertura/cierre si el usuario reduce el movimiento */
 @media (prefers-reduced-motion: reduce) {
+
   .panelMovil,
   .fondoPanel,
   .hamburguesa span {
@@ -755,7 +767,7 @@
 
 /* Separador entre secciones: mismo trazo que el footer para no introducir
    un segundo lenguaje de líneas en la vista */
-.seccion + .seccion {
+.seccion+.seccion {
   border-top: 1px solid var(--color-border);
 }
 
@@ -838,7 +850,7 @@
   line-height: 1.65;
   color: var(--color-muted);
   max-width: 62ch;
-  margin-bottom:1rem;
+  margin-bottom: 1rem;
 }
 
 /* Variante de lectura cómoda — hoy la usa el párrafo de "Sobre mí" */
@@ -1367,7 +1379,7 @@
   border-top-color: var(--color-fg);
 }
 
-.chip:focus-visible + .chipTooltip {
+.chip:focus-visible+.chipTooltip {
   opacity: 1;
   transform: translate(-50%, 0);
 }
@@ -1410,7 +1422,7 @@
   align-items: center;
 }
 
-@media (min-width: 700px) {
+@media (min-width: 800px) {
   .contactoGrid {
     flex-direction: row;
     align-items: center;
@@ -1444,7 +1456,8 @@
 }
 
 :global(.dark) .cta {
-  --cta-bg: var(--color-fg); /* lavender; el texto (accent-fg) ya es indigo */
+  --cta-bg: var(--color-fg);
+  /* lavender; el texto (accent-fg) ya es indigo */
 }
 
 .cta:hover {
