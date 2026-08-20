@@ -391,42 +391,6 @@
   transform: translateY(-2px);
 }
 
-.botonScroll:focus-visible {
-  outline: 2px solid var(--color-accent);
-  outline-offset: 2px;
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .botonScroll {
-    transition: none;
-  }
-}
-
-/* Variante compacta embebida en Sociales: mismo diseño/lógica que
-   .botonesScroll/.botonScroll (fade con grid-area 1/1), pero en flujo
-   (no fixed) y visible en el rango contrario al flotante: < 1600px,
-   que cubre tanto el aside desktop (1024–1600px) como socialesBarra. */
-.botonesScrollCompacto {
-  display: inline-grid;
-  place-items: center;
-}
-
-@media (min-width: 1600px) {
-  .botonesScrollCompacto {
-    display: none;
-  }
-}
-
-.botonScrollCompacto {
-  width: 1.9rem;
-  height: 1.9rem;
-}
-
-.botonScrollCompacto svg {
-  width: 14px;
-  height: 14px;
-}
-
 /* ============================================================
    Navegación móvil (< 1024px) — NavMovil: barra sticky
    (sociales | separador | hamburguesa) + sidebar derecha
@@ -455,7 +419,6 @@
   align-items: center;
   gap: 0.5rem;
   min-width: 0;
-  margin-right: auto;
 }
 
 /* Huella más compacta que en el aside: los 6 iconos, el separador y la
@@ -503,23 +466,6 @@
   height: 2px;
   border-radius: 999px;
   background: currentColor;
-  transition:
-    transform var(--transition-base) var(--ease-standard),
-    opacity var(--transition-base) var(--ease-standard);
-}
-
-/* 7px = alto de línea (2px) + gap (5px): las exteriores viajan al centro
-   mientras rotan; la central se desvanece */
-.hamburguesaAbierta span:nth-child(1) {
-  transform: translateY(7px) rotate(45deg);
-}
-
-.hamburguesaAbierta span:nth-child(2) {
-  opacity: 0;
-}
-
-.hamburguesaAbierta span:nth-child(3) {
-  transform: translateY(-7px) rotate(-45deg);
 }
 
 /* Backdrop: velo esmerilado derivado del fondo (sirve en ambos temas).
@@ -749,10 +695,8 @@
 
 /* Sin animación de apertura/cierre si el usuario reduce el movimiento */
 @media (prefers-reduced-motion: reduce) {
-
   .panelMovil,
-  .fondoPanel,
-  .hamburguesa span {
+  .fondoPanel {
     transition: none;
   }
 }

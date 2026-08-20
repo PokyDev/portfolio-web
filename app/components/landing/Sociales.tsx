@@ -87,9 +87,6 @@ export default function Sociales({ className }: { className?: string }) {
           <IconoRed nombre={nombre} />
         </a>
       ))}
-      {/* Solo visible < 1600px, ver .botonesScrollCompacto — es la misma
-          lógica de scroll que la variante flotante de desktop */}
-      <ScrollButtons variante="compacto" />
     </div>
   );
 }

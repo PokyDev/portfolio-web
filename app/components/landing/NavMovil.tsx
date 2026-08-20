@@ -89,9 +89,7 @@ export default function NavMovil() {
         <button
           ref={refHamburguesa}
           type="button"
-          className={`${styles.hamburguesa} ${
-            abierto ? styles.hamburguesaAbierta : ""
-          }`}
+          className={styles.hamburguesa}
           onClick={() => setAbierto(!abierto)}
           aria-label={
             abierto ? "Cerrar menú de secciones" : "Abrir menú de secciones"
@@ -106,18 +104,16 @@ export default function NavMovil() {
       </div>
 
       <div
-        className={`${styles.fondoPanel} ${
-          abierto ? styles.fondoPanelVisible : ""
-        }`}
+        className={`${styles.fondoPanel} ${abierto ? styles.fondoPanelVisible : ""
+          }`}
         onClick={() => setAbierto(false)}
         aria-hidden="true"
       />
 
       <aside
         id="panel-secciones"
-        className={`${styles.panelMovil} ${
-          abierto ? styles.panelMovilAbierto : ""
-        }`}
+        className={`${styles.panelMovil} ${abierto ? styles.panelMovilAbierto : ""
+          }`}
         aria-label="Menú de secciones"
         inert={!abierto}
       >
@@ -149,9 +145,8 @@ export default function NavMovil() {
               <li key={id}>
                 <button
                   type="button"
-                  className={`${styles.botonSeccion} ${
-                    seccionActiva === id ? styles.botonSeccionActivo : ""
-                  }`}
+                  className={`${styles.botonSeccion} ${seccionActiva === id ? styles.botonSeccionActivo : ""
+                    }`}
                   onClick={() => irASeccion(id)}
                 >
                   <span className={styles.navMarcador} aria-hidden="true" />
