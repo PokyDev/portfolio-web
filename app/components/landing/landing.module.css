@@ -427,19 +427,12 @@
   padding: 0.35rem;
 }
 
-@media (max-width: 400px) {
-  .separadorBarra {
-    opacity: 0%;
-  }
-}
-
 .separadorBarra {
   align-self: stretch;
   flex-shrink: 0;
   width: 1px;
   margin-block: 0.3rem;
   background: var(--color-border);
-  transition: opacity var(--transition-base) var(--ease-standard);
 }
 
 /* Hamburguesa: 3 líneas que se transforman en X mientras el panel esté
