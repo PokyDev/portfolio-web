@@ -1,0 +1,28 @@
+/* ============================================================
+   Sociales — enlaces a redes sociales (Sociales.tsx)
+   El contenedor lo decide cada consumidor vía className (`.sociales` en el
+   aside desktop, `.socialesBarra` en la barra sticky móvil — ambas en
+   landing.module.css). Lo que vive acá es exclusivamente el ícono en sí.
+   ============================================================ */
+
+.social {
+  display: inline-flex;
+  padding: 0.45rem;
+  color: var(--color-muted);
+  transition:
+    color var(--transition-fast) var(--ease-standard),
+    transform var(--transition-fast) var(--ease-standard);
+}
+
+.social:hover {
+  color: var(--color-accent);
+  transform: translateY(-2px);
+}
+
+/* Variante compacta: usada en la barra sticky móvil (antes era el selector
+   compuesto `.socialesBarra .social` en landing.module.css — con CSS
+   Modules ese selector no puede cruzar de módulo, cada archivo hashea sus
+   propias clases). Sociales.tsx la aplica vía prop `compacto`. */
+.socialCompacto {
+  padding: 0.35rem;
+}

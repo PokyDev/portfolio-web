@@ -1,0 +1,79 @@
+.toggleTema {
+  appearance: none;
+  cursor: pointer;
+  display: grid;
+  place-items: center;
+  width: 2.75rem;
+  height: 2.75rem;
+  line-height: 1;
+  /* En claro el icono va en Indigo (accent); en oscuro, en Lavender (fg).
+     Los SVG usan currentColor, así que basta con mover este color. */
+  color: var(--color-accent);
+  background: color-mix(in oklch, var(--color-accent) 8%, transparent);
+  backdrop-filter: blur(8px);
+  border: 1px solid var(--color-border);
+  border-radius: 999px;
+  transition:
+    color var(--transition-fast) var(--ease-standard),
+    background-color var(--transition-fast) var(--ease-standard),
+    border-color var(--transition-fast) var(--ease-standard),
+    transform var(--transition-fast) var(--ease-standard);
+}
+
+
+/* Variante flotante: SOLO desktop — en móvil el toggle vive en el footer
+   de la sidebar (NavMovil) y ya no se monta sobre el contenido. Márgenes
+   left/bottom = --aside-padding-y: el botón queda a ras con la línea
+   inferior del contenido del aside. */
+.toggleFlotante {
+  display: none;
+}
+
+@media (min-width: 1600px) {
+  .toggleFlotante {
+    display: grid;
+    position: fixed;
+    left: var(--aside-padding-y);
+    bottom: var(--aside-padding-y);
+    z-index: 10;
+  }
+}
+
+.toggleCompacto {
+  display: none;
+}
+
+@media (min-width: 500px) and (max-width: 1599px) {
+  .toggleCompacto {
+    width: 2rem;
+    height: 2rem;
+    display: grid;
+  }
+}
+
+:global(.dark) .toggleTema {
+  color: var(--color-fg);
+}
+
+.iconoTema {
+  line-height: 0;
+}
+
+.toggleTema:hover {
+  border-color: var(--color-accent);
+  background: color-mix(in oklch, var(--color-accent) 18%, transparent);
+  transform: translateY(-2px);
+}
+
+.social:focus-visible,
+.navLink:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 2px;
+  border-radius: var(--radius-sm);
+}
+
+/* Sin border-radius extra: el outline sigue el radio circular del botón */
+.toggleTema:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 2px;
+}

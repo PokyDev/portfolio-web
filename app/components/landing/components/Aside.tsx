@@ -1,9 +1,9 @@
 "use client";
 
-import { useScrollspy } from "../../hooks/useScrollspy";
-import { IDENTIDAD, IDS_SECCIONES, SECCIONES } from "./data";
+import { useScrollspy } from "@/app/components/landing/hooks/useScrollspy";
+import { IDENTIDAD, IDS_SECCIONES, SECCIONES } from "../data";
 import Sociales from "./Sociales";
-import styles from "./landing.module.css";
+import styles from "../landing.module.css";
 
 export default function Aside() {
   const seccionActiva = useScrollspy(IDS_SECCIONES);

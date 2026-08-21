@@ -1,13 +1,13 @@
-import Aside from "./Aside";
-import ContactoChat from "./ContactoChat";
-import IconoTarjetaClickeable from "./IconoTarjetaClickeable";
+import Aside from "./components/Aside";
+import ContactoChat from "./components/ContactoChat";
+import IconoTarjetaClickeable from "./components/IconoTarjetaClickeable";
+import NavMovil from "./components/NavMovil";
+import ScrollButtons from "./components/ScrollButtons";
+import SelloPoky from "./components/SelloPoky";
+import Tecnologia from "./components/Tecnologia";
+import TarjetaProyecto from "./components/TarjetaProyecto";
+import ThemeToggle from "@/app/components/shared/theme/ThemeToggle";
 
-import NavMovil from "./NavMovil";
-import ScrollButtons from "./ScrollButtons";
-import SelloPoky from "./SelloPoky";
-import Tecnologia from "./Tecnologia";
-import TarjetaProyecto from "./TarjetaProyecto";
-import ThemeToggle from "./ThemeToggle";
 import {
   ENLACES_DESTACADOS,
   EXPERIENCIAS,
@@ -57,7 +57,7 @@ export default function Landing() {
           className={styles.seccion}
           aria-label="Sobre mí"
         >
-          <div>
+          <div className={styles.sobreMi}>
             {SOBRE_MI.map((parrafo, index) => (
               <p
                 key={index}

@@ -1,7 +1,7 @@
 "use client";
 
-import { useScrollButtons } from "../../hooks/useScrollButtons";
-import styles from "./landing.module.css";
+import { useScrollButtons } from "@/app/components/landing/hooks/useScrollButtons";
+import styles from "../landing.module.css";
 
 const ICONO_FLECHA_COMUN = {
   width: 20,
@@ -15,29 +15,24 @@ const ICONO_FLECHA_COMUN = {
   "aria-hidden": true,
 };
 
-function IconoFlechaArriba() {
+function IconoFlechaArriba({ tamano = 20 }: { tamano?: number }) {
   return (
-    <svg {...ICONO_FLECHA_COMUN}>
+    <svg {...ICONO_FLECHA_COMUN} width={tamano} height={tamano}>
       <line x1="12" y1="19" x2="12" y2="5" />
       <polyline points="5 12 12 5 19 12" />
     </svg>
   );
 }
 
-function IconoFlechaAbajo() {
+function IconoFlechaAbajo({ tamano = 20 }: { tamano?: number }) {
   return (
-    <svg {...ICONO_FLECHA_COMUN}>
+    <svg {...ICONO_FLECHA_COMUN} width={tamano} height={tamano}>
       <line x1="12" y1="5" x2="12" y2="19" />
       <polyline points="19 12 12 19 5 12" />
     </svg>
   );
 }
 
-// Dos variantes, misma lógica (useScrollButtons) y mismo diseño base:
-// - "flotante" (default): fijo en la esquina, SOLO ≥1600px (ver .botonesScroll).
-// - "compacto": embebido inline en Sociales, tamaño reducido, visible
-//   exactamente en el rango contrario (< 1600px, ver .botonesScrollCompacto)
-//   — así nunca se solapa con la variante flotante.
 export default function ScrollButtons({
   variante = "flotante",
 }: {
@@ -47,33 +42,33 @@ export default function ScrollButtons({
 
   const contenedor =
     variante === "compacto" ? styles.botonesScrollCompacto : styles.botonesScroll;
-  const tamano = variante === "compacto" ? styles.botonScrollCompacto : "";
+  const tamanoClase = variante === "compacto" ? styles.botonScrollCompacto : "";
+  const tamanoIcono = variante === "compacto" ? 16 : 20;
 
   return (
     <div className={contenedor}>
       <button
         type="button"
-        className={`${styles.botonScroll} ${tamano} ${
-          mostrarArriba ? "" : styles.botonScrollOculto
-        }`}
+        className={`${styles.botonScroll} ${styles.botonScrollArriba} ${tamanoClase} ${mostrarArriba ? "" : styles.botonScrollOculto
+          }`}
         onClick={irArriba}
         aria-label="Subir al inicio de la página"
         aria-hidden={!mostrarArriba}
         tabIndex={mostrarArriba ? 0 : -1}
       >
-        <IconoFlechaArriba />
+        <IconoFlechaArriba tamano={tamanoIcono} />
       </button>
+
       <button
         type="button"
-        className={`${styles.botonScroll} ${tamano} ${
-          mostrarAbajo ? "" : styles.botonScrollOculto
-        }`}
+        className={`${styles.botonScroll} ${styles.botonScrollAbajo} ${tamanoClase} ${mostrarAbajo ? "" : styles.botonScrollOculto
+          }`}
         onClick={irAbajo}
         aria-label="Bajar al final de la página"
         aria-hidden={!mostrarAbajo}
         tabIndex={mostrarAbajo ? 0 : -1}
       >
-        <IconoFlechaAbajo />
+        <IconoFlechaAbajo tamano={tamanoIcono} />
       </button>
     </div>
   );

@@ -1,4 +1,4 @@
-import styles from "./landing.module.css";
+import styles from "../landing.module.css";
 
 // Marca visual de "esto es clickeable" junto al título de cada tarjeta:
 // una flecha diagonal que se mueve y pasa a accent en el hover de la

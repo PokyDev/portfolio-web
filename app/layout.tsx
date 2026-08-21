@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { Inter, Stack_Sans_Text } from "next/font/google";
-import Spotlight from "./components/effects/Spotlight";
+import Spotlight from "./components/shared/effects/Spotlight";
 import "./globals.css";
 
 // Roles tipográficos: Inter para cuerpo/UI y Stack Sans Text para títulos

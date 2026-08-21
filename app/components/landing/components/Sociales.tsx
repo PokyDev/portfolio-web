@@ -1,6 +1,7 @@
-import { REDES } from "./data";
+import { REDES } from "../data";
 import ScrollButtons from "./ScrollButtons";
-import styles from "./landing.module.css";
+import ThemeToggle from "@/app/components/shared/theme/ThemeToggle";
+import styles from "./sociales.module.css";
 
 // Iconos stroke (estilo Feather) con currentColor: heredan el color del
 // enlace y el patrón de hover sin assets externos.
@@ -70,15 +71,34 @@ function IconoRed({ nombre }: { nombre: string }) {
 
 // Fila de enlaces sociales compartida: el contenedor lo decide cada consumidor
 // vía className (`.sociales` en el aside desktop, `.socialesBarra` en la barra
-// sticky móvil). No usa hooks: sigue siendo server component.
-export default function Sociales({ className }: { className?: string }) {
+// sticky móvil, ambas en landing.module.css). No usa hooks: sigue siendo
+// server component.
+//
+// `compacto`: variante de padding más ajustada para la barra sticky móvil
+// (los 6 iconos, el separador y la hamburguesa deben caber sin scroll
+// horizontal incluso a 320px). Antes era el selector compuesto
+// `.socialesBarra .social` en landing.module.css; con CSS Modules ese
+// selector no puede cruzar de archivo (cada .module.css hashea sus propias
+// clases), así que la variante ahora vive como modificador en
+// sociales.module.css y se activa explícitamente desde acá.
+export default function Sociales({
+  className,
+  compacto = false,
+}: {
+  className?: string;
+  compacto?: boolean;
+}) {
+  const claseIcono = compacto
+    ? `${styles.social} ${styles.socialCompacto}`
+    : styles.social;
+
   return (
     <div className={className}>
       {REDES.map(({ nombre, url }) => (
         <a
           key={nombre}
           href={url}
-          className={styles.social}
+          className={claseIcono}
           target="_blank"
           rel="noopener noreferrer"
           aria-label={nombre}
@@ -87,6 +107,12 @@ export default function Sociales({ className }: { className?: string }) {
           <IconoRed nombre={nombre} />
         </a>
       ))}
+
+      <span className={styles.separadorUtilidades} aria-hidden="true" />
+
+      <ThemeToggle variante="compacto" />
+      <ScrollButtons variante="compacto" />
+      
     </div>
   );
 }

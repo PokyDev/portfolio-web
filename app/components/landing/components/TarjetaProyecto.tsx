@@ -4,13 +4,13 @@ import Image from "next/image";
 import { useEffect, useRef, useState } from "react";
 
 import IconoTarjetaClickeable from "./IconoTarjetaClickeable";
-import BartolomeMiniatura from "./miniaturas/bartolome/BartolomeMiniatura";
-import CoragemMiniatura from "./miniaturas/coragem/CoragemMiniatura";
-import DeployMonitorMiniatura from "./miniaturas/deploy-monitor/DeployMonitorMiniatura";
-import PortfolioMiniatura from "./miniaturas/portfolio/PortfolioMiniatura";
+import BartolomeMiniatura from "../miniaturas/bartolome/BartolomeMiniatura";
+import CoragemMiniatura from "../miniaturas/coragem/CoragemMiniatura";
+import DeployMonitorMiniatura from "../miniaturas/deploy-monitor/DeployMonitorMiniatura";
+import PortfolioMiniatura from "../miniaturas/portfolio/PortfolioMiniatura";
 import Tecnologia from "./Tecnologia";
-import type { Proyecto } from "./data";
-import styles from "./landing.module.css";
+import type { Proyecto } from "../data";
+import styles from "../landing.module.css";
 
 function IconoPlay() {
   return (

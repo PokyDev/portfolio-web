@@ -1,8 +1,8 @@
 "use client";
 
 import { useId } from "react";
-import { DESCRIPCIONES_TECNOLOGIAS } from "./data";
-import styles from "./landing.module.css";
+import { DESCRIPCIONES_TECNOLOGIAS } from "../data";
+import styles from "../landing.module.css";
 
 // Chip de tecnología con tooltip explicativo: el visitante del portafolio no
 // siempre sabe qué es "Fastify" o "Prisma". El chip vive dentro de tarjetas

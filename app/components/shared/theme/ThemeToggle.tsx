@@ -1,12 +1,8 @@
 "use client";
 
-import { useTheme } from "../../hooks/useTheme";
-import styles from "./landing.module.css";
+import { useTheme } from "@/app/hooks/useTheme";
+import styles from "./themeToggle.module.css";
 
-// Iconos del toggle de tema: se muestra el tema CONTRARIO al activo (en claro,
-// la luna; en oscuro, el sol). Un solo par de SVG basta: con currentColor el
-// color lo resuelven los tokens por tema desde el CSS (indigo en claro,
-// lavender en oscuro), sin duplicar SVG por tema.
 const ICONO_TEMA_COMUN = {
   width: 20,
   height: 20,
@@ -19,17 +15,17 @@ const ICONO_TEMA_COMUN = {
   "aria-hidden": true,
 };
 
-function IconoLuna() {
+function IconoLuna({ tamano = 20 }: { tamano?: number }) {
   return (
-    <svg {...ICONO_TEMA_COMUN}>
+    <svg {...ICONO_TEMA_COMUN} width={tamano} height={tamano}>
       <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" />
     </svg>
   );
 }
 
-function IconoSol() {
+function IconoSol({ tamano = 20 }: { tamano?: number }) {
   return (
-    <svg {...ICONO_TEMA_COMUN}>
+    <svg {...ICONO_TEMA_COMUN} width={tamano} height={tamano}>
       <circle cx="12" cy="12" r="5" />
       <line x1="12" y1="1" x2="12" y2="3" />
       <line x1="12" y1="21" x2="12" y2="23" />
@@ -43,33 +39,35 @@ function IconoSol() {
   );
 }
 
-// Botón circular de tema en dos variantes:
-// - "flotante" (default): fijo en la esquina inferior izquierda del viewport,
-//   fuera del container del aside, SOLO en desktop (≥ 1024px). Sus márgenes
-//   left/bottom viven en el CSS module, a ras con la línea inferior del aside.
-// - "panel": el mismo botón sin posicionamiento, para el footer de la sidebar
-//   móvil (NavMovil) — en móvil el toggle ya no flota sobre el contenido.
+// Tres variantes:
+// - "flotante" (default): fijo en la esquina, SOLO desktop ancho (≥1600px).
+// - "panel": sin posicionamiento, para el footer de la sidebar móvil (NavMovil).
+// - "compacto": embebida en el container de redes sociales (Sociales.tsx),
+//   tamaño reducido para convivir con los íconos de redes — visible
+//   exactamente en el rango donde "flotante" no cabe (queda a cargo de
+//   quien la consuma decidirlo vía @media).
 export default function ThemeToggle({
   variante = "flotante",
 }: {
-  variante?: "flotante" | "panel";
+  variante?: "flotante" | "panel" | "compacto";
 }) {
   const { toggleTheme } = useTheme();
+  const tamanoIcono = variante === "compacto" ? 16 : 20;
 
   return (
     <button
       type="button"
       className={`${styles.toggleTema} ${
         variante === "flotante" ? styles.toggleFlotante : ""
-      }`}
+      } ${variante === "compacto" ? styles.toggleCompacto : ""}`}
       onClick={toggleTheme}
       aria-label="Cambiar tema"
     >
       <span className={`dark:hidden ${styles.iconoTema}`}>
-        <IconoLuna />
+        <IconoLuna tamano={tamanoIcono} />
       </span>
       <span className={`hidden dark:inline ${styles.iconoTema}`}>
-        <IconoSol />
+        <IconoSol tamano={tamanoIcono} />
       </span>
     </button>
   );

@@ -33,6 +33,12 @@
   padding-top: 2.5rem;
 }
 
+@media (max-width: 1023px) {
+  .identidad {
+    margin: 0 auto;
+  }
+}
+
 .sociales {
   display: none;
 }
@@ -233,97 +239,6 @@
 }
 
 /* ============================================================
-   Aside — sociales
-   ============================================================ */
-
-.social {
-  display: inline-flex;
-  padding: 0.45rem;
-  color: var(--color-muted);
-  transition:
-    color var(--transition-fast) var(--ease-standard),
-    transform var(--transition-fast) var(--ease-standard);
-}
-
-.social:hover {
-  color: var(--color-accent);
-  transform: translateY(-2px);
-}
-
-/* ============================================================
-   Toggle de tema — botón circular en dos variantes: flotante
-   (fijo al viewport, solo desktop) y de panel (footer de la
-   sidebar móvil, sin posicionamiento)
-   ============================================================ */
-
-.toggleTema {
-  appearance: none;
-  cursor: pointer;
-  display: grid;
-  place-items: center;
-  width: 2.75rem;
-  height: 2.75rem;
-  line-height: 1;
-  /* En claro el icono va en Indigo (accent); en oscuro, en Lavender (fg).
-     Los SVG usan currentColor, así que basta con mover este color. */
-  color: var(--color-accent);
-  background: color-mix(in oklch, var(--color-accent) 8%, transparent);
-  backdrop-filter: blur(8px);
-  border: 1px solid var(--color-border);
-  border-radius: 999px;
-  transition:
-    color var(--transition-fast) var(--ease-standard),
-    background-color var(--transition-fast) var(--ease-standard),
-    border-color var(--transition-fast) var(--ease-standard),
-    transform var(--transition-fast) var(--ease-standard);
-}
-
-/* Variante flotante: SOLO desktop — en móvil el toggle vive en el footer
-   de la sidebar (NavMovil) y ya no se monta sobre el contenido. Márgenes
-   left/bottom = --aside-padding-y: el botón queda a ras con la línea
-   inferior del contenido del aside. */
-.toggleFlotante {
-  display: none;
-}
-
-@media (min-width: 1600px) {
-  .toggleFlotante {
-    display: grid;
-    position: fixed;
-    left: var(--aside-padding-y);
-    bottom: var(--aside-padding-y);
-    z-index: 10;
-  }
-}
-
-:global(.dark) .toggleTema {
-  color: var(--color-fg);
-}
-
-.iconoTema {
-  line-height: 0;
-}
-
-.toggleTema:hover {
-  border-color: var(--color-accent);
-  background: color-mix(in oklch, var(--color-accent) 18%, transparent);
-  transform: translateY(-2px);
-}
-
-.social:focus-visible,
-.navLink:focus-visible {
-  outline: 2px solid var(--color-accent);
-  outline-offset: 2px;
-  border-radius: var(--radius-sm);
-}
-
-/* Sin border-radius extra: el outline sigue el radio circular del botón */
-.toggleTema:focus-visible {
-  outline: 2px solid var(--color-accent);
-  outline-offset: 2px;
-}
-
-/* ============================================================
    Botones page-up / page-down — mismo lugar que el toggle de tema
    (fijo, solo desktop), justo encima. Colores invertidos respecto al
    toggle de tema para resaltar más: mismo patrón que .cta (dupla
@@ -391,6 +306,44 @@
   transform: translateY(-2px);
 }
 
+/* Variante compacta: vive DENTRO del container de redes sociales, sin
+   position fija — sigue el flujo normal de la fila. Mismo diseño de
+   "cápsula" sólida que .botonScroll (fondo accent invertido), solo
+   reducido, para distinguirse de los enlaces sociales planos como un
+   control interactivo real. Visibilidad por breakpoint a cargo de quien
+   la consuma vía @media (no se define acá). */
+
+.botonesScrollCompacto {
+  display: none;
+}
+
+@media (min-width: 500px) and (max-width: 1599px) {
+  .botonesScrollCompacto {
+    display: grid;
+  }
+
+  .botonScrollCompacto {
+    width: 2rem;
+    height: 2rem;
+  }
+}
+
+@media (max-width: 499px) {
+  .botonesScroll {
+    display: grid;
+  }
+  .botonScrollAbajo {
+    position: fixed;
+    top: 40px;
+    right: 30px;
+  }
+  .botonScrollArriba {
+    position: fixed;
+    bottom: 40px;
+    right: 30px;
+  }
+}
+
 /* ============================================================
    Navegación móvil (< 1024px) — NavMovil: barra sticky
    (sociales | separador | hamburguesa) + sidebar derecha
@@ -405,13 +358,23 @@
   position: sticky;
   top: 0;
   z-index: 2;
+
   display: flex;
   align-items: center;
+  justify-content: center;
   gap: 0.5rem;
+
   margin: 1.5rem calc(-1 * var(--padding-x)) 0;
   padding: 0.5rem var(--padding-x);
+
   background: var(--color-bg);
   border-bottom: 1px solid var(--color-border);
+}
+
+@media (pointer: fine) {
+  .barraMovil {
+    background: none;
+  }
 }
 
 .socialesBarra {
@@ -419,12 +382,6 @@
   align-items: center;
   gap: 0.5rem;
   min-width: 0;
-}
-
-/* Huella más compacta que en el aside: los 6 iconos, el separador y la
-   hamburguesa deben caber sin scroll horizontal incluso a 320px */
-.socialesBarra .social {
-  padding: 0.35rem;
 }
 
 .separadorBarra {
@@ -688,6 +645,7 @@
 
 /* Sin animación de apertura/cierre si el usuario reduce el movimiento */
 @media (prefers-reduced-motion: reduce) {
+
   .panelMovil,
   .fondoPanel {
     transition: none;
@@ -700,6 +658,23 @@
 
 .seccion {
   padding: 2.75rem 0;
+}
+
+@media (min-width: 601px) and (max-width: 1023px) {
+  .sobreMi {
+    width: 100%;
+    max-width: 800px;
+    margin-inline: auto;
+    padding-inline: 4rem;
+    box-sizing: border-box;
+    text-align: justify;
+  }
+}
+
+@media (min-width: 500px) and (max-width: 600px) {
+  .sobreMi {
+    padding-inline: 2rem;
+  }
 }
 
 /* Separador entre secciones: mismo trazo que el footer para no introducir

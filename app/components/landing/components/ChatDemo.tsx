@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState, type FormEvent } from "react";
-import { BOT_DEMO, GUION_CHAT_DEMO } from "./data";
+import { BOT_DEMO, GUION_CHAT_DEMO } from "../data";
 import styles from "./chatDemo.module.css";
 
 interface Mensaje {

@@ -1,12 +1,12 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { useScrollspy } from "../../hooks/useScrollspy";
-import { IDENTIDAD, IDS_SECCIONES, SECCIONES } from "./data";
+import { useScrollspy } from "../hooks/useScrollspy";
+import { IDENTIDAD, IDS_SECCIONES, SECCIONES } from "../data";
 import SelloPoky from "./SelloPoky";
 import Sociales from "./Sociales";
-import ThemeToggle from "./ThemeToggle";
-import styles from "./landing.module.css";
+import ThemeToggle from "@/app/components/shared/theme/ThemeToggle";
+import styles from "../landing.module.css";
 
 // Navegación móvil (< 1024px) — reemplaza a la antigua fila horizontal de
 // secciones con scroll propio, descartada por UX. Tres piezas:
