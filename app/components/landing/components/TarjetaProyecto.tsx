@@ -4,10 +4,14 @@ import Image from "next/image";
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
 
 import IconoTarjetaClickeable from "./IconoTarjetaClickeable";
+
 import BartolomeMiniatura from "../miniaturas/bartolome/BartolomeMiniatura";
 import CoragemMiniatura from "../miniaturas/coragem/CoragemMiniatura";
 import DeployMonitorMiniatura from "../miniaturas/deploy-monitor/DeployMonitorMiniatura";
 import PortfolioMiniatura from "../miniaturas/portfolio/PortfolioMiniatura";
+
+import DeployMonitorReproductor from "@/app/components/landing/miniaturas/deploy-monitor/DeployMonitorReproductor";
+
 import Tecnologia from "./Tecnologia";
 import type { Proyecto } from "../data";
 import styles from "../landing.module.css";
@@ -33,23 +37,6 @@ function IconoPlayGrande() {
   return (
     <svg width="28" height="28" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
       <path d="M8 5.14v13.72a1 1 0 0 0 1.5.87l11-6.86a1 1 0 0 0 0-1.72l-11-6.86A1 1 0 0 0 8 5.14Z" />
-    </svg>
-  );
-}
-
-function IconoCerrar() {
-  return (
-    <svg
-      width="22"
-      height="22"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      aria-hidden="true"
-    >
-      <path d="M6 6l12 12M18 6L6 18" />
     </svg>
   );
 }
@@ -267,19 +254,24 @@ export default function TarjetaProyecto({ proyecto }: { proyecto: Proyecto }) {
           className={`${styles.proyectoMiniatura}${reproductorAbierto ? ` ${styles.proyectoMiniaturaExpandida}` : ""
             }`}
         >
-          <DeployMonitorMiniatura />
-          <button
-            type="button"
-            className={`${styles.overlayReproductor}${reproductorAbierto ? ` ${styles.overlayReproductorActivo}` : ""
-              }`}
-            aria-label={reproductorAbierto ? "Cerrar reproductor" : "Reproducir animación"}
-            disabled={enTransicion}
-            onClick={reproductorAbierto ? alCerrarReproductor : alAbrirReproductor}
-          >
-            <span className={styles.overlayReproductorIcono}>
-              {reproductorAbierto ? <IconoCerrar /> : <IconoPlayGrande />}
-            </span>
-          </button>
+          {reproductorAbierto ? (
+            <DeployMonitorReproductor onCerrar={alCerrarReproductor} />
+          ) : (
+            <>
+              <DeployMonitorMiniatura />
+              <button
+                type="button"
+                className={styles.overlayReproductor}
+                aria-label="Reproducir animación"
+                disabled={enTransicion}
+                onClick={alAbrirReproductor}
+              >
+                <span className={styles.overlayReproductorIcono}>
+                  <IconoPlayGrande />
+                </span>
+              </button>
+            </>
+          )}
         </div>
       ) : proyecto.slug === "coragem-bisuteria" ? (
         <div className={styles.proyectoMiniatura}>
