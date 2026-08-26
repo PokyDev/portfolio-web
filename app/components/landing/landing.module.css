@@ -925,6 +925,7 @@
    para que el contenido alinee con la columna y el fondo solo aparezca al
    hacer hover. En móvil la miniatura queda arriba del detalle. */
 .tarjetaEnlace {
+  position: relative;
   display: flex;
   flex-direction: column;
   gap: 1.25rem;
@@ -1061,13 +1062,19 @@
   .proyectoCuerpo {
     min-width: 0;
     opacity: 1;
-    transition: opacity 0.22s var(--ease-stardard);
+    transition: opacity 0.22s var(--ease-standard);
   }
 
-  .proyectoCuerpoOculto {
+  /* Fase A: solo desvanece, sigue ocupando su celda del grid normalmente */
+  .proyectoCuerpoDesvanecido {
     opacity: 0;
     pointer-events: none;
-    position: fixed;
+  }
+
+  /* Fase B: recién acá sale del flujo — se aplica cuando ya está invisible */
+  .proyectoCuerpoOculto {
+    position: absolute;
+    inset: 0;
   }
 
   /* Con miniatura y cuerpo lado a lado, el botón (si existe) va debajo de

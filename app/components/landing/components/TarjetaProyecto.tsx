@@ -83,6 +83,9 @@ export default function TarjetaProyecto({ proyecto }: { proyecto: Proyecto }) {
   const miniaturaRef = useRef<HTMLDivElement>(null);
   const rectPrevioRef = useRef<DOMRect | null>(null);
 
+  const tarjetaRef = useRef<HTMLAnchorElement>(null);
+  const alturaPreviaRef = useRef<number | null>(null);
+
   const DURACION_FADE_TEXTO_MS = 220;
   const DURACION_ESCALA_MS = 400;
 
@@ -92,9 +95,10 @@ export default function TarjetaProyecto({ proyecto }: { proyecto: Proyecto }) {
     if (reproductorAbierto || enTransicion) return;
 
     setEnTransicion(true);
-    setTextoOculto(true);
+    setTextoOculto(true); // Fase A: fade, el texto sigue en el flujo
 
     window.setTimeout(() => {
+      alturaPreviaRef.current = tarjetaRef.current?.getBoundingClientRect().height ?? null;
       rectPrevioRef.current = miniaturaRef.current?.getBoundingClientRect() ?? null;
       setReproductorAbierto(true);
 
@@ -104,17 +108,19 @@ export default function TarjetaProyecto({ proyecto }: { proyecto: Proyecto }) {
     }, DURACION_FADE_TEXTO_MS);
   }
 
+
   function alCerrarReproductor(evento: React.SyntheticEvent) {
     evento.preventDefault();
     evento.stopPropagation();
     if (!reproductorAbierto || enTransicion) return;
 
     setEnTransicion(true);
+    alturaPreviaRef.current = tarjetaRef.current?.getBoundingClientRect().height ?? null;
     rectPrevioRef.current = miniaturaRef.current?.getBoundingClientRect() ?? null;
-    setReproductorAbierto(false);
+    setReproductorAbierto(false); // Fase B inversa: miniatura vuelve a angosta (FLIP)
 
     window.setTimeout(() => {
-      setTextoOculto(false);
+      setTextoOculto(false); // Fase A inversa: recién ahora reaparece el texto
       setEnTransicion(false);
     }, DURACION_ESCALA_MS);
   }
@@ -191,6 +197,45 @@ export default function TarjetaProyecto({ proyecto }: { proyecto: Proyecto }) {
     rectPrevioRef.current = null;
   }, [reproductorAbierto]);
 
+  useLayoutEffect(() => {
+    const tarjeta = tarjetaRef.current;
+    const alturaPrevia = alturaPreviaRef.current;
+    if (!tarjeta || alturaPrevia == null) return;
+
+    const alturaNueva = tarjeta.getBoundingClientRect().height;
+
+    tarjeta.style.overflow = "hidden";
+    tarjeta.style.transition = "none";
+    tarjeta.style.height = `${alturaPrevia}px`;
+
+    tarjeta.getBoundingClientRect();
+
+    requestAnimationFrame(() => {
+      tarjeta.style.transition = `height ${DURACION_ESCALA_MS}ms var(--ease-standard)`;
+      tarjeta.style.height = `${alturaNueva}px`;
+    });
+
+    alturaPreviaRef.current = null;
+
+    function alTerminar(evento: TransitionEvent) {
+      if (evento.propertyName !== "height") return;
+
+      const nodo = tarjetaRef.current;
+      if (!nodo) return;
+
+      nodo.style.transition = "";
+      nodo.style.height = "";
+      nodo.style.overflow = "";
+      nodo.removeEventListener("transitionend", alTerminar);
+    }
+
+    tarjeta.addEventListener("transitionend", alTerminar);
+
+    return () => {
+      tarjeta.removeEventListener("transitionend", alTerminar);
+    };
+  }, [reproductorAbierto]);
+
   function alTocarBoton(evento: React.SyntheticEvent) {
     evento.preventDefault();
     evento.stopPropagation();
@@ -205,6 +250,7 @@ export default function TarjetaProyecto({ proyecto }: { proyecto: Proyecto }) {
 
   return (
     <a
+      ref={tarjetaRef}
       href={proyecto.enlace}
       onClick={alClickearTarjeta}
       className={
@@ -294,9 +340,8 @@ export default function TarjetaProyecto({ proyecto }: { proyecto: Proyecto }) {
       )}
 
       <div
-        className={`${styles.proyectoCuerpo}${proyecto.slug === "deploy-monitor" && textoOculto
-          ? ` ${styles.proyectoCuerpoOculto}`
-          : ""
+        className={`${styles.proyectoCuerpo}${proyecto.slug === "deploy-monitor" && textoOculto ? ` ${styles.proyectoCuerpoDesvanecido}` : ""
+          }${proyecto.slug === "deploy-monitor" && reproductorAbierto ? ` ${styles.proyectoCuerpoOculto}` : ""
           }`}
       >
         <h3 className={styles.proyectoTitulo}>
