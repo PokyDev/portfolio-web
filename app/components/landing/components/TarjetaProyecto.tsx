@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useLayoutEffect, useRef, useState } from "react";
 
 import IconoTarjetaClickeable from "./IconoTarjetaClickeable";
 import BartolomeMiniatura from "../miniaturas/bartolome/BartolomeMiniatura";
@@ -29,11 +29,35 @@ function IconoPausa() {
   );
 }
 
+function IconoPlayGrande() {
+  return (
+    <svg width="28" height="28" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+      <path d="M8 5.14v13.72a1 1 0 0 0 1.5.87l11-6.86a1 1 0 0 0 0-1.72l-11-6.86A1 1 0 0 0 8 5.14Z" />
+    </svg>
+  );
+}
+
+function IconoCerrar() {
+  return (
+    <svg
+      width="22"
+      height="22"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      aria-hidden="true"
+    >
+      <path d="M6 6l12 12M18 6L6 18" />
+    </svg>
+  );
+}
+
 // Mapa slug -> clase global (sin hash) que engancha la animación de hover de
 // cada miniatura-componente desde fuera del scope de landing.module.css —
 // ver deployMonitorAnimacion/coragemAnimacion/portfolioAnimacion/bartolomeAnimacion.
 const CLASE_HOVER_MINIATURA: Record<string, string> = {
-  "deploy-monitor": "dm-tarjeta-hover",
   "coragem-bisuteria": "coragem-tarjeta-hover",
   "pokydev-portfolio": "portfolio-tarjeta-hover",
   "bartolome-parrilla": "bartolome-tarjeta-hover",
@@ -51,6 +75,55 @@ export default function TarjetaProyecto({ proyecto }: { proyecto: Proyecto }) {
   // animación, que además de `:hover` ahora reaccionan a `.animar-forzado`.
   const [animado, setAnimado] = useState(false);
   const botonRef = useRef<HTMLSpanElement>(null);
+
+  const [reproductorAbierto, setReproductorAbierto] = useState(false);
+  const [textoOculto, setTextoOculto] = useState(false);
+  const [enTransicion, setEnTransicion] = useState(false);
+
+  const miniaturaRef = useRef<HTMLDivElement>(null);
+  const rectPrevioRef = useRef<DOMRect | null>(null);
+
+  const DURACION_FADE_TEXTO_MS = 220;
+  const DURACION_ESCALA_MS = 400;
+
+  function alAbrirReproductor(evento: React.SyntheticEvent) {
+    evento.preventDefault();
+    evento.stopPropagation();
+    if (reproductorAbierto || enTransicion) return;
+
+    setEnTransicion(true);
+    setTextoOculto(true);
+
+    window.setTimeout(() => {
+      rectPrevioRef.current = miniaturaRef.current?.getBoundingClientRect() ?? null;
+      setReproductorAbierto(true);
+
+      window.setTimeout(() => {
+        setEnTransicion(false);
+      }, DURACION_ESCALA_MS);
+    }, DURACION_FADE_TEXTO_MS);
+  }
+
+  function alCerrarReproductor(evento: React.SyntheticEvent) {
+    evento.preventDefault();
+    evento.stopPropagation();
+    if (!reproductorAbierto || enTransicion) return;
+
+    setEnTransicion(true);
+    rectPrevioRef.current = miniaturaRef.current?.getBoundingClientRect() ?? null;
+    setReproductorAbierto(false);
+
+    window.setTimeout(() => {
+      setTextoOculto(false);
+      setEnTransicion(false);
+    }, DURACION_ESCALA_MS);
+  }
+
+  function alClickearTarjeta(evento: React.MouseEvent) {
+    if (proyecto.slug === "deploy-monitor" && (reproductorAbierto || textoOculto)) {
+      evento.preventDefault();
+    }
+  }
 
   useEffect(() => {
     if (!animado) return;
@@ -92,6 +165,32 @@ export default function TarjetaProyecto({ proyecto }: { proyecto: Proyecto }) {
     };
   }, [animado]);
 
+  useLayoutEffect(() => {
+    const nodo = miniaturaRef.current;
+    const rectPrevio = rectPrevioRef.current;
+    if (!nodo || !rectPrevio) return;
+
+    const rectNuevo = nodo.getBoundingClientRect();
+    const escalaX = rectPrevio.width / rectNuevo.width;
+    const escalaY = rectPrevio.height / rectNuevo.height;
+    const trasladoX = rectPrevio.left - rectNuevo.left;
+    const trasladoY = rectPrevio.top - rectNuevo.top;
+
+    nodo.style.transformOrigin = "top left";
+    nodo.style.transition = "none";
+    nodo.style.transform = `translate(${trasladoX}px, ${trasladoY}px) scale(${escalaX}, ${escalaY})`;
+
+    // Fuerza reflow para que el navegador registre el estado inicial antes de animar
+    nodo.getBoundingClientRect();
+
+    requestAnimationFrame(() => {
+      nodo.style.transition = `transform ${DURACION_ESCALA_MS}ms var(--ease-standard)`;
+      nodo.style.transform = "translate(0, 0) scale(1, 1)";
+    });
+
+    rectPrevioRef.current = null;
+  }, [reproductorAbierto]);
+
   function alTocarBoton(evento: React.SyntheticEvent) {
     evento.preventDefault();
     evento.stopPropagation();
@@ -107,21 +206,34 @@ export default function TarjetaProyecto({ proyecto }: { proyecto: Proyecto }) {
   return (
     <a
       href={proyecto.enlace}
+      onClick={alClickearTarjeta}
       className={
         claseHoverMiniatura
-          ? `${styles.tarjetaEnlace} ${claseHoverMiniatura}${
-              animado ? " animar-forzado" : ""
-            }`
+          ? `${styles.tarjetaEnlace} ${claseHoverMiniatura}${animado ? " animar-forzado" : ""
+          }`
           : styles.tarjetaEnlace
       }
       {...(externo && { target: "_blank", rel: "noopener noreferrer" })}
     >
       {proyecto.slug === "deploy-monitor" ? (
-        // Experimento de diseño (temporal): miniatura como componente en vez
-        // de captura .png — ver app/components/landing/miniaturas. Si
-        // convence, se generaliza a las demás tarjetas.
-        <div className={styles.proyectoMiniatura}>
+        <div
+          ref={miniaturaRef}
+          className={`${styles.proyectoMiniatura}${reproductorAbierto ? ` ${styles.proyectoMiniaturaExpandida}` : ""
+            }`}
+        >
           <DeployMonitorMiniatura />
+          <button
+            type="button"
+            className={`${styles.overlayReproductor}${reproductorAbierto ? ` ${styles.overlayReproductorActivo}` : ""
+              }`}
+            aria-label={reproductorAbierto ? "Cerrar reproductor" : "Reproducir animación"}
+            disabled={enTransicion}
+            onClick={reproductorAbierto ? alCerrarReproductor : alAbrirReproductor}
+          >
+            <span className={styles.overlayReproductorIcono}>
+              {reproductorAbierto ? <IconoCerrar /> : <IconoPlayGrande />}
+            </span>
+          </button>
         </div>
       ) : proyecto.slug === "coragem-bisuteria" ? (
         <div className={styles.proyectoMiniatura}>
@@ -171,9 +283,8 @@ export default function TarjetaProyecto({ proyecto }: { proyecto: Proyecto }) {
                 ? "Pausar animación de la miniatura"
                 : "Reproducir animación de la miniatura"
             }
-            className={`${styles.botonAnimarMiniatura}${
-              animado ? ` ${styles.botonAnimarMiniaturaActivo}` : ""
-            }`}
+            className={`${styles.botonAnimarMiniatura}${animado ? ` ${styles.botonAnimarMiniaturaActivo}` : ""
+              }`}
             onClick={alTocarBoton}
             onKeyDown={alPresionarTeclaBoton}
           >
@@ -182,7 +293,12 @@ export default function TarjetaProyecto({ proyecto }: { proyecto: Proyecto }) {
         </div>
       )}
 
-      <div className={styles.proyectoCuerpo}>
+      <div
+        className={`${styles.proyectoCuerpo}${proyecto.slug === "deploy-monitor" && textoOculto
+          ? ` ${styles.proyectoCuerpoOculto}`
+          : ""
+          }`}
+      >
         <h3 className={styles.proyectoTitulo}>
           {proyecto.titulo}
           <IconoTarjetaClickeable />

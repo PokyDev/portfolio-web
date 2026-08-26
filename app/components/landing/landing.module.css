@@ -332,11 +332,13 @@
   .botonesScroll {
     display: grid;
   }
+
   .botonScrollAbajo {
     position: fixed;
     top: 40px;
     right: 30px;
   }
+
   .botonScrollArriba {
     position: fixed;
     bottom: 40px;
@@ -357,7 +359,7 @@
   order: 2;
   position: sticky;
   top: 0;
-  z-index: 2;
+  z-index: 3;
 
   display: flex;
   align-items: center;
@@ -938,11 +940,8 @@
   transition: color var(--transition-base) var(--ease-standard);
 }
 
-.proyectoCuerpo {
-  min-width: 0;
-}
-
 .proyectoMiniatura {
+  position: relative;
   width: 100%;
   aspect-ratio: 16 / 9;
   border: 1px solid var(--color-border);
@@ -979,6 +978,50 @@
     color var(--transition-fast) var(--ease-standard);
 }
 
+/* Overlay para la miniatura y fusión con texto para reproductor */
+
+.overlayReproductor {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #000;
+  color: #fff;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  opacity: 0;
+  transition: opacity var(--transition-base) var(--ease-standard);
+}
+
+.overlayReproductorActivo {
+  opacity: 1;
+}
+
+@media (hover: hover) {
+  .tarjetaEnlace:hover .overlayReproductor {
+    opacity: 1;
+  }
+
+  .tarjetaEnlace:hover .overlayReproductor:not(.overlayReproductorActivo) .overlayReproductorIcono {
+    animation: overlayPulso 1.8s ease-in-out infinite;
+  }
+}
+
+@keyframes overlayPulso {
+
+  0%,
+  100% {
+    opacity: 1;
+  }
+
+  50% {
+    opacity: 0.55;
+  }
+}
+
 /* Solo con puntero real: en táctil el navegador puede aplicar :hover
    "pegajoso" con un simple tap (o al mantener presionado sobre la
    miniatura), lo que teñiría el borde sin pasar por el botón de
@@ -1010,11 +1053,21 @@
     margin-top: 0.2rem;
   }
 
-  /* Sin miniatura (p. ej. widget-clima) el detalle conserva su columna:
-     todos los cuerpos quedan alineados verticalmente entre tarjetas */
+  .proyectoMiniaturaExpandida {
+    grid-column: 1 / -1;
+    z-index: 2;
+  }
+
   .proyectoCuerpo {
-    grid-column: 2;
-    grid-row: 1 / 3;
+    min-width: 0;
+    opacity: 1;
+    transition: opacity 0.22s var(--ease-stardard);
+  }
+
+  .proyectoCuerpoOculto {
+    opacity: 0;
+    pointer-events: none;
+    position: fixed;
   }
 
   /* Con miniatura y cuerpo lado a lado, el botón (si existe) va debajo de
@@ -1054,7 +1107,6 @@
    pausarlo o al deseleccionar (tap fuera), sin depender del hover
    pegajoso del navegador que un tap sostenido sobre la miniatura
    también dispararía. */
-:global(.dm-tarjeta-hover.animar-forzado) .proyectoMiniatura,
 :global(.coragem-tarjeta-hover.animar-forzado) .proyectoMiniatura,
 :global(.portfolio-tarjeta-hover.animar-forzado) .proyectoMiniatura,
 :global(.bartolome-tarjeta-hover.animar-forzado) .proyectoMiniatura {
