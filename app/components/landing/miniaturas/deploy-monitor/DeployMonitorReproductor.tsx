@@ -85,6 +85,19 @@ function formatearTiempo(segundos: number) {
   return `${minutos}:${restante.toString().padStart(2, "0")}`;
 }
 
+// Fuente de verdad legible para el estado inicial del loop. El toggle en
+// pantalla sigue siendo booleano (useState) — esta constante solo decide
+// con qué arranca. Cambiar a "OFF" para revertir el default sin tocar
+// el resto del componente.
+type EstadoOnOff = "ON" | "OFF";
+const LOOP_POR_DEFECTO: EstadoOnOff = "ON";
+
+// Progresión fija de velocidades — ciclar entre estos tres valores en
+// orden. Si más adelante se quiere otro tope o más pasos, esta es la
+// única línea que cambia.
+const VELOCIDADES = [1, 2, 4] as const;
+type Velocidad = (typeof VELOCIDADES)[number];
+
 export default function DeployMonitorReproductor({
   onCerrar,
 }: {
@@ -98,6 +111,11 @@ export default function DeployMonitorReproductor({
 
   const [reproduciendo, setReproduciendo] = useState(false);
   const [pantallaCompleta, setPantallaCompleta] = useState(false);
+
+  const [loopActivo, setLoopActivo] = useState(LOOP_POR_DEFECTO === "ON");
+
+  const [velocidad, setVelocidad] = useState<Velocidad>(1);
+
   const [frameActual, setFrameActual] = useState(0);
   const [totalFrames, setTotalFrames] = useState(0);
   const [duracion, setDuracion] = useState(0);
@@ -168,6 +186,22 @@ export default function DeployMonitorReproductor({
     } else {
       dotLottie.play();
     }
+  }
+
+  function alToggleLoop(evento: React.SyntheticEvent) {
+    evento.preventDefault();
+    evento.stopPropagation();
+    setLoopActivo((valorPrevio) => !valorPrevio);
+  }
+
+  function alCambiarVelocidad(evento: React.SyntheticEvent) {
+    evento.preventDefault();
+    evento.stopPropagation();
+    setVelocidad((actual) => {
+      const indiceActual = VELOCIDADES.indexOf(actual);
+      const siguienteIndice = (indiceActual + 1) % VELOCIDADES.length;
+      return VELOCIDADES[siguienteIndice];
+    });
   }
 
   function alToggleFullscreen(evento: React.SyntheticEvent) {
@@ -244,7 +278,8 @@ export default function DeployMonitorReproductor({
         <DotLottieReact
           src="/video/deploy_monitor.json"
           autoplay
-          loop={false}
+          loop={loopActivo}
+          speed={velocidad}
           className={styles.lienzo}
           renderConfig={{
             autoResize: true,
@@ -283,13 +318,25 @@ export default function DeployMonitorReproductor({
 
         <span className={styles.tiempo}>{formatearTiempo(duracion)}</span>
 
-        {/* Pendientes para el próximo avance: velocidad, loop, fullscreen,
-            acento de color — deshabilitados para no prometer algo que
-            todavía no responde. */}
-        <button type="button" className={styles.botonVelocidad} aria-label="Velocidad de reproducción" disabled>
-          1x
+        <button
+          type="button"
+          className={styles.botonVelocidad}
+          aria-label={`Velocidad de reproducción: ${velocidad}x. Tocar para cambiar`}
+          onClick={alCambiarVelocidad}
+        >
+          {velocidad}x
         </button>
-        <button type="button" className={styles.botonControl} aria-label="Activar loop" disabled>
+        <button
+          type="button"
+          className={
+            loopActivo
+              ? `${styles.botonControl} ${styles.botonControlActivo}`
+              : styles.botonControl
+          }
+          aria-label={loopActivo ? "Desactivar loop" : "Activar loop"}
+          aria-pressed={loopActivo}
+          onClick={alToggleLoop}
+        >
           <IconoLoop />
         </button>
         <button
