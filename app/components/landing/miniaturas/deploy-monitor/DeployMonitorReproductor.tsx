@@ -109,6 +109,9 @@ export default function DeployMonitorReproductor({
   const dotLottieRef = useRef<DotLottie | null>(null);
   const reproductorRef = useRef<HTMLDivElement>(null);
 
+  const frameObjetivoRef = useRef<number | null>(null);
+  const rafPendienteRef = useRef<number | null>(null);
+
   const [reproduciendo, setReproduciendo] = useState(false);
   const [pantallaCompleta, setPantallaCompleta] = useState(false);
 
@@ -159,13 +162,21 @@ export default function DeployMonitorReproductor({
     };
   }, []);
 
+  useEffect(() => {
+    return () => {
+      if (rafPendienteRef.current !== null) {
+        cancelAnimationFrame(rafPendienteRef.current);
+      }
+    };
+  }, []);
+
   function alObtenerInstancia(instancia: DotLottie | null) {
     dotLottieRef.current = instancia;
     if (!instancia) return;
 
     instancia.addEventListener("load", () => {
       setTotalFrames(instancia.totalFrames);
-      setDuracion(instancia.duration / 1000); // duration viene en milisegundos
+      setDuracion(instancia.duration); // duration viene en milisegundos
     });
     instancia.addEventListener("play", () => setReproduciendo(true));
     instancia.addEventListener("pause", () => setReproduciendo(false));
@@ -236,16 +247,31 @@ export default function DeployMonitorReproductor({
     onCerrar(evento);
   }
 
-  // Adelantar/atrasar: convierte una posición X de mouse/touch sobre la
-  // barra en un frame del Lottie y lo aplica de inmediato.
+  // Con loop activo el ciclo de dibujo del canvas ya no se detiene nunca
+  // (antes, con loop=false, la animación terminaba y el render se paraba
+  // solo). Arrastrar la barra ahora compite por el hilo principal con ese
+  // loop continuo — cada pointermove sin agrupar forzaba un render()+draw()
+  // síncrono adicional. Se agrupa el seek real (caro) a un máximo de uno
+  // por frame de pantalla (rAF); el feedback visual de la barra (barato,
+  // solo React state) se sigue actualizando a la resolución completa del
+  // puntero.
   function buscarEnPosicion(clientX: number, track: HTMLDivElement) {
     const dotLottie = dotLottieRef.current;
     if (!dotLottie || totalFrames === 0) return;
     const rect = track.getBoundingClientRect();
     const ratio = Math.min(1, Math.max(0, (clientX - rect.left) / rect.width));
     const frame = ratio * totalFrames;
-    dotLottie.setFrame(frame);
-    setFrameActual(frame); // feedback inmediato, sin esperar el evento "frame"
+
+    setFrameActual(frame); // feedback inmediato en la barra, no toca el canvas
+
+    frameObjetivoRef.current = frame;
+    if (rafPendienteRef.current !== null) return; // ya hay un seek agendado
+    rafPendienteRef.current = requestAnimationFrame(() => {
+      rafPendienteRef.current = null;
+      if (frameObjetivoRef.current !== null) {
+        dotLottie.setFrame(frameObjetivoRef.current);
+      }
+    });
   }
 
   function alPresionarProgreso(evento: React.PointerEvent<HTMLDivElement>) {
