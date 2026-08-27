@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { DotLottieReact } from "@lottiefiles/dotlottie-react";
 import type { DotLottie } from "@lottiefiles/dotlottie-web";
 import styles from "./deployMonitorReproductor.module.css";
@@ -83,6 +83,25 @@ export default function DeployMonitorReproductor({
 
   const progreso = totalFrames > 0 ? frameActual / totalFrames : 0;
   const tiempoActual = duracion * progreso;
+
+  // El FLIP de TarjetaProyecto anima un `transform` sobre un ancestro
+  // (miniaturaRef) mientras este componente ya está montado y cargando el
+  // Lottie. Si la carga termina en pleno transform, dotlottie-web mide el
+  // canvas con getBoundingClientRect() ya escalado y calcula mal su
+  // resolución interna — y como ResizeObserver no reacciona a cambios de
+  // transform (solo a cambios de layout), queda pegado en baja resolución
+  // para siempre. Forzamos un resize() apenas termina esa transición para
+  // corregirlo. Escuchamos en `document` porque transitionend burbujea y
+  // el transform lo aplica un ancestro fuera de este componente; resize()
+  // es un no-op seguro si el Lottie todavía no cargó o si ya estaba bien.
+  useEffect(() => {
+    function alTerminarTransicion(evento: TransitionEvent) {
+      if (evento.propertyName !== "transform") return;
+      dotLottieRef.current?.resize();
+    }
+    document.addEventListener("transitionend", alTerminarTransicion);
+    return () => document.removeEventListener("transitionend", alTerminarTransicion);
+  }, []);
 
   function alObtenerInstancia(instancia: DotLottie | null) {
     dotLottieRef.current = instancia;
