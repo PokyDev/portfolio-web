@@ -153,3 +153,12 @@
   transform: translate(-50%, -50%);
   pointer-events: none;
 }
+
+/* Algunos navegadores no fuerzan 100% via UA stylesheet sobre elementos
+   arbitrarios en fullscreen (a diferencia de <video>) — esto evita
+   cualquier letterboxing inesperado. */
+.reproductor:fullscreen,
+.reproductor:-webkit-full-screen {
+  width: 100vw;
+  height: 100vh;
+}

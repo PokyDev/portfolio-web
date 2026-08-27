@@ -49,6 +49,14 @@ function IconoFullscreen() {
   );
 }
 
+function IconoSalirFullscreen() {
+  return (
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+      <path d="M8 3v3a2 2 0 0 1-2 2H3M16 3v3a2 2 0 0 0 2 2h3M21 16h-3a2 2 0 0 0-2 2v3M3 16h3a2 2 0 0 1 2 2v3" />
+    </svg>
+  );
+}
+
 function IconoBotePintura() {
   return (
     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
@@ -57,6 +65,17 @@ function IconoBotePintura() {
       <path d="M2 22c1.5-2 3.5-2 5 0s3.5 2 5 0" />
     </svg>
   );
+}
+
+// lib.dom no declara los prefijos vendor de Safari (nunca implementó
+// la Fullscreen API sin prefijo para elementos arbitrarios hasta iOS
+// 16.4). Se acotan al mínimo necesario acá.
+interface ElementoConFullscreenVendor extends HTMLDivElement {
+  webkitRequestFullscreen?: () => Promise<void> | void;
+}
+interface DocumentoConFullscreenVendor extends Document {
+  webkitFullscreenElement?: Element | null;
+  webkitExitFullscreen?: () => Promise<void> | void;
 }
 
 function formatearTiempo(segundos: number) {
@@ -75,8 +94,10 @@ export default function DeployMonitorReproductor({
   // métodos (play/pause/setFrame) son imperativos — solo el progreso
   // derivado (frame/duración) vive en estado para re-renderizar la UI.
   const dotLottieRef = useRef<DotLottie | null>(null);
+  const reproductorRef = useRef<HTMLDivElement>(null);
 
   const [reproduciendo, setReproduciendo] = useState(false);
+  const [pantallaCompleta, setPantallaCompleta] = useState(false);
   const [frameActual, setFrameActual] = useState(0);
   const [totalFrames, setTotalFrames] = useState(0);
   const [duracion, setDuracion] = useState(0);
@@ -101,6 +122,23 @@ export default function DeployMonitorReproductor({
     }
     document.addEventListener("transitionend", alTerminarTransicion);
     return () => document.removeEventListener("transitionend", alTerminarTransicion);
+  }, []);
+
+  // El botón no es la única forma de salir de fullscreen (Esc, gesto del
+  // sistema, F11). Sin este listener el ícono quedaría desincronizado del
+  // estado real del navegador.
+  useEffect(() => {
+    function alCambiarFullscreen() {
+      const doc = document as DocumentoConFullscreenVendor;
+      const elementoActivo = doc.fullscreenElement ?? doc.webkitFullscreenElement ?? null;
+      setPantallaCompleta(elementoActivo === reproductorRef.current);
+    }
+    document.addEventListener("fullscreenchange", alCambiarFullscreen);
+    document.addEventListener("webkitfullscreenchange", alCambiarFullscreen);
+    return () => {
+      document.removeEventListener("fullscreenchange", alCambiarFullscreen);
+      document.removeEventListener("webkitfullscreenchange", alCambiarFullscreen);
+    };
   }, []);
 
   function alObtenerInstancia(instancia: DotLottie | null) {
@@ -132,6 +170,38 @@ export default function DeployMonitorReproductor({
     }
   }
 
+  function alToggleFullscreen(evento: React.SyntheticEvent) {
+    evento.preventDefault();
+    evento.stopPropagation();
+
+    const nodo = reproductorRef.current as ElementoConFullscreenVendor | null;
+    const doc = document as DocumentoConFullscreenVendor;
+    if (!nodo) return;
+
+    const yaEnFullscreen = Boolean(doc.fullscreenElement ?? doc.webkitFullscreenElement);
+
+    if (!yaEnFullscreen) {
+      if (nodo.requestFullscreen) {
+        nodo.requestFullscreen().catch(() => { });
+      } else if (nodo.webkitRequestFullscreen) {
+        nodo.webkitRequestFullscreen();
+      }
+    } else if (doc.exitFullscreen) {
+      doc.exitFullscreen().catch(() => { });
+    } else if (doc.webkitExitFullscreen) {
+      doc.webkitExitFullscreen();
+    }
+  }
+
+  function alCerrarReproductor(evento: React.SyntheticEvent) {
+    const doc = document as DocumentoConFullscreenVendor;
+    if (doc.fullscreenElement ?? doc.webkitFullscreenElement) {
+      const salir = doc.exitFullscreen?.() ?? doc.webkitExitFullscreen?.();
+      Promise.resolve(salir).catch(() => { });
+    }
+    onCerrar(evento);
+  }
+
   // Adelantar/atrasar: convierte una posición X de mouse/touch sobre la
   // barra en un frame del Lottie y lo aplica de inmediato.
   function buscarEnPosicion(clientX: number, track: HTMLDivElement) {
@@ -158,13 +228,13 @@ export default function DeployMonitorReproductor({
   }
 
   return (
-    <div className={styles.reproductor}>
+    <div className={styles.reproductor} ref={reproductorRef}>
       <div className={styles.barraSuperior}>
         <button
           type="button"
           className={styles.botonAtras}
           aria-label="Cerrar reproductor"
-          onClick={onCerrar}
+          onClick={alCerrarReproductor}
         >
           <IconoFlechaAtras />
         </button>
@@ -222,8 +292,13 @@ export default function DeployMonitorReproductor({
         <button type="button" className={styles.botonControl} aria-label="Activar loop" disabled>
           <IconoLoop />
         </button>
-        <button type="button" className={styles.botonControl} aria-label="Pantalla completa" disabled>
-          <IconoFullscreen />
+        <button
+          type="button"
+          className={styles.botonControl}
+          aria-label={pantallaCompleta ? "Salir de pantalla completa" : "Pantalla completa"}
+          onClick={alToggleFullscreen}
+        >
+          {pantallaCompleta ? <IconoSalirFullscreen /> : <IconoFullscreen />}
         </button>
         <button type="button" className={styles.botonControl} aria-label="Cambiar acento de color" disabled>
           <IconoBotePintura />
