@@ -92,7 +92,7 @@
 }
 
 .botonVelocidad {
-  composes: botonControl;
+  color-scheme: botonControl;
   width: auto;
   padding: 0 0.375rem;
   font-size: 0.75rem;
