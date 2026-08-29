@@ -1023,11 +1023,6 @@
   }
 }
 
-/* Solo con puntero real: en táctil el navegador puede aplicar :hover
-   "pegajoso" con un simple tap (o al mantener presionado sobre la
-   miniatura), lo que teñiría el borde sin pasar por el botón de
-   reproducir. En táctil el borde lo controla únicamente .animar-forzado
-   — ver regla debajo del bloque @media (hover: none) de más abajo. */
 @media (hover: hover) {
   .tarjetaEnlace:hover .proyectoMiniatura {
     border-color: var(--color-accent);
