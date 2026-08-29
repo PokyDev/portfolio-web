@@ -2,6 +2,7 @@
 
 import Image from "next/image";
 import { useLayoutEffect, useRef, useState } from "react";
+import type { ComponentType } from "react";
 
 import IconoTarjetaClickeable from "./IconoTarjetaClickeable";
 
@@ -10,7 +11,7 @@ import CoragemMiniatura from "../miniaturas/coragem/CoragemMiniatura";
 import DeployMonitorMiniatura from "../miniaturas/deploy-monitor/DeployMonitorMiniatura";
 import PortfolioMiniatura from "../miniaturas/portfolio/PortfolioMiniatura";
 
-import DeployMonitorReproductor from "@/app/components/landing/miniaturas/deploy-monitor/DeployMonitorReproductor";
+import Reproductor from "@/app/components/landing/miniaturas/reproductor/Reproductor";
 
 import Tecnologia from "./Tecnologia";
 import type { Proyecto } from "../data";
@@ -24,10 +25,25 @@ function IconoPlayGrande() {
   );
 }
 
+// Los 4 proyectos con miniatura animada propia (imagotipo/marca en vez de
+// captura de pantalla) son, hasta ahora, los únicos con reproductor —
+// tengan o no ya un .json de Lottie asociado en data.ts (proyecto.animacion).
+// Sin entrada acá => tarjeta simple (imagen estática o empty-state), sin
+// overlay de play ni reproductor.
+const MINIATURAS_CON_REPRODUCTOR: Record<string, ComponentType> = {
+  "deploy-monitor": DeployMonitorMiniatura,
+  "coragem-bisuteria": CoragemMiniatura,
+  "pokydev-portfolio": PortfolioMiniatura,
+  "bartolome-parrilla": BartolomeMiniatura,
+};
+
 export default function TarjetaProyecto({ proyecto }: { proyecto: Proyecto }) {
   // Toda tarjeta es clickeable: interna (caso de estudio, interfaz 2) o
   // externa (repo/página). Las externas abren en pestaña nueva.
   const externo = proyecto.enlace.startsWith("http");
+
+  const ComponenteMiniatura = MINIATURAS_CON_REPRODUCTOR[proyecto.slug];
+  const tieneReproductor = Boolean(ComponenteMiniatura);
 
   const [reproductorAbierto, setReproductorAbierto] = useState(false);
   const [textoOculto, setTextoOculto] = useState(false);
@@ -79,7 +95,7 @@ export default function TarjetaProyecto({ proyecto }: { proyecto: Proyecto }) {
   }
 
   function alClickearTarjeta(evento: React.MouseEvent) {
-    if (proyecto.slug === "deploy-monitor" && (reproductorAbierto || textoOculto)) {
+    if (tieneReproductor && (reproductorAbierto || textoOculto)) {
       evento.preventDefault();
     }
   }
@@ -157,17 +173,17 @@ export default function TarjetaProyecto({ proyecto }: { proyecto: Proyecto }) {
       className={styles.tarjetaEnlace}
       {...(externo && { target: "_blank", rel: "noopener noreferrer" })}
     >
-      {proyecto.slug === "deploy-monitor" ? (
+      {ComponenteMiniatura ? (
         <div
           ref={miniaturaRef}
           className={`${styles.proyectoMiniatura}${reproductorAbierto ? ` ${styles.proyectoMiniaturaExpandida}` : ""
             }`}
         >
           {reproductorAbierto ? (
-            <DeployMonitorReproductor onCerrar={alCerrarReproductor} />
+            <Reproductor src={proyecto.animacion} onCerrar={alCerrarReproductor} />
           ) : (
             <>
-              <DeployMonitorMiniatura />
+              <ComponenteMiniatura />
               <button
                 type="button"
                 className={styles.overlayReproductor}
@@ -181,18 +197,6 @@ export default function TarjetaProyecto({ proyecto }: { proyecto: Proyecto }) {
               </button>
             </>
           )}
-        </div>
-      ) : proyecto.slug === "coragem-bisuteria" ? (
-        <div className={styles.proyectoMiniatura}>
-          <CoragemMiniatura />
-        </div>
-      ) : proyecto.slug === "pokydev-portfolio" ? (
-        <div className={styles.proyectoMiniatura}>
-          <PortfolioMiniatura />
-        </div>
-      ) : proyecto.slug === "bartolome-parrilla" ? (
-        <div className={styles.proyectoMiniatura}>
-          <BartolomeMiniatura />
         </div>
       ) : proyecto.miniatura ? (
         <div className={styles.proyectoMiniatura}>
@@ -216,8 +220,8 @@ export default function TarjetaProyecto({ proyecto }: { proyecto: Proyecto }) {
       )}
 
       <div
-        className={`${styles.proyectoCuerpo}${proyecto.slug === "deploy-monitor" && textoOculto ? ` ${styles.proyectoCuerpoDesvanecido}` : ""
-          }${proyecto.slug === "deploy-monitor" && reproductorAbierto ? ` ${styles.proyectoCuerpoOculto}` : ""
+        className={`${styles.proyectoCuerpo}${tieneReproductor && textoOculto ? ` ${styles.proyectoCuerpoDesvanecido}` : ""
+          }${tieneReproductor && reproductorAbierto ? ` ${styles.proyectoCuerpoOculto}` : ""
           }`}
       >
         <h3 className={styles.proyectoTitulo}>

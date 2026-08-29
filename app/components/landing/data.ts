@@ -21,6 +21,8 @@ export interface Proyecto {
   usuariosMensuales?: number;
   /** Miniatura de la tarjeta: captura en /public/photos (opcional) */
   miniatura?: string;
+  /** Ruta al .json de Lottie para el reproductor (opcional; sin esto, el reproductor muestra el emptyState) */
+  animacion?: string;
   tecnologias: string[];
 }
 
@@ -216,6 +218,7 @@ export const PROYECTOS: readonly Proyecto[] = [
     etiquetaEnlace: "Revisar proyecto",
     estrellas: 1,
     miniatura: "/photos/deploy-monitor.png",
+    animacion: "/video/deploy_monitor.json",
     tecnologias: ["TauriV2", "React.js", "TypeScript", "Rust", "Xterm.js"],
   },
   {

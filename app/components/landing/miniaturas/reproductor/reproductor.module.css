@@ -1,8 +1,8 @@
-/* Cromo del reproductor de DeployMonitor — ahora sigue la paleta del
-   portafolio (tokens.css) en vez de colores fijos, así hereda el theme
-   claro/oscuro automáticamente vía la clase .dark en <html>.
-   --acento-reproductor queda separado de --color-accent para que el bote
-   de pintura (próxima entrega) pueda sobreescribirlo sin tocar el resto. */
+/* Cromo del reproductor — sigue la paleta del portafolio (tokens.css),
+   así hereda el theme claro/oscuro automáticamente vía la clase .dark
+   en <html>. --acento-reproductor queda separado de --color-accent para
+   que el bote de pintura (próxima entrega) pueda sobreescribirlo sin
+   tocar el resto. */
 
 .reproductor {
   --acento-reproductor: var(--color-accent);
@@ -182,4 +182,47 @@
 .reproductor:-webkit-full-screen {
   width: 100vw;
   height: 100vh;
+}
+
+
+/* EmptyState — mismo cromo del reproductor real (barraSuperior,
+   zonaCentral, barraInferior), pero centro con mensaje de "en
+   preparación" en vez del canvas de Lottie. */
+.emptyStateContenido {
+  height: 100%;
+  display: grid;
+  place-items: center;
+  gap: 0.75rem;
+  color: var(--color-muted);
+  text-align: center;
+  padding: 1.5rem;
+}
+
+.emptyStateIcono {
+  opacity: 0.7;
+}
+
+.emptyStateMensaje {
+  font-family: var(--font-heading);
+  font-size: 0.9rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+}
+
+/* Controles de la barra inferior en el EmptyState: visibles pero
+   deshabilitados, para que el cromo se vea consistente con el
+   reproductor real aunque no haya nada que reproducir todavía. */
+.botonVelocidad:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.botonVelocidad:disabled:hover {
+  background-color: transparent;
+  color: var(--color-muted);
+}
+
+.progresoTrackDeshabilitada {
+  cursor: not-allowed;
+  opacity: 0.5;
 }

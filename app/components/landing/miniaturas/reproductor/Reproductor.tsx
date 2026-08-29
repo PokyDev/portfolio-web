@@ -3,7 +3,8 @@
 import { useEffect, useRef, useState } from "react";
 import { DotLottieReact } from "@lottiefiles/dotlottie-react";
 import type { DotLottie } from "@lottiefiles/dotlottie-web";
-import styles from "./deployMonitorReproductor.module.css";
+import ReproductorEmptyState from "./ReproductorEmptyState";
+import styles from "./reproductor.module.css";
 
 function IconoFlechaAtras() {
   return (
@@ -98,9 +99,11 @@ const LOOP_POR_DEFECTO: EstadoOnOff = "ON";
 const VELOCIDADES = [1, 2, 4] as const;
 type Velocidad = (typeof VELOCIDADES)[number];
 
-export default function DeployMonitorReproductor({
+export default function Reproductor({
+  src,
   onCerrar,
 }: {
+  src?: string;
   onCerrar: (evento: React.SyntheticEvent) => void;
 }) {
   // Instancia del player, guardada por fuera de React state porque sus
@@ -287,6 +290,10 @@ export default function DeployMonitorReproductor({
     buscarEnPosicion(evento.clientX, evento.currentTarget);
   }
 
+  if (!src) {
+    return <ReproductorEmptyState onCerrar={onCerrar} />;
+  }
+
   return (
     <div className={styles.reproductor} ref={reproductorRef}>
       <div className={styles.barraSuperior}>
@@ -302,7 +309,7 @@ export default function DeployMonitorReproductor({
 
       <div className={styles.zonaCentral}>
         <DotLottieReact
-          src="/video/deploy_monitor.json"
+          src={src}
           autoplay
           loop={loopActivo}
           speed={velocidad}
