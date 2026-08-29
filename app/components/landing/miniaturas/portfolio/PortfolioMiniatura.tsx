@@ -1,5 +1,4 @@
 import styles from "./portfolioMiniatura.module.css";
-import animacion from "./portfolioAnimacion.module.css";
 
 // Réplica a escala reducida del imagotipo del propio portafolio (tema
 // oscuro fijo, no sigue el theme claro/oscuro del portafolio): sello @Poky
@@ -14,14 +13,14 @@ import animacion from "./portfolioAnimacion.module.css";
 export default function PortfolioMiniatura() {
   return (
     <div className={styles.miniatura}>
-      <div className={`${styles.contenido} ${animacion.contenido}`}>
+      <div className={`${styles.contenido}`}>
         <svg
           role="img"
           aria-label=""
           aria-hidden="true"
           viewBox="0 0 1024 1024"
           xmlns="http://www.w3.org/2000/svg"
-          className={`${styles.icono} ${animacion.icono}`}
+          className={`${styles.icono}`}
         >
           <g transform="translate(0,1024) scale(0.1,-0.1)" stroke="none">
             <path
@@ -41,7 +40,7 @@ export default function PortfolioMiniatura() {
           src="/icons/@titulo-frontend.svg"
           alt=""
           aria-hidden="true"
-          className={`${styles.wordmark} ${animacion.wordmark}`}
+          className={`${styles.wordmark}`}
         />
       </div>
     </div>

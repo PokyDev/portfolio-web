@@ -16,23 +16,6 @@ import Tecnologia from "./Tecnologia";
 import type { Proyecto } from "../data";
 import styles from "../landing.module.css";
 
-function IconoPlay() {
-  return (
-    <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-      <path d="M8 5.14v13.72a1 1 0 0 0 1.5.87l11-6.86a1 1 0 0 0 0-1.72l-11-6.86A1 1 0 0 0 8 5.14Z" />
-    </svg>
-  );
-}
-
-function IconoPausa() {
-  return (
-    <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-      <rect x="6" y="4" width="4" height="16" rx="1" />
-      <rect x="14" y="4" width="4" height="16" rx="1" />
-    </svg>
-  );
-}
-
 function IconoPlayGrande() {
   return (
     <svg width="28" height="28" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
@@ -41,27 +24,10 @@ function IconoPlayGrande() {
   );
 }
 
-// Mapa slug -> clase global (sin hash) que engancha la animación de hover de
-// cada miniatura-componente desde fuera del scope de landing.module.css —
-// ver deployMonitorAnimacion/coragemAnimacion/portfolioAnimacion/bartolomeAnimacion.
-const CLASE_HOVER_MINIATURA: Record<string, string> = {
-  "coragem-bisuteria": "coragem-tarjeta-hover",
-  "pokydev-portfolio": "portfolio-tarjeta-hover",
-  "bartolome-parrilla": "bartolome-tarjeta-hover",
-};
-
 export default function TarjetaProyecto({ proyecto }: { proyecto: Proyecto }) {
   // Toda tarjeta es clickeable: interna (caso de estudio, interfaz 2) o
   // externa (repo/página). Las externas abren en pestaña nueva.
   const externo = proyecto.enlace.startsWith("http");
-
-  const claseHoverMiniatura = CLASE_HOVER_MINIATURA[proyecto.slug];
-
-  // Táctil (sin :hover real): el botón de abajo hace de sustituto del hover
-  // para las 4 miniaturas-componente animadas — ver esas mismas hojas de
-  // animación, que además de `:hover` ahora reaccionan a `.animar-forzado`.
-  const [animado, setAnimado] = useState(false);
-  const botonRef = useRef<HTMLSpanElement>(null);
 
   const [reproductorAbierto, setReproductorAbierto] = useState(false);
   const [textoOculto, setTextoOculto] = useState(false);
@@ -117,46 +83,6 @@ export default function TarjetaProyecto({ proyecto }: { proyecto: Proyecto }) {
       evento.preventDefault();
     }
   }
-
-  useEffect(() => {
-    if (!animado) return;
-
-    // "él" en el pedido original es el botón, no la tarjeta entera: cualquier
-    // TAP fuera del botón deselecciona (incluido un tap en otra parte de la
-    // misma tarjeta, que de paso navega — el <a> ya lo maneja solo). Un
-    // drag/scroll que arranca fuera del botón NO debe deseleccionar: se mide
-    // la distancia entre pointerdown y pointerup, y si se movió más que el
-    // umbral, se ignora por ser gesto de scroll, no un tap real.
-    const UMBRAL_ARRASTRE_PX = 10;
-    let inicioToque: { x: number; y: number } | null = null;
-
-    function alIniciarToque(evento: PointerEvent) {
-      inicioToque = { x: evento.clientX, y: evento.clientY };
-    }
-
-    function alSoltarToque(evento: PointerEvent) {
-      const inicio = inicioToque;
-      inicioToque = null;
-      if (!inicio) return;
-
-      const distancia = Math.hypot(
-        evento.clientX - inicio.x,
-        evento.clientY - inicio.y,
-      );
-      if (distancia > UMBRAL_ARRASTRE_PX) return;
-
-      if (!botonRef.current?.contains(evento.target as Node)) {
-        setAnimado(false);
-      }
-    }
-
-    document.addEventListener("pointerdown", alIniciarToque);
-    document.addEventListener("pointerup", alSoltarToque);
-    return () => {
-      document.removeEventListener("pointerdown", alIniciarToque);
-      document.removeEventListener("pointerup", alSoltarToque);
-    };
-  }, [animado]);
 
   useLayoutEffect(() => {
     const nodo = miniaturaRef.current;
@@ -223,29 +149,12 @@ export default function TarjetaProyecto({ proyecto }: { proyecto: Proyecto }) {
     };
   }, [reproductorAbierto]);
 
-  function alTocarBoton(evento: React.SyntheticEvent) {
-    evento.preventDefault();
-    evento.stopPropagation();
-    setAnimado((valorPrevio) => !valorPrevio);
-  }
-
-  function alPresionarTeclaBoton(evento: React.KeyboardEvent) {
-    if (evento.key === "Enter" || evento.key === " ") {
-      alTocarBoton(evento);
-    }
-  }
-
   return (
     <a
       ref={tarjetaRef}
       href={proyecto.enlace}
       onClick={alClickearTarjeta}
-      className={
-        claseHoverMiniatura
-          ? `${styles.tarjetaEnlace} ${claseHoverMiniatura}${animado ? " animar-forzado" : ""
-          }`
-          : styles.tarjetaEnlace
-      }
+      className={styles.tarjetaEnlace}
       {...(externo && { target: "_blank", rel: "noopener noreferrer" })}
     >
       {proyecto.slug === "deploy-monitor" ? (
@@ -303,31 +212,6 @@ export default function TarjetaProyecto({ proyecto }: { proyecto: Proyecto }) {
           aria-hidden="true"
         >
           {"</>"}
-        </div>
-      )}
-
-      {claseHoverMiniatura && (
-        // Solo en táctil (sin :hover real) — sustituto del hover de la
-        // miniatura de arriba: ver CLASE_HOVER_MINIATURA y .animar-forzado
-        // en las hojas de animación de cada miniatura-componente.
-        <div className={styles.filaAnimarMiniatura}>
-          <span
-            ref={botonRef}
-            role="button"
-            tabIndex={0}
-            aria-pressed={animado}
-            aria-label={
-              animado
-                ? "Pausar animación de la miniatura"
-                : "Reproducir animación de la miniatura"
-            }
-            className={`${styles.botonAnimarMiniatura}${animado ? ` ${styles.botonAnimarMiniaturaActivo}` : ""
-              }`}
-            onClick={alTocarBoton}
-            onKeyDown={alPresionarTeclaBoton}
-          >
-            {animado ? <IconoPausa /> : <IconoPlay />}
-          </span>
         </div>
       )}
 

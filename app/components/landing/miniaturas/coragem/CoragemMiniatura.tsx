@@ -1,7 +1,6 @@
 import Image from "next/image";
 import { Noto_Serif } from "next/font/google";
 import styles from "./coragemMiniatura.module.css";
-import animacion from "./coragemAnimacion.module.css";
 
 // Fuente exclusiva de esta miniatura (no es la tipografía del portafolio):
 // el cliente pidió reemplazar la fuente decorativa anterior (Bagel Fat One)
@@ -29,7 +28,7 @@ const notoSerif = Noto_Serif({
 export default function CoragemMiniatura() {
   return (
     <div className={`${styles.miniatura} ${notoSerif.variable}`}>
-      <div className={`${styles.contenido} ${animacion.contenido}`}>
+      <div className={`${styles.contenido}`}>
         <Image
           src="/miniature-icons/coragem_icon.png"
           alt=""
