@@ -185,14 +185,20 @@
 }
 
 
-/* EmptyState — mismo cromo del reproductor real (barraSuperior,
-   zonaCentral, barraInferior), pero centro con mensaje de "en
-   preparación" en vez del canvas de Lottie. */
+/* EmptyState — mismo cromo del reproductor real, pero el centro cuenta
+   una secuencia: puntos tipo leader de cuenta regresiva que se van
+   encendiendo, y al completarse la claqueta da el golpe (la "toma"),
+   todo reinicia. Un solo ciclo maestro de 4.8s comparten los 5 puntos
+   y la tapa de la claqueta — misma duración, mismo instante de arranque,
+   así quedan en fase para siempre sin necesitar animation-delay. */
+
 .emptyStateContenido {
   height: 100%;
-  display: grid;
-  place-items: center;
-  gap: 0.75rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.85rem;
   color: var(--color-muted);
   text-align: center;
   padding: 1.5rem;
@@ -202,11 +208,112 @@
   opacity: 0.7;
 }
 
+/* La tapa gira sobre la esquina inferior izquierda, simulando la bisagra
+   real de una claqueta. Queda cerrada la mayor parte del ciclo (0–66%),
+   coincidiendo con la ventana en la que los puntos se están encendiendo;
+   recién dispara cuando el "leader" ya terminó de cargar. */
+.claquetaTapa {
+  transform-box: fill-box;
+  transform-origin: 0% 100%;
+  animation: claquetaCierre 4.8s ease-in-out infinite;
+}
+
+@keyframes claquetaCierre {
+  0%, 66% { transform: rotate(0deg); }
+  74% { transform: rotate(-18deg); }
+  82% { transform: rotate(5deg); }
+  88% { transform: rotate(-2deg); }
+  94%, 100% { transform: rotate(0deg); }
+}
+
+.emptyStatePuntos {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.punto {
+  width: 0.4rem;
+  height: 0.4rem;
+  border-radius: 50%;
+  background-color: var(--acento-reproductor);
+}
+
+/* Cada punto tiene su propio keyframe (en vez de compartir uno con
+   delay) para poder fijar a mano el instante exacto en que se enciende
+   Y el instante en que todos vuelven a apagarse juntos (86%→90%) —
+   con delay negativo eso se desincroniza porque el offset corre todo
+   el timeline por igual, incluido el apagado. */
+.punto1 { animation: puntoUno 4.8s ease-in-out infinite; }
+.punto2 { animation: puntoDos 4.8s ease-in-out infinite; }
+.punto3 { animation: puntoTres 4.8s ease-in-out infinite; }
+.punto4 { animation: puntoCuatro 4.8s ease-in-out infinite; }
+.punto5 { animation: puntoCinco 4.8s ease-in-out infinite; }
+
+@keyframes puntoUno {
+  0%, 4% { opacity: 0.25; transform: scale(0.7); }
+  8% { opacity: 1; transform: scale(1.15); }
+  12%, 86% { opacity: 1; transform: scale(1); }
+  90%, 100% { opacity: 0.25; transform: scale(0.7); }
+}
+@keyframes puntoDos {
+  0%, 16% { opacity: 0.25; transform: scale(0.7); }
+  20% { opacity: 1; transform: scale(1.15); }
+  24%, 86% { opacity: 1; transform: scale(1); }
+  90%, 100% { opacity: 0.25; transform: scale(0.7); }
+}
+@keyframes puntoTres {
+  0%, 28% { opacity: 0.25; transform: scale(0.7); }
+  32% { opacity: 1; transform: scale(1.15); }
+  36%, 86% { opacity: 1; transform: scale(1); }
+  90%, 100% { opacity: 0.25; transform: scale(0.7); }
+}
+@keyframes puntoCuatro {
+  0%, 40% { opacity: 0.25; transform: scale(0.7); }
+  44% { opacity: 1; transform: scale(1.15); }
+  48%, 86% { opacity: 1; transform: scale(1); }
+  90%, 100% { opacity: 0.25; transform: scale(0.7); }
+}
+@keyframes puntoCinco {
+  0%, 52% { opacity: 0.25; transform: scale(0.7); }
+  56% { opacity: 1; transform: scale(1.15); }
+  60%, 86% { opacity: 1; transform: scale(1); }
+  90%, 100% { opacity: 0.25; transform: scale(0.7); }
+}
+
+.emptyStateTexto {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.2rem;
+}
+
+.emptyStateEyebrow {
+  font-family: var(--font-mono, ui-monospace, "SF Mono", "Courier New", monospace);
+  font-size: 0.65rem;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--acento-reproductor);
+  opacity: 0.85;
+}
+
 .emptyStateMensaje {
   font-family: var(--font-heading);
   font-size: 0.9rem;
   font-weight: 600;
   letter-spacing: 0.02em;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .claquetaTapa {
+    animation: none;
+  }
+  .punto1, .punto2, .punto3, .punto4, .punto5 {
+    animation: none;
+    opacity: 0.6;
+    transform: none;
+  }
 }
 
 /* Controles de la barra inferior en el EmptyState: visibles pero

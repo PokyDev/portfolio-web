@@ -47,20 +47,28 @@ function IconoBotePintura() {
   );
 }
 
-// Claqueta — único ícono nuevo de esta entrega, distinto del glifo "</>"
-// que ya se usa para el empty-state de imagen estática (miniaturaVacia en
-// landing.module.css), para no mezclar semánticas ("sin captura" vs.
-// "video en preparación").
+// Versión sólida (fill), no outline — coherente con el estilo "flat
+// vector" de los íconos de repo. La tapa queda como 4 bloques rellenos
+// con gaps entre ellos (simulan los segmentos blanco/negro de una
+// claqueta real) agrupados en .claquetaTapa, que sigue siendo la parte
+// que rota. El cuerpo es un <rect> con esquinas redondas + el play como
+// triángulo sólido, igual que el resto de los controles del reproductor.
 function IconoClaqueta() {
   return (
-    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-      <path d="M3 8.5 20 5l.8 3.9L4 12.4Z" />
-      <path d="M4 12h16v6a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2Z" />
-      <path d="m6.5 8 2-3.6M11.5 7l2-3.6M16.5 6l2-3.6" />
+    <svg width="36" height="36" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+      <rect x="3" y="10.5" width="18" height="9.8" rx="2.2" />
+      <g className={styles.claquetaTapa}>
+        <path d="M2.4 8.9 8.1 7.5l2.9 3.7-5.7 1.4a1 1 0 0 1-1.2-.73l-.5-1.94a1 1 0 0 1 .73-1.21Z" />
+        <path d="m9.9 7.2 5.7-1.4 2.9 3.7-5.7 1.4Z" />
+        <path d="m17.4 5.4 3.9-.96a1 1 0 0 1 1.21.73l.5 1.94a1 1 0 0 1-.73 1.21l-2.97.74Z" />
+      </g>
+      <path
+        d="M10.2 13v4.8a.6.6 0 0 0 .93.5l3.9-2.4a.6.6 0 0 0 0-1l-3.9-2.4a.6.6 0 0 0-.93.5Z"
+        fill="var(--color-bg-elevated)"
+      />
     </svg>
   );
 }
-
 // Fallback provisional del reproductor genérico: se muestra cuando el
 // proyecto todavía no tiene .json de Lottie asociado (Reproductor.tsx
 // delega acá si `src` viene undefined). Mantiene el mismo cromo del
@@ -91,7 +99,19 @@ export default function ReproductorEmptyState({
           <span className={styles.emptyStateIcono}>
             <IconoClaqueta />
           </span>
-          <span className={styles.emptyStateMensaje}>Animación en camino</span>
+
+          <div className={styles.emptyStatePuntos} aria-hidden="true">
+            <span className={`${styles.punto} ${styles.punto1}`} />
+            <span className={`${styles.punto} ${styles.punto2}`} />
+            <span className={`${styles.punto} ${styles.punto3}`} />
+            <span className={`${styles.punto} ${styles.punto4}`} />
+            <span className={`${styles.punto} ${styles.punto5}`} />
+          </div>
+
+          <div className={styles.emptyStateTexto}>
+            <span className={styles.emptyStateEyebrow}>En producción</span>
+            <span className={styles.emptyStateMensaje}>Animación sin diseñar</span>
+          </div>
         </div>
       </div>
 
