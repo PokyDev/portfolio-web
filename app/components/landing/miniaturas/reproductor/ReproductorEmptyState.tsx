@@ -47,28 +47,40 @@ function IconoBotePintura() {
   );
 }
 
-// Versión sólida (fill), no outline — coherente con el estilo "flat
-// vector" de los íconos de repo. La tapa queda como 4 bloques rellenos
-// con gaps entre ellos (simulan los segmentos blanco/negro de una
-// claqueta real) agrupados en .claquetaTapa, que sigue siendo la parte
-// que rota. El cuerpo es un <rect> con esquinas redondas + el play como
-// triángulo sólido, igual que el resto de los controles del reproductor.
+// Claqueta rediseñada como dos piezas reales: cuerpo (caja + hueco +
+// triángulo play) fijo, y tapa (barra con 4 muescas) como pieza aparte
+// que rota sobre su bisagra real: la esquina superior-izquierda de la
+// caja (12,40) en el viewBox 0-100. La tapa está dibujada en su
+// posición CERRADA (alineada con el borde de la caja) — el estado de
+// reposo "abierta" lo aplica el rotate(-25deg) inicial del keyframe en
+// .claquetaTapa, no la geometría del path.
 function IconoClaqueta() {
   return (
-    <svg width="36" height="36" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-      <rect x="3" y="10.5" width="18" height="9.8" rx="2.2" />
-      <g className={styles.claquetaTapa}>
-        <path d="M2.4 8.9 8.1 7.5l2.9 3.7-5.7 1.4a1 1 0 0 1-1.2-.73l-.5-1.94a1 1 0 0 1 .73-1.21Z" />
-        <path d="m9.9 7.2 5.7-1.4 2.9 3.7-5.7 1.4Z" />
-        <path d="m17.4 5.4 3.9-.96a1 1 0 0 1 1.21.73l.5 1.94a1 1 0 0 1-.73 1.21l-2.97.74Z" />
-      </g>
+    <svg width="40" height="40" viewBox="0 0 100 100" fill="currentColor" aria-hidden="true">
+      {/* Cuerpo: marco de la caja (evenodd deja el hueco central
+          transparente, se ve el fondo detrás) + triángulo de play sólido. */}
       <path
-        d="M10.2 13v4.8a.6.6 0 0 0 .93.5l3.9-2.4a.6.6 0 0 0 0-1l-3.9-2.4a.6.6 0 0 0-.93.5Z"
-        fill="var(--color-bg-elevated)"
+        fillRule="evenodd"
+        d="M18,40 H82 A6,6 0 0 1 88,46 V82 A6,6 0 0 1 82,88 H18 A6,6 0 0 1 12,82 V46 A6,6 0 0 1 18,40 Z
+           M22,47 H78 A3,3 0 0 1 81,50 V78 A3,3 0 0 1 78,81 H22 A3,3 0 0 1 19,78 V50 A3,3 0 0 1 22,47 Z"
       />
+      <path d="M44,54 L44,76 L66,65 Z" />
+
+      {/* Tapa: gira sobre la bisagra (12,40), definida en .claquetaTapa */}
+      <g className={styles.claquetaTapa}>
+        <path
+          fillRule="evenodd"
+          d="M15,28 H85 A3,3 0 0 1 88,31 V37 A3,3 0 0 1 85,40 H15 A3,3 0 0 1 12,37 V31 A3,3 0 0 1 15,28 Z
+             M21.5,40 L26.5,40 L31.5,28 L26.5,28 Z
+             M37.5,40 L42.5,40 L47.5,28 L42.5,28 Z
+             M53.5,40 L58.5,40 L63.5,28 L58.5,28 Z
+             M69.5,40 L74.5,40 L79.5,28 L74.5,28 Z"
+        />
+      </g>
     </svg>
   );
 }
+
 // Fallback provisional del reproductor genérico: se muestra cuando el
 // proyecto todavía no tiene .json de Lottie asociado (Reproductor.tsx
 // delega acá si `src` viene undefined). Mantiene el mismo cromo del
@@ -76,6 +88,7 @@ function IconoClaqueta() {
 // inferior con los mismos controles) para que la transición FLIP entre
 // miniatura y reproductor se sienta igual en todos los proyectos, aunque
 // acá los controles estén deshabilitados por no haber nada que reproducir.
+
 export default function ReproductorEmptyState({
   onCerrar,
 }: {
