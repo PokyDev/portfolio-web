@@ -74,6 +74,16 @@ export default function TarjetaProyecto({
   const tarjetaRef = useRef<HTMLAnchorElement>(null);
   const alturaPreviaRef = useRef<number | null>(null);
 
+  // Snapshot continuo del rect/alto MIENTRAS el reproductor está abierto.
+  // Necesario porque, cuando esta tarjeta se cierra por la apertura de
+  // OTRA (ver efecto más abajo), para el momento en que React vuelve a
+  // renderizar "abierto" ya es false y el DOM ya colapsó — no hay forma
+  // de leer ahí el rect "grande". Se va guardando de antemano, en cada
+  // commit mientras sigue abierta, para tener siempre uno reciente a mano.
+  const rectAbiertoRef = useRef<DOMRect | null>(null);
+  const alturaAbiertaRef = useRef<number | null>(null);
+  const llegoAEstarAbiertaRef = useRef(false);
+
   const DURACION_FADE_TEXTO_MS = 220;
   const DURACION_ESCALA_MS = 400;
 
@@ -127,25 +137,69 @@ export default function TarjetaProyecto({
     cerrarConAnimacion();
   }
 
+  // El listener de click-afuera vive dentro de un efecto que solo se
+  // vuelve a suscribir cuando cambia "abierto" (ver más abajo). Como
+  // "cerrarConAnimacion" es una función nueva en cada render (cierra
+  // sobre "enTransicion" del momento), si el efecto la referenciara
+  // directamente quedaría atada para siempre al valor de "enTransicion"
+  // que había EN EL RENDER EN QUE SE ABRIÓ — que es `true` (recién se
+  // llamó a setEnTransicion(true) para arrancar la apertura). Esa es la
+  // razón real por la que el cierre por click-afuera no estaba
+  // funcionando: `cerrarConAnimacion()` hacía siempre `return` de
+  // inmediato por ese `enTransicion` obsoleto atrapado en el closure,
+  // sin importar que en la práctica ya no hubiera ninguna transición en
+  // curso. Este ref siempre apunta a la versión más reciente.
+  const cerrarConAnimacionRef = useRef(cerrarConAnimacion);
+  useEffect(() => {
+    cerrarConAnimacionRef.current = cerrarConAnimacion;
+  });
+
   function alClickearTarjeta(evento: React.MouseEvent) {
     if (tieneReproductor && (abierto || textoOculto)) {
       evento.preventDefault();
     }
   }
 
-  // Red de seguridad: si "abierto" pasa a false SIN que haya sido esta
-  // tarjeta la que llamó a onCerrar() (por ejemplo, se abrió otro
-  // reproductor sin pasar por el click-afuera de abajo), no hay rects
-  // capturados para animar un FLIP en reversa correcto — en vez de dejar
-  // la miniatura en un estado visual intermedio, se resetea directo.
-  useEffect(() => {
+  // Actualiza el snapshot en cada commit mientras sigue abierta. Se apoya
+  // en el orden de los layout effects: como se declara ANTES que los dos
+  // que aplican el FLIP (más abajo), en el commit en el que recién se abre
+  // corre antes de que esos le apliquen cualquier transform/height inline,
+  // así que siempre lee el tamaño "real" ya expandido, nunca uno a medio
+  // animar.
+  useLayoutEffect(() => {
+    if (!abierto) return;
+    llegoAEstarAbiertaRef.current = true;
+    rectAbiertoRef.current = miniaturaRef.current?.getBoundingClientRect() ?? null;
+    alturaAbiertaRef.current = tarjetaRef.current?.getBoundingClientRect().height ?? null;
+  });
+
+  // Si "abierto" pasa a false SIN que haya sido esta tarjeta la que llamó
+  // a cerrarConAnimacion() (cierrePorEstaTarjetaRef en false), es porque
+  // se abrió OTRO reproductor y Landing.tsx cambió el slug activo. Antes
+  // esto simplemente reseteaba todo de golpe (de ahí lo abrupto); ahora
+  // reusamos el último rect/alto conocidos (capturados por el efecto de
+  // arriba mientras seguía abierta) para alimentar el MISMO FLIP en
+  // reversa que dispara un cierre manual — los dos efectos de más abajo,
+  // que leen rectPrevioRef/alturaPreviaRef, se encargan de animarlo.
+  // Por eso debe ser useLayoutEffect y debe declararse ANTES que esos dos:
+  // los layout effects de un mismo commit corren en orden de declaración,
+  // así que este alcanza a dejar los rects listos antes de que se lean.
+  useLayoutEffect(() => {
     if (abierto) return;
     if (cierrePorEstaTarjetaRef.current) {
       cierrePorEstaTarjetaRef.current = false;
       return;
     }
-    setTextoOculto(false);
-    setEnTransicion(false);
+    if (!llegoAEstarAbiertaRef.current) return; // nunca se abrió (mount inicial) — nada que revertir
+
+    rectPrevioRef.current = rectAbiertoRef.current;
+    alturaPreviaRef.current = alturaAbiertaRef.current;
+    setEnTransicion(true);
+
+    window.setTimeout(() => {
+      setTextoOculto(false);
+      setEnTransicion(false);
+    }, DURACION_ESCALA_MS);
   }, [abierto]);
 
   // Mejora de UX opcional: click en cualquier lugar fuera del reproductor
@@ -159,14 +213,13 @@ export default function TarjetaProyecto({
     function alClickearFuera(evento: PointerEvent) {
       const nodo = miniaturaRef.current;
       if (nodo && evento.target instanceof Node && !nodo.contains(evento.target)) {
-        cerrarConAnimacion();
+        cerrarConAnimacionRef.current(); // antes: cerrarConAnimacion()
       }
     }
 
     document.addEventListener("pointerdown", alClickearFuera, true);
     return () => document.removeEventListener("pointerdown", alClickearFuera, true);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [abierto]);
+  }, [abierto]); // ya no hace falta el eslint-disable de exhaustive-deps
 
   useLayoutEffect(() => {
     const nodo = miniaturaRef.current;
