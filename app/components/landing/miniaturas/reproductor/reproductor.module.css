@@ -46,6 +46,24 @@
   background-color: var(--color-bg);
 }
 
+/* Contraparte del cambio en .proyectoMiniatura.proyectoMiniaturaExpandida
+   (landing.module.css): en mobile el contenedor deja de tener un alto
+   fijo por aspect-ratio, así que acá se le da un alto explícito por
+   contenido (barraSuperior + zonaCentral + barraInferior, cada una auto)
+   y el aspect-ratio 16:9 se traslada a zonaCentral — mismo tamaño de
+   video que tenía la miniatura, con las barras sumando alto aparte en
+   vez de robárselo. */
+@media (max-width: 639px) {
+  .reproductor {
+    height: auto;
+    grid-template-rows: auto auto auto;
+  }
+
+  .zonaCentral {
+    aspect-ratio: 16 / 9;
+  }
+}
+
 .lienzo {
   position: absolute;
   inset: 0;
