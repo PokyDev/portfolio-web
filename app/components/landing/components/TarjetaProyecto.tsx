@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { useLayoutEffect, useRef, useState } from "react";
+import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import type { ComponentType } from "react";
 
 import IconoTarjetaClickeable from "./IconoTarjetaClickeable";
@@ -37,7 +37,17 @@ const MINIATURAS_CON_REPRODUCTOR: Record<string, ComponentType> = {
   "bartolome-parrilla": BartolomeMiniatura,
 };
 
-export default function TarjetaProyecto({ proyecto }: { proyecto: Proyecto }) {
+export default function TarjetaProyecto({
+  proyecto,
+  abierto,
+  onAbrir,
+  onCerrar,
+}: {
+  proyecto: Proyecto;
+  abierto: boolean;
+  onAbrir: () => void;
+  onCerrar: () => void;
+}) {
   // Toda tarjeta es clickeable: interna (caso de estudio, interfaz 2) o
   // externa (repo/página). Las externas abren en pestaña nueva.
   const externo = proyecto.enlace.startsWith("http");
@@ -45,9 +55,18 @@ export default function TarjetaProyecto({ proyecto }: { proyecto: Proyecto }) {
   const ComponenteMiniatura = MINIATURAS_CON_REPRODUCTOR[proyecto.slug];
   const tieneReproductor = Boolean(ComponenteMiniatura);
 
-  const [reproductorAbierto, setReproductorAbierto] = useState(false);
+  // "abierto" ahora vive en Landing.tsx (un solo slug activo para toda la
+  // landing) — evita que se puedan tener dos reproductores abiertos a la
+  // vez. Esta tarjeta solo sabe si LE toca estar abierta.
   const [textoOculto, setTextoOculto] = useState(false);
   const [enTransicion, setEnTransicion] = useState(false);
+
+  // true mientras el cierre en curso fue disparado por el propio botón/
+  // click-afuera de ESTA tarjeta (con animación FLIP normal). Si "abierto"
+  // pasa a false sin que este flag se haya activado, es porque algo cerró
+  // este reproductor sin pasar por cerrarConAnimacion() — el efecto de
+  // más abajo lo usa como red de seguridad.
+  const cierrePorEstaTarjetaRef = useRef(false);
 
   const miniaturaRef = useRef<HTMLDivElement>(null);
   const rectPrevioRef = useRef<DOMRect | null>(null);
@@ -58,10 +77,17 @@ export default function TarjetaProyecto({ proyecto }: { proyecto: Proyecto }) {
   const DURACION_FADE_TEXTO_MS = 220;
   const DURACION_ESCALA_MS = 400;
 
+  // Mientras el reproductor está abierto (o en camino a estarlo) el href
+  // de la tarjeta se desactiva: navegar o mostrar el link no tiene sentido
+  // viendo el video, y además el navegador muestra el preview nativo del
+  // href en la esquina inferior al hacer hover, lo cual estorba encima
+  // del reproductor.
+  const enlaceDeshabilitado = tieneReproductor && (abierto || textoOculto);
+
   function alAbrirReproductor(evento: React.SyntheticEvent) {
     evento.preventDefault();
     evento.stopPropagation();
-    if (reproductorAbierto || enTransicion) return;
+    if (abierto || enTransicion) return;
 
     setEnTransicion(true);
     setTextoOculto(true); // Fase A: fade, el texto sigue en el flujo
@@ -69,7 +95,7 @@ export default function TarjetaProyecto({ proyecto }: { proyecto: Proyecto }) {
     window.setTimeout(() => {
       alturaPreviaRef.current = tarjetaRef.current?.getBoundingClientRect().height ?? null;
       rectPrevioRef.current = miniaturaRef.current?.getBoundingClientRect() ?? null;
-      setReproductorAbierto(true);
+      onAbrir(); // Fase B: le avisa a Landing.tsx — cierra cualquier otro abierto
 
       window.setTimeout(() => {
         setEnTransicion(false);
@@ -77,16 +103,17 @@ export default function TarjetaProyecto({ proyecto }: { proyecto: Proyecto }) {
     }, DURACION_FADE_TEXTO_MS);
   }
 
+  // Compartida por el botón de cerrar y por el listener de click-afuera:
+  // captura los rects ANTES de avisarle a Landing.tsx que este reproductor
+  // se cierra, para que el FLIP de reversa tenga de dónde partir.
+  function cerrarConAnimacion() {
+    if (!abierto || enTransicion) return;
 
-  function alCerrarReproductor(evento: React.SyntheticEvent) {
-    evento.preventDefault();
-    evento.stopPropagation();
-    if (!reproductorAbierto || enTransicion) return;
-
+    cierrePorEstaTarjetaRef.current = true;
     setEnTransicion(true);
     alturaPreviaRef.current = tarjetaRef.current?.getBoundingClientRect().height ?? null;
     rectPrevioRef.current = miniaturaRef.current?.getBoundingClientRect() ?? null;
-    setReproductorAbierto(false); // Fase B inversa: miniatura vuelve a angosta (FLIP)
+    onCerrar(); // Fase B inversa: miniatura vuelve a angosta (FLIP)
 
     window.setTimeout(() => {
       setTextoOculto(false); // Fase A inversa: recién ahora reaparece el texto
@@ -94,11 +121,52 @@ export default function TarjetaProyecto({ proyecto }: { proyecto: Proyecto }) {
     }, DURACION_ESCALA_MS);
   }
 
+  function alCerrarReproductor(evento: React.SyntheticEvent) {
+    evento.preventDefault();
+    evento.stopPropagation();
+    cerrarConAnimacion();
+  }
+
   function alClickearTarjeta(evento: React.MouseEvent) {
-    if (tieneReproductor && (reproductorAbierto || textoOculto)) {
+    if (tieneReproductor && (abierto || textoOculto)) {
       evento.preventDefault();
     }
   }
+
+  // Red de seguridad: si "abierto" pasa a false SIN que haya sido esta
+  // tarjeta la que llamó a onCerrar() (por ejemplo, se abrió otro
+  // reproductor sin pasar por el click-afuera de abajo), no hay rects
+  // capturados para animar un FLIP en reversa correcto — en vez de dejar
+  // la miniatura en un estado visual intermedio, se resetea directo.
+  useEffect(() => {
+    if (abierto) return;
+    if (cierrePorEstaTarjetaRef.current) {
+      cierrePorEstaTarjetaRef.current = false;
+      return;
+    }
+    setTextoOculto(false);
+    setEnTransicion(false);
+  }, [abierto]);
+
+  // Mejora de UX opcional: click en cualquier lugar fuera del reproductor
+  // (sin contar sus propios controles, incluido el botón de cerrar) lo
+  // cierra. Capture phase porque los controles internos (play, loop,
+  // fullscreen, cerrar) hacen stopPropagation() en bubble — así este
+  // listener en document siempre se entera primero.
+  useEffect(() => {
+    if (!abierto) return;
+
+    function alClickearFuera(evento: PointerEvent) {
+      const nodo = miniaturaRef.current;
+      if (nodo && evento.target instanceof Node && !nodo.contains(evento.target)) {
+        cerrarConAnimacion();
+      }
+    }
+
+    document.addEventListener("pointerdown", alClickearFuera, true);
+    return () => document.removeEventListener("pointerdown", alClickearFuera, true);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [abierto]);
 
   useLayoutEffect(() => {
     const nodo = miniaturaRef.current;
@@ -124,7 +192,7 @@ export default function TarjetaProyecto({ proyecto }: { proyecto: Proyecto }) {
     });
 
     rectPrevioRef.current = null;
-  }, [reproductorAbierto]);
+  }, [abierto]);
 
   useLayoutEffect(() => {
     const tarjeta = tarjetaRef.current;
@@ -163,23 +231,23 @@ export default function TarjetaProyecto({ proyecto }: { proyecto: Proyecto }) {
     return () => {
       tarjeta.removeEventListener("transitionend", alTerminar);
     };
-  }, [reproductorAbierto]);
+  }, [abierto]);
 
   return (
     <a
       ref={tarjetaRef}
-      href={proyecto.enlace}
+      href={enlaceDeshabilitado ? undefined : proyecto.enlace}
       onClick={alClickearTarjeta}
       className={styles.tarjetaEnlace}
-      {...(externo && { target: "_blank", rel: "noopener noreferrer" })}
+      {...(externo && !enlaceDeshabilitado && { target: "_blank", rel: "noopener noreferrer" })}
     >
       {ComponenteMiniatura ? (
         <div
           ref={miniaturaRef}
-          className={`${styles.proyectoMiniatura}${reproductorAbierto ? ` ${styles.proyectoMiniaturaExpandida}` : ""
+          className={`${styles.proyectoMiniatura}${abierto ? ` ${styles.proyectoMiniaturaExpandida}` : ""
             }`}
         >
-          {reproductorAbierto ? (
+          {abierto ? (
             <Reproductor src={proyecto.animacion} onCerrar={alCerrarReproductor} />
           ) : (
             <>
@@ -221,7 +289,7 @@ export default function TarjetaProyecto({ proyecto }: { proyecto: Proyecto }) {
 
       <div
         className={`${styles.proyectoCuerpo}${tieneReproductor && textoOculto ? ` ${styles.proyectoCuerpoDesvanecido}` : ""
-          }${tieneReproductor && reproductorAbierto ? ` ${styles.proyectoCuerpoOculto}` : ""
+          }${tieneReproductor && abierto ? ` ${styles.proyectoCuerpoOculto}` : ""
           }`}
       >
         <h3 className={styles.proyectoTitulo}>

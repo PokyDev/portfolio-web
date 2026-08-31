@@ -1,3 +1,7 @@
+"use client";
+
+import { useState } from "react";
+
 import Aside from "./components/Aside";
 import ContactoChat from "./components/ContactoChat";
 import IconoTarjetaClickeable from "./components/IconoTarjetaClickeable";
@@ -42,6 +46,10 @@ function resaltarEnlaces(texto: string) {
 }
 
 export default function Landing() {
+  // Único reproductor abierto a la vez en toda la landing — el slug del
+  // proyecto activo, o null si ninguno está abierto.
+  const [proyectoAbierto, setProyectoAbierto] = useState<string | null>(null);
+
   return (
     <div className={styles.layout}>
       <Aside />
@@ -135,7 +143,13 @@ export default function Landing() {
         >
           <div className={styles.proyectos}>
             {PROYECTOS.map((proyecto) => (
-              <TarjetaProyecto key={proyecto.slug} proyecto={proyecto} />
+              <TarjetaProyecto
+                key={proyecto.slug}
+                proyecto={proyecto}
+                abierto={proyectoAbierto === proyecto.slug}
+                onAbrir={() => setProyectoAbierto(proyecto.slug)}
+                onCerrar={() => setProyectoAbierto(null)}
+              />
             ))}
           </div>
         </section>
