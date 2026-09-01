@@ -210,15 +210,15 @@ export default function TarjetaProyecto({
   useEffect(() => {
     if (!abierto) return;
 
-    function alClickearFuera(evento: PointerEvent) {
+    function alClickearFuera(evento: MouseEvent) { // antes: PointerEvent
       const nodo = miniaturaRef.current;
       if (nodo && evento.target instanceof Node && !nodo.contains(evento.target)) {
-        cerrarConAnimacionRef.current(); // antes: cerrarConAnimacion()
+        cerrarConAnimacionRef.current();
       }
     }
 
-    document.addEventListener("pointerdown", alClickearFuera, true);
-    return () => document.removeEventListener("pointerdown", alClickearFuera, true);
+    document.addEventListener("click", alClickearFuera, true); // antes: "pointerdown"
+    return () => document.removeEventListener("click", alClickearFuera, true);
   }, [abierto]); // ya no hace falta el eslint-disable de exhaustive-deps
 
   useLayoutEffect(() => {
