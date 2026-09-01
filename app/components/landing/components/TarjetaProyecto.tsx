@@ -61,6 +61,12 @@ export default function TarjetaProyecto({
   const [textoOculto, setTextoOculto] = useState(false);
   const [enTransicion, setEnTransicion] = useState(false);
 
+  // Velo sólido (mismo fondo que el reproductor) que cubre el contenedor
+  // durante el cierre, para que el swap Reproductor -> miniatura real y
+  // el achique del FLIP no se vean como contenido saltando de golpe a
+  // tamaño expandido. Ver detalle de las 3 fases en cerrarConAnimacion().
+  const [veloVisible, setVeloVisible] = useState(false);
+
   // true mientras el cierre en curso fue disparado por el propio botón/
   // click-afuera de ESTA tarjeta (con animación FLIP normal). Si "abierto"
   // pasa a false sin que este flag se haya activado, es porque algo cerró
@@ -86,6 +92,11 @@ export default function TarjetaProyecto({
 
   const DURACION_FADE_TEXTO_MS = 220;
   const DURACION_ESCALA_MS = 400;
+  // Duración del fade de entrada/salida del velo de cierre — debe
+  // coincidir con la transición de opacity de .veloCierre en
+  // landing.module.css (los setTimeout de abajo dependen de este valor
+  // para encadenar la siguiente fase justo cuando termina la anterior).
+  const DURACION_VELO_MS = 200;
 
   // Mientras el reproductor está abierto (o en camino a estarlo) el href
   // de la tarjeta se desactiva: navegar o mostrar el link no tiene sentido
@@ -116,19 +127,36 @@ export default function TarjetaProyecto({
   // Compartida por el botón de cerrar y por el listener de click-afuera:
   // captura los rects ANTES de avisarle a Landing.tsx que este reproductor
   // se cierra, para que el FLIP de reversa tenga de dónde partir.
+  // Cierre en 3 fases (ver .veloCierre en landing.module.css para el
+  // porqué del velo):
+  //   1. Velo: fade-in de un rectángulo sólido (mismo --color-bg del
+  //      reproductor) que lo cubre por completo. El reproductor sigue
+  //      montado y visible por debajo hasta que el velo llega a opaco.
+  //   2. Swap + resize: recién con el velo opaco se llama a onCerrar()
+  //      (la miniatura real reemplaza al reproductor, pero queda oculta
+  //      bajo el velo) y arranca el FLIP de achique (los dos
+  //      useLayoutEffect de más abajo). El texto empieza a reaparecer en
+  //      paralelo a este mismo achique, no después.
+  //   3. Reveal: cuando el achique termina, el velo se disuelve y
+  //      descubre la miniatura ya en su tamaño final.
   function cerrarConAnimacion() {
     if (!abierto || enTransicion) return;
 
     cierrePorEstaTarjetaRef.current = true;
     setEnTransicion(true);
-    alturaPreviaRef.current = tarjetaRef.current?.getBoundingClientRect().height ?? null;
-    rectPrevioRef.current = miniaturaRef.current?.getBoundingClientRect() ?? null;
-    onCerrar(); // Fase B inversa: miniatura vuelve a angosta (FLIP)
+    setVeloVisible(true); // Fase 1
 
     window.setTimeout(() => {
-      setTextoOculto(false); // Fase A inversa: recién ahora reaparece el texto
-      setEnTransicion(false);
-    }, DURACION_ESCALA_MS);
+      alturaPreviaRef.current = tarjetaRef.current?.getBoundingClientRect().height ?? null;
+      rectPrevioRef.current = miniaturaRef.current?.getBoundingClientRect() ?? null;
+      onCerrar(); // Fase 2: miniatura vuelve a angosta (FLIP), oculta bajo el velo
+
+      window.setTimeout(() => {
+        setVeloVisible(false); // Fase 3: velo y texto aparecen juntos en opacidad
+        setTextoOculto(false);
+        setEnTransicion(false);
+      }, DURACION_ESCALA_MS);
+    }, DURACION_VELO_MS);
   }
 
   function alCerrarReproductor(evento: React.SyntheticEvent) {
@@ -195,8 +223,17 @@ export default function TarjetaProyecto({
     rectPrevioRef.current = rectAbiertoRef.current;
     alturaPreviaRef.current = alturaAbiertaRef.current;
     setEnTransicion(true);
+    // Acá el swap Reproductor -> miniatura ya ocurrió (React ya renderizó
+    // "abierto" en false antes de que este efecto pudiera reaccionar), así
+    // que no hay margen para el fade-in de Fase 1 de cerrarConAnimacion():
+    // el velo tiene que aparecer opaco ya. Como esto corre en un
+    // useLayoutEffect, React aplica el estado y repinta antes de que el
+    // navegador muestre el frame — no se alcanza a ver la miniatura real
+    // a tamaño expandido ni un parpadeo del velo apareciendo.
+    setVeloVisible(true);
 
     window.setTimeout(() => {
+      setVeloVisible(false); // Fase 3: mismo reveal que el cierre manual + texto
       setTextoOculto(false);
       setEnTransicion(false);
     }, DURACION_ESCALA_MS);
@@ -318,6 +355,10 @@ export default function TarjetaProyecto({
               </button>
             </>
           )}
+          <div
+            className={`${styles.veloCierre}${veloVisible ? ` ${styles.veloCierreVisible}` : ""}`}
+            aria-hidden="true"
+          />
         </div>
       ) : proyecto.miniatura ? (
         <div className={styles.proyectoMiniatura}>

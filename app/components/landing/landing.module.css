@@ -1017,6 +1017,32 @@
   opacity: 1;
 }
 
+/* Velo de cierre: cubre el contenedor con el mismo fondo que usa el
+   reproductor (var(--color-bg), ver reproductor.module.css) mientras se
+   hace el swap Reproductor -> miniatura real y el FLIP de resize. Sin
+   esto, ese swap se pinta instantáneo (la miniatura real, a tamaño
+   expandido, reemplazando de golpe al reproductor) y recién después se
+   nota el achique — dos cambios abruptos superpuestos. Con el velo, lo
+   que se ve es: opacidad hacia el color sólido, achique del rectángulo
+   ya cubierto (sin contenido visible cambiando de golpe), y opacidad de
+   vuelta revelando la miniatura ya en su tamaño final. z-index por
+   encima de overlayReproductor para tapar también su ícono de play.
+   pointer-events: none porque es puramente visual, nunca debe interceptar
+   clicks (ni siquiera mientras está opaco). */
+.veloCierre {
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  background-color: var(--color-bg);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 200ms var(--ease-standard);
+}
+
+.veloCierreVisible {
+  opacity: 1;
+}
+
 @media (hover: hover) {
   .tarjetaEnlace:hover .overlayReproductor {
     opacity: 1;
