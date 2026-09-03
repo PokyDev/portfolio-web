@@ -80,6 +80,18 @@ export default function TarjetaProyecto({
   const tarjetaRef = useRef<HTMLAnchorElement>(null);
   const alturaPreviaRef = useRef<number | null>(null);
 
+  // FLIP del cuerpo de texto — solo mobile (ver useLayoutEffect dedicado
+  // más abajo). En desktop el texto se oculta con opacity (.proyectoCuerpo*
+  // en landing.module.css); en mobile, a esa resolución, no hace falta
+  // ocultarlo — alcanza con que acompañe el achique de la miniatura en vez
+  // de quedar en su posición final (chica) desde el primer frame del
+  // cierre, mientras la miniatura todavía se ve grande por el transform.
+  // rectCuerpoPrevioRef solo se setea en las rutas de CIERRE (nunca al
+  // abrir): abrir ya se ve bien tal cual está (reveal por altura, sin
+  // overlap), así que no se toca.
+  const cuerpoRef = useRef<HTMLDivElement>(null);
+  const rectCuerpoPrevioRef = useRef<DOMRect | null>(null);
+
   // Snapshot continuo del rect/alto MIENTRAS el reproductor está abierto.
   // Necesario porque, cuando esta tarjeta se cierra por la apertura de
   // OTRA (ver efecto más abajo), para el momento en que React vuelve a
@@ -88,7 +100,21 @@ export default function TarjetaProyecto({
   // commit mientras sigue abierta, para tener siempre uno reciente a mano.
   const rectAbiertoRef = useRef<DOMRect | null>(null);
   const alturaAbiertaRef = useRef<number | null>(null);
+  // Mismo snapshot continuo, pero del cuerpo de texto — alimenta
+  // rectCuerpoPrevioRef en el cierre externo (ver efecto de abajo).
+  const rectCuerpoAbiertoRef = useRef<DOMRect | null>(null);
   const llegoAEstarAbiertaRef = useRef(false);
+
+  // Breakpoint mobile del reproductor (coincide con el "@media (max-width:
+  // 639px)" de .proyectoMiniatura.proyectoMiniaturaExpandida en
+  // landing.module.css). El FLIP del cuerpo solo corre por debajo de este
+  // ancho — en desktop el texto ya se maneja con opacity + position:
+  // absolute (.proyectoCuerpoOculto), y mezclar ambos mecanismos ahí
+  // rompería ese enfoque que ya funciona.
+  const ANCHO_MAXIMO_MOBILE_PX = 639;
+  function esMobile() {
+    return typeof window !== "undefined" && window.innerWidth <= ANCHO_MAXIMO_MOBILE_PX;
+  }
 
   const DURACION_FADE_TEXTO_MS = 220;
   const DURACION_ESCALA_MS = 400;
@@ -149,6 +175,9 @@ export default function TarjetaProyecto({
     window.setTimeout(() => {
       alturaPreviaRef.current = tarjetaRef.current?.getBoundingClientRect().height ?? null;
       rectPrevioRef.current = miniaturaRef.current?.getBoundingClientRect() ?? null;
+      if (esMobile()) {
+        rectCuerpoPrevioRef.current = cuerpoRef.current?.getBoundingClientRect() ?? null;
+      }
       onCerrar(); // Fase 2: miniatura vuelve a angosta (FLIP), oculta bajo el velo
 
       window.setTimeout(() => {
@@ -199,6 +228,7 @@ export default function TarjetaProyecto({
     llegoAEstarAbiertaRef.current = true;
     rectAbiertoRef.current = miniaturaRef.current?.getBoundingClientRect() ?? null;
     alturaAbiertaRef.current = tarjetaRef.current?.getBoundingClientRect().height ?? null;
+    rectCuerpoAbiertoRef.current = cuerpoRef.current?.getBoundingClientRect() ?? null;
   });
 
   // Si "abierto" pasa a false SIN que haya sido esta tarjeta la que llamó
@@ -222,6 +252,9 @@ export default function TarjetaProyecto({
 
     rectPrevioRef.current = rectAbiertoRef.current;
     alturaPreviaRef.current = alturaAbiertaRef.current;
+    if (esMobile()) {
+      rectCuerpoPrevioRef.current = rectCuerpoAbiertoRef.current;
+    }
     setEnTransicion(true);
     // Acá el swap Reproductor -> miniatura ya ocurrió (React ya renderizó
     // "abierto" en false antes de que este efecto pudiera reaccionar), así
@@ -282,6 +315,45 @@ export default function TarjetaProyecto({
     });
 
     rectPrevioRef.current = null;
+  }, [abierto]);
+
+  // FLIP del cuerpo de texto en mobile — mismo patrón que el de la
+  // miniatura de arriba, pero solo traslación en Y (una sola columna, no
+  // hay cambio de ancho). rectCuerpoPrevioRef solo llega con datos en las
+  // rutas de cierre (manual o externo); en la apertura queda null y este
+  // efecto no hace nada, dejando ese caso tal cual está.
+  useLayoutEffect(() => {
+    const nodo = cuerpoRef.current;
+    const rectPrevio = rectCuerpoPrevioRef.current;
+    rectCuerpoPrevioRef.current = null;
+    if (!nodo || !rectPrevio) return;
+
+    const rectNuevo = nodo.getBoundingClientRect();
+    const trasladoY = rectPrevio.top - rectNuevo.top;
+
+    nodo.style.transition = "none";
+    nodo.style.transform = `translateY(${trasladoY}px)`;
+
+    // Fuerza reflow para que el navegador registre el estado inicial antes de animar
+    nodo.getBoundingClientRect();
+
+    requestAnimationFrame(() => {
+      nodo.style.transition = `transform ${DURACION_ESCALA_MS}ms var(--ease-standard)`;
+      nodo.style.transform = "translateY(0)";
+    });
+
+    function alTerminar(evento: TransitionEvent) {
+      if (evento.propertyName !== "transform" || !nodo) return;
+      nodo.style.transition = "";
+      nodo.style.transform = "";
+      nodo.removeEventListener("transitionend", alTerminar);
+    }
+
+    nodo.addEventListener("transitionend", alTerminar);
+
+    return () => {
+      nodo.removeEventListener("transitionend", alTerminar);
+    };
   }, [abierto]);
 
   useLayoutEffect(() => {
@@ -382,6 +454,7 @@ export default function TarjetaProyecto({
       )}
 
       <div
+        ref={cuerpoRef}
         className={`${styles.proyectoCuerpo}${tieneReproductor && textoOculto ? ` ${styles.proyectoCuerpoDesvanecido}` : ""
           }${tieneReproductor && abierto ? ` ${styles.proyectoCuerpoOculto}` : ""
           }`}
