@@ -62,9 +62,10 @@ export default function TarjetaProyecto({
   const [enTransicion, setEnTransicion] = useState(false);
 
   // Velo sólido (mismo fondo que el reproductor) que cubre el contenedor
-  // durante el cierre, para que el swap Reproductor -> miniatura real y
-  // el achique del FLIP no se vean como contenido saltando de golpe a
-  // tamaño expandido. Ver detalle de las 3 fases en cerrarConAnimacion().
+  // tanto al abrir como al cerrar, para que el swap de componente
+  // (miniatura <-> Reproductor) y el resize del FLIP (achique o
+  // crecimiento) no se vean como contenido saltando de golpe. Ver detalle
+  // de las 3 fases en alAbrirReproductor() y en cerrarConAnimacion().
   const [veloVisible, setVeloVisible] = useState(false);
 
   // true mientras el cierre en curso fue disparado por el propio botón/
@@ -118,10 +119,10 @@ export default function TarjetaProyecto({
 
   const DURACION_FADE_TEXTO_MS = 220;
   const DURACION_ESCALA_MS = 400;
-  // Duración del fade de entrada/salida del velo de cierre — debe
-  // coincidir con la transición de opacity de .veloCierre en
-  // landing.module.css (los setTimeout de abajo dependen de este valor
-  // para encadenar la siguiente fase justo cuando termina la anterior).
+  // Duración del fade de entrada/salida del velo (abrir y cerrar) — debe
+  // coincidir con la transición de opacity de .velo en landing.module.css
+  // (los setTimeout de abajo dependen de este valor para encadenar la
+  // siguiente fase justo cuando termina la anterior).
   const DURACION_VELO_MS = 200;
 
   // Mientras el reproductor está abierto (o en camino a estarlo) el href
@@ -131,6 +132,19 @@ export default function TarjetaProyecto({
   // del reproductor.
   const enlaceDeshabilitado = tieneReproductor && (abierto || textoOculto);
 
+  // Apertura en 3 fases — mismo mecanismo de velo que cerrarConAnimacion(),
+  // en espejo (acá se cubre para CRECER en vez de para achicar):
+  //   1. Velo: fade-in de un rectángulo sólido (mismo --color-bg del
+  //      reproductor) sobre la miniatura chica, en paralelo al fade del
+  //      texto (Fase A). Dura menos que el fade del texto (DURACION_VELO_MS
+  //      < DURACION_FADE_TEXTO_MS), así que ya llegó a opaco para cuando
+  //      arranca la Fase B.
+  //   2. Swap + resize: con el velo opaco se llama a onAbrir() (Landing.tsx
+  //      activa esta tarjeta — la miniatura real es reemplazada por
+  //      Reproductor, pero queda oculto bajo el velo) y arranca el FLIP de
+  //      crecimiento (useLayoutEffect de más abajo).
+  //   3. Reveal: cuando el crecimiento termina, el velo se disuelve y
+  //      descubre el reproductor ya en su tamaño final.
   function alAbrirReproductor(evento: React.SyntheticEvent) {
     evento.preventDefault();
     evento.stopPropagation();
@@ -138,13 +152,15 @@ export default function TarjetaProyecto({
 
     setEnTransicion(true);
     setTextoOculto(true); // Fase A: fade, el texto sigue en el flujo
+    setVeloVisible(true); // Fase 1: velo fade-in sobre la miniatura chica
 
     window.setTimeout(() => {
       alturaPreviaRef.current = tarjetaRef.current?.getBoundingClientRect().height ?? null;
       rectPrevioRef.current = miniaturaRef.current?.getBoundingClientRect() ?? null;
-      onAbrir(); // Fase B: le avisa a Landing.tsx — cierra cualquier otro abierto
+      onAbrir(); // Fase 2: le avisa a Landing.tsx — cierra cualquier otro abierto, swap oculto bajo el velo
 
       window.setTimeout(() => {
+        setVeloVisible(false); // Fase 3: revela el reproductor ya en tamaño final
         setEnTransicion(false);
       }, DURACION_ESCALA_MS);
     }, DURACION_FADE_TEXTO_MS);
@@ -153,8 +169,8 @@ export default function TarjetaProyecto({
   // Compartida por el botón de cerrar y por el listener de click-afuera:
   // captura los rects ANTES de avisarle a Landing.tsx que este reproductor
   // se cierra, para que el FLIP de reversa tenga de dónde partir.
-  // Cierre en 3 fases (ver .veloCierre en landing.module.css para el
-  // porqué del velo):
+  // Cierre en 3 fases (ver .velo en landing.module.css para el porqué del
+  // velo; misma mecánica que usa alAbrirReproductor(), en espejo):
   //   1. Velo: fade-in de un rectángulo sólido (mismo --color-bg del
   //      reproductor) que lo cubre por completo. El reproductor sigue
   //      montado y visible por debajo hasta que el velo llega a opaco.
@@ -428,7 +444,7 @@ export default function TarjetaProyecto({
             </>
           )}
           <div
-            className={`${styles.veloCierre}${veloVisible ? ` ${styles.veloCierreVisible}` : ""}`}
+            className={`${styles.velo}${veloVisible ? ` ${styles.veloVisible}` : ""}`}
             aria-hidden="true"
           />
         </div>
