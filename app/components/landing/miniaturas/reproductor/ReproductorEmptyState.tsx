@@ -37,16 +37,6 @@ function IconoFullscreen() {
   );
 }
 
-function IconoBotePintura() {
-  return (
-    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-      <path d="M19 11l-8-8-8.5 8.5a2 2 0 0 0 0 2.83l5.67 5.67a2 2 0 0 0 2.83 0L19 11Z" />
-      <path d="M5 2l5 5" />
-      <path d="M2 22c1.5-2 3.5-2 5 0s3.5 2 5 0" />
-    </svg>
-  );
-}
-
 // Claqueta rediseñada como dos piezas reales: cuerpo (caja + hueco +
 // triángulo play) fijo, y tapa (barra con 4 muescas) como pieza aparte
 // que rota sobre su bisagra real: la esquina superior-izquierda de la
@@ -158,9 +148,6 @@ export default function ReproductorEmptyState({
         </button>
         <button type="button" className={styles.botonControl} aria-label="Pantalla completa" disabled>
           <IconoFullscreen />
-        </button>
-        <button type="button" className={styles.botonControl} aria-label="Cambiar acento de color" disabled>
-          <IconoBotePintura />
         </button>
       </div>
     </div>

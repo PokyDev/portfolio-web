@@ -58,6 +58,7 @@ function IconoSalirFullscreen() {
   );
 }
 
+{/* Por ahora se descarta
 function IconoBotePintura() {
   return (
     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
@@ -67,6 +68,7 @@ function IconoBotePintura() {
     </svg>
   );
 }
+*/}
 
 // lib.dom no declara los prefijos vendor de Safari (nunca implementó
 // la Fullscreen API sin prefijo para elementos arbitrarios hasta iOS
@@ -379,9 +381,6 @@ export default function Reproductor({
           onClick={alToggleFullscreen}
         >
           {pantallaCompleta ? <IconoSalirFullscreen /> : <IconoFullscreen />}
-        </button>
-        <button type="button" className={styles.botonControl} aria-label="Cambiar acento de color" disabled>
-          <IconoBotePintura />
         </button>
       </div>
     </div>
