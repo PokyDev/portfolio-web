@@ -6,6 +6,7 @@
 
 .reproductor {
   --acento-reproductor: var(--color-accent);
+  position: relative; /* contexto de posicionamiento para .veloFullscreen (inset: 0 sobre TODO el reproductor, no solo la zona central) */
   height: 100%;
   width: 100%;
   display: grid;
@@ -61,6 +62,35 @@
 
   .zonaCentral {
     aspect-ratio: 16 / 9;
+  }
+}
+
+/* Envoltorio del canvas usado SOLO para la transición de entrada/salida de
+   fullscreen ("inside-in"/"inside-out", ver Reproductor.tsx). El resize
+   real de .zonaCentral (16:9 <-> 100vh) queda tapado por .veloFullscreen;
+   mientras tanto, este wrapper anima un scale+opacity propio, desacoplado
+   del tamaño real del contenedor. Duración: debe coincidir con
+   DURACION_ESCALA_FULLSCREEN_MS en Reproductor.tsx. */
+.zonaCentralAnimada {
+  position: absolute;
+  inset: 0;
+  transform: scale(1);
+  opacity: 1;
+  transition: transform 280ms var(--ease-standard), opacity 280ms var(--ease-standard);
+}
+
+.zonaCentralOculta {
+  transform: scale(0.94);
+  opacity: 0;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .zonaCentralAnimada {
+    transition: opacity 280ms var(--ease-standard);
+  }
+
+  .zonaCentralOculta {
+    transform: none;
   }
 }
 
@@ -200,6 +230,39 @@
 .reproductor:-webkit-full-screen {
   width: 100vw;
   height: 100vh;
+}
+
+/* Velo de fullscreen: mismo concepto que .velo en landing.module.css
+   (tapar un resize brusco con un fade a color sólido), pero es un
+   elemento DISTINTO y vive acá a propósito. Al entrar en fullscreen el
+   navegador promueve .reproductor al "top layer": ese elemento y sus
+   descendientes se pintan por encima de todo, pero un velo ubicado
+   afuera (como el de la tarjeta) se queda atrás y no cubre nada. Cubre
+   TODO .reproductor (no solo .zonaCentral) para tapar también el reflow
+   de barraSuperior/barraInferior al crecer el grid.
+   Duración: debe coincidir con DURACION_VELO_FULLSCREEN_MS en
+   Reproductor.tsx. z-index por encima de cualquier contenido del
+   reproductor; pointer-events: none porque es puramente visual. */
+.veloFullscreen {
+  position: absolute;
+  inset: 0;
+  z-index: 5;
+  background-color: var(--color-bg);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 170ms var(--ease-standard);
+}
+
+.veloFullscreenVisible {
+  opacity: 1;
+}
+
+/* Usado solo en el camino de salida NO controlada (Esc, gesto del
+   sistema): fuerza que el salto a opaco sea instantáneo, sin animar,
+   porque el resize ya ocurrió antes de que pudiéramos reaccionar — ver
+   comentario de "salida NO controlada" en Reproductor.tsx. */
+.veloFullscreenSinTransicion {
+  transition: none;
 }
 
 
