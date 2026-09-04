@@ -225,11 +225,35 @@
 
 /* Algunos navegadores no fuerzan 100% via UA stylesheet sobre elementos
    arbitrarios en fullscreen (a diferencia de <video>) — esto evita
-   cualquier letterboxing inesperado. */
+   cualquier letterboxing inesperado.
+
+   grid-template-rows se reafirma acá a propósito: el media query mobile
+   (max-width: 639px, más arriba) cambia .reproductor a "auto auto auto"
+   pensando en la tarjeta expandida, pero ese query es solo de ancho —
+   no distingue si además estamos en fullscreen. Sin este reset, en
+   cualquier celular (viewport < 640px) el fullscreen hereda esas filas
+   "auto auto auto" con un contenedor de 100vh, y el espacio libre se
+   reparte entre las 3 filas por igual (align-content: normal ≈ stretch
+   cuando no hay ninguna fr) en vez de ir todo a la fila central. Este
+   selector gana igual sin depender del orden en el archivo: :fullscreen
+   como pseudo-clase suma especificidad (0,2,0) contra la (0,1,0) del
+   media query. */
 .reproductor:fullscreen,
 .reproductor:-webkit-full-screen {
   width: 100vw;
   height: 100vh;
+  grid-template-rows: auto 1fr auto;
+}
+
+/* Contraparte para .zonaCentral: el mismo media query mobile la deja con
+   aspect-ratio fijo 16:9 (correcto para la tarjeta expandida, donde el
+   alto total del reproductor lo define el contenido). En fullscreen
+   necesita poder ocupar todo el alto real de la fila 1fr de arriba, así
+   que se anula el aspect-ratio en vez de dejar que recorte el video a
+   una franja fija sobre un contenedor de 100vh. */
+.reproductor:fullscreen .zonaCentral,
+.reproductor:-webkit-full-screen .zonaCentral {
+  aspect-ratio: unset;
 }
 
 /* Velo de fullscreen: mismo concepto que .velo en landing.module.css
