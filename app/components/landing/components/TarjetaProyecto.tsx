@@ -515,3 +515,5 @@ export default function TarjetaProyecto({
     </a>
   );
 }
+
+// Rollback antes del boton de reproducción
