@@ -469,6 +469,24 @@ export default function TarjetaProyecto({
         </div>
       )}
 
+      {tieneReproductor && (
+        <div
+          className={`${styles.contenedorBotonMobile}${textoOculto ? ` ${styles.contenedorBotonMobileOculto}` : ""
+            }${abierto ? ` ${styles.contenedorBotonMobileFueraFlujo}` : ""
+            }`}
+        >
+          <button
+            type="button"
+            className={styles.botonReproducirMobile}
+            aria-label="Reproducir animación"
+            disabled={enTransicion}
+            onClick={alAbrirReproductor}
+          >
+            <IconoPlayGrande />
+          </button>
+        </div>
+      )}
+
       <div
         ref={cuerpoRef}
         className={`${styles.proyectoCuerpo}${tieneReproductor && textoOculto ? ` ${styles.proyectoCuerpoDesvanecido}` : ""

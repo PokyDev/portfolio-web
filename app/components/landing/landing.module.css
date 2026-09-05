@@ -1043,6 +1043,56 @@
   opacity: 1;
 }
 
+/* Botón de reproducción — solo mobile (< 640px). Vive entre la miniatura y
+   el cuerpo de texto, como affordance visible ya que en táctil no hay hover
+   (el overlay invisible de arriba sigue funcionando como gatillo de
+   respaldo sobre toda la miniatura, esto es aditivo).
+   Reutiliza el mismo mecanismo de 2 fases que ya usa .proyectoCuerpoOculto
+   en desktop, pero condicionado a "textoOculto"/"abierto" en vez de un
+   estado propio:
+     Fase A (textoOculto): fade a opacity 0, sigue en el flujo.
+     Fase B (abierto): ya invisible, se saca del flujo con position:
+     absolute (mismo patrón que .proyectoCuerpoOculto, apoyado en que
+     .tarjetaEnlace ya es position: relative) — el colapso/expansión del
+     espacio que deja lo anima gratis el FLIP de altura de la tarjeta
+     (useLayoutEffect sobre tarjetaRef), no hace falta animarlo acá. */
+.contenedorBotonMobile {
+  display: flex;
+  justify-content: center;
+  opacity: 1;
+  transition: opacity 220ms var(--ease-standard);
+}
+
+.contenedorBotonMobileOculto {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.contenedorBotonMobileFueraFlujo {
+  position: absolute;
+  inset: 0;
+}
+
+.botonReproducirMobile {
+  width: 3rem;
+  height: 3rem;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  background: var(--color-fg);
+  color: var(--color-bg);
+  box-shadow: 0 0 10px 4px color-mix(in oklch, var(--color-fg) 45%, transparent);
+  transition: transform var(--transition-fast) var(--ease-standard),
+    box-shadow var(--transition-fast) var(--ease-standard);
+}
+
+.botonReproducirMobile:active {
+  transform: scale(0.92);
+}
+
 @media (hover: hover) {
   .tarjetaEnlace:hover .overlayReproductor {
     opacity: 1;
@@ -1076,6 +1126,10 @@
 }
 
 @media (min-width: 640px) {
+  .contenedorBotonMobile {
+    display: none;
+  }
+
   .tarjetaEnlace {
     display: grid;
     grid-template-columns: 8.5rem 1fr;
