@@ -92,6 +92,10 @@
     /* vuelve a mandar el orden del DOM: identidad, nav, sociales */
   }
 
+  .sociales {
+    padding-top: 1rem;
+  }
+
   .identidad {
     padding-top: 0;
   }
@@ -1434,4 +1438,46 @@
   justify-content: center;
   padding: 3rem 0 2.5rem;
   border-top: 1px solid var(--color-border);
+}
+
+
+/* ============================================================
+   Refinamiento de altura corta — mini portátiles en resolución
+   "desktop" por width (≥1024px) pero con height insuficiente para
+   que el aside sticky (100vh) muestre nav + sociales completos.
+   Se combina con min-width:1024px a propósito: sin ese AND, esta
+   regla también pegaría en mobile/tablet landscape con poco height,
+   donde nav/sociales ya están en display:none y no aplica.
+   Va AL FINAL del archivo a propósito: .avatar, .nombre y .nav
+   tienen reglas base SIN media query más arriba — con igual
+   especificidad, gana la última declarada en el archivo, sin
+   importar si está envuelta en un @media o no.
+   ============================================================ */
+@media (min-width: 1024px) and (max-height: 650) {
+
+  .avatar {
+    width: 3rem;
+    height: 3rem;
+    font-size: 1.5rem;
+  }
+
+  .nombre {
+    font-size: 1.6rem;
+  }
+
+  .alias {
+    display: none;
+  }
+
+  .habilidad {
+    margin-top: 0.4rem;
+  }
+
+  .nav {
+    margin-top: 1rem;
+  }
+
+  .navLink {
+    padding: 0.2rem 0;
+  }
 }
