@@ -7,8 +7,8 @@ import styles from "./sociales.module.css";
 // enlace y el patrón de hover sin assets externos.
 function IconoRed({ nombre }: { nombre: string }) {
   const comun = {
-    width: 24,
-    height: 24,
+    width: 18,
+    height: 18,
     viewBox: "0 0 24 24",
     fill: "none",
     stroke: "currentColor",

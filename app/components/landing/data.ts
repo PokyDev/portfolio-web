@@ -73,8 +73,8 @@ export const GUION_CHAT_DEMO: readonly MensajeBotDemo[] = [
 export const IDENTIDAD = {
   nombre: "Javier Socha",
   alias: "@Pokymon.dev",
-  habilidad: "Ingeniero en Desarrollo de Sistemas Informáticos",
-  tagline: "Construyo soluciones inspiradas en ofrecer la mejor experiencia de usuario posible.",
+  habilidad: "Ingeniero de Sistemas",
+  tagline: "Audito, diseño y construyo: encuentro fallas y necesidades para entregar soluciones sólidas, confiables y escalables con codigo limpio, documentación y buena arquitectura.",
   email: "andressocha.correo@gmail.com",
 } as const;
 
@@ -115,19 +115,10 @@ export const ENLACES_DESTACADOS: readonly EnlaceDestacado[] = [
 ] as const;
 
 export const SOBRE_MI = [
-  "¡Hola! Soy Javier y me gusta solucionar problemas. " +
-  "Soy un Ingeniero en Desarrollo de Sistemas Informáticos con interes en " +
-  "la creación de soluciones digitales que puedan impulsar negocios, me enfoco en constuir automatizaciones " +
-  "que de verdad puedan aportar utilidad real, me siento orgulloso de crear productos solidos, seguros y confiables y  " +
-  "disfruto de trabajar con la misma dedicación en el diseño e ingenieria de mis proyectos, combinando excelente UI/UX " +
-  "con buena arquitectura, codigo limpio y escalable.",
-
-  "He trabajado en varios entornos desde startups hasta empresas consolidadas con complejas necesidades de automatización, " +
-  "algunos productos en los que he estado presente desde desarrollo hasta mantenimiento han sido Coragem y Bartolome " +
-  "Actualmente trabajo como freelancer dispuesto a asumir nuevos desafios y siempre con ganas de poner en practica mi conocimiento.",
-
-  "En mi tiempo libre disfruto de salir a caminar con mi mascota y disfrutar de la naturaleza, me gusta viajar a lugares tranquilos, " +
-  "pasar tiempo de calidad con mi pareja y siempre estoy interesado en aprender como implementar tecnologías modernas."
+  "Soy Javier, Ingeniero de Sistemas, mi enfoque para abordar problemas siempre es el mismo: " +
+  "entender qué está fallando o que le falta a un sistema antes de pensar en código. " +
+  "Dependiendo del contexto diseño arquitecturas limpias y escalables, las desarrollo y " +
+  "las llevo a producción siendo exigente con el codigo y la experiencia de usuario."
 ];
 
 export const EXPERIENCIAS: readonly Experiencia[] = [

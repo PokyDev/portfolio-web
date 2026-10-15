@@ -1381,7 +1381,7 @@
   align-items: center;
 }
 
-@media (min-width: 800px) {
+@media (min-width: 1250px) {
   .contactoGrid {
     flex-direction: row;
     align-items: center;
@@ -1453,16 +1453,16 @@
    especificidad, gana la última declarada en el archivo, sin
    importar si está envuelta en un @media o no.
    ============================================================ */
-@media (min-width: 1024px) and (max-height: 650) {
+@media (min-width: 1024px) and (max-height: 650px) {
 
   .avatar {
-    width: 3rem;
-    height: 3rem;
-    font-size: 1.5rem;
+    width: 2.25rem;
+    height: 2.25rem;
+    font-size: 1.25rem;
   }
 
   .nombre {
-    font-size: 1.6rem;
+    font-size: 1.3rem;
   }
 
   .alias {
@@ -1471,6 +1471,11 @@
 
   .habilidad {
     margin-top: 0.4rem;
+    font-size: 0.9rem;
+  }
+  
+  .tagline {
+    font-size: 0.85rem;
   }
 
   .nav {
@@ -1479,5 +1484,6 @@
 
   .navLink {
     padding: 0.2rem 0;
+    font-size: 0.6rem;
   }
 }
