@@ -37,7 +37,7 @@ export default function Aside() {
           
           {IDENTIDAD.tagline_principal.rest_content}
         </p>
-        <p className={styles.tagline}>
+        <p className={`${styles.tagline} ${styles.taglineSecundario}`}>
           <span className={styles.taglineBold}>
             {IDENTIDAD.tagline_secundario.init_bold}
           </span>

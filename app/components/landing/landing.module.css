@@ -174,10 +174,24 @@
   max-width: 36ch;
 }
 
+.tagline:hover .taglineSecundario {
+  opacity: 1;
+}
+
 .taglinePrincipal {
   font-size: 1rem;
   font-weight: 400;
   color: var(--color-muted);
+}
+
+.taglineSecundario {
+  opacity: 0.6;
+  cursor: default;
+  transition: opacity var(--transition-base) var(--ease-standard);
+}
+
+.taglineSecundario:hover {
+  opacity: 1;
 }
 
 .taglineBold {
