@@ -74,7 +74,16 @@ export const IDENTIDAD = {
   nombre: "Javier Socha",
   alias: "@Pokymon.dev",
   habilidad: "Ingeniero de Sistemas",
-  tagline: "Audito, diseño y construyo: encuentro fallas y necesidades para entregar soluciones sólidas, confiables y escalables con codigo limpio, documentación y buena arquitectura.",
+  tagline_principal: {
+    init_bold: "Analizo, diseño y construyo",
+    content: "soluciones de software",
+    bold_content: "confiables y escalables,",
+    rest_content: "en base a problemas reales."
+  },
+  tagline_secundario: {
+    init_bold: "Tres pilares:",
+    content: "Código legible, documentación clara y arquitectura sólida."
+  },
   email: "andressocha.correo@gmail.com",
 } as const;
 

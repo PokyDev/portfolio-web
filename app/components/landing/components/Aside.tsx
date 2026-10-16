@@ -19,7 +19,31 @@ export default function Aside() {
         <h1 className={styles.nombre}>{IDENTIDAD.nombre}</h1>
         <p className={styles.alias}>{IDENTIDAD.alias}</p>
         <p className={styles.habilidad}>{IDENTIDAD.habilidad}</p>
-        <p className={styles.tagline}>{IDENTIDAD.tagline}</p>
+        <p className={`${styles.tagline} ${styles.taglinePrincipal}`}>
+          <span className={styles.taglineBold}>
+            {IDENTIDAD.tagline_principal.init_bold}
+          </span>
+          {" "}
+
+          <span>
+            {IDENTIDAD.tagline_principal.content}
+          </span>
+          {" "}
+
+          <span className={styles.taglineBold}>
+            {IDENTIDAD.tagline_principal.bold_content}
+          </span>
+          {" "}
+          
+          {IDENTIDAD.tagline_principal.rest_content}
+        </p>
+        <p className={styles.tagline}>
+          <span className={styles.taglineBold}>
+            {IDENTIDAD.tagline_secundario.init_bold}
+          </span>
+          {" "}
+          {IDENTIDAD.tagline_secundario.content}
+        </p>
       </div>
 
       <nav className={styles.nav} aria-label="Secciones del portafolio">
@@ -28,9 +52,8 @@ export default function Aside() {
             <li key={id}>
               <a
                 href={`#${id}`}
-                className={`${styles.navLink} ${
-                  seccionActiva === id ? styles.navLinkActivo : ""
-                }`}
+                className={`${styles.navLink} ${seccionActiva === id ? styles.navLinkActivo : ""
+                  }`}
               >
                 <span className={styles.navMarcador} aria-hidden="true" />
                 {label}
